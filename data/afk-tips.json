@@ -1,6 +1,6 @@
 [
-  {"id":"golden-apple","category":"afk","skill":"無工具採集（蘋果）","target":"金蘋果","method":"身上保留至少 1 個金蘋果，以金蘋果建立取得任務。","stop":"取得 10 個金蘋果","effect":"長時間連續採集","status":"user-tested","statusLabel":"使用者實測","note":"技能本身仍較難升級。"},
-  {"id":"golden-wool","category":"afk","skill":"剪羊毛","target":"金羊毛","method":"身上保留至少 1 個金羊毛，以金羊毛建立取得任務。","stop":"取得 10 個金羊毛","effect":"長時間連續剪羊毛","status":"user-tested","statusLabel":"使用者實測","note":"工具為羊毛剪。"},
-  {"id":"four-leaf-clover","category":"afk","skill":"採集藥草","target":"四葉草","method":"身上保留至少 1 株四葉草，以四葉草建立取得任務。","stop":"取得 10 株四葉草","effect":"因四葉草稀有，通常可持續採集非常久","status":"user-tested","statusLabel":"使用者實測","note":"工具為藥草鋤。"},
-  {"id":"golden-egg","category":"afk","skill":"無工具採集（雞蛋）","target":"金雞蛋","method":"若台版存在此道具，身上保留至少 1 個後建立取得任務。","stop":"推測為取得 10 個金雞蛋","effect":"理論上可長時間採蛋","status":"unconfirmed","statusLabel":"待確認","note":"目前僅依電腦版機制推測，不列為已證實。"}
+  {"id":"golden-apple","category":"afk","skill":"日常採集（蘋果）","target":"金蘋果","method":"身上保留至少 1 個金蘋果，以金蘋果建立取得任務。","stop":"取得 10 個金蘋果","effect":"長時間連續採集","status":"user-tested","statusLabel":"法那提歐實測","contributor":"法那提歐","note":"技能本身仍較難升級。"},
+  {"id":"golden-wool","category":"afk","skill":"剪羊毛","target":"金羊毛","method":"身上保留至少 1 個金羊毛，以金羊毛建立取得任務。","stop":"取得 10 個金羊毛","effect":"長時間連續剪羊毛","status":"user-tested","statusLabel":"法那提歐實測","contributor":"法那提歐","note":"工具為羊毛剪。"},
+  {"id":"four-leaf-clover","category":"afk","skill":"採集藥草","target":"四葉草","method":"身上保留至少 1 株四葉草，以四葉草建立取得任務。","stop":"取得 10 株四葉草","effect":"因四葉草稀有，通常可持續採集非常久","status":"user-tested","statusLabel":"法那提歐實測","contributor":"法那提歐","note":"工具為藥草鋤。"},
+  {"id":"golden-egg","category":"afk","skill":"日常採集（雞蛋）","target":"金雞蛋","method":"若台版存在此道具，身上保留至少 1 個後建立取得任務。","stop":"推測為取得 10 個金雞蛋","effect":"理論上可長時間採蛋","status":"unconfirmed","statusLabel":"待確認","note":"目前僅依電腦版機制推測，不列為已證實。"}
 ]
