@@ -1,0 +1,131 @@
+/* Accessibility baseline: keyboard focus, non-color state cues and reduced motion. */
+:root {
+  --focus-ring: #0b6ecf;
+  --focus-ring-backdrop: color-mix(in srgb, var(--surface-solid) 88%, transparent);
+}
+
+html[data-theme="dark"] {
+  --focus-ring: #ffd36f;
+  --focus-ring-backdrop: color-mix(in srgb, var(--page) 86%, transparent);
+}
+
+html[data-palette="contrast"][data-theme="light"] {
+  --focus-ring: #8a4f00;
+  --focus-ring-backdrop: var(--surface-solid);
+}
+html[data-palette="contrast"][data-theme="dark"] {
+  --focus-ring: #ffd27a;
+  --focus-ring-backdrop: var(--surface-solid);
+}
+
+:where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 3px solid var(--focus-ring) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 2px var(--focus-ring-backdrop) !important;
+}
+
+.sidebar :where(a[href], button, summary):focus-visible {
+  --focus-ring-backdrop: var(--sidebar);
+}
+
+.skip-link:focus-visible {
+  top: 16px;
+  outline-offset: 4px !important;
+}
+
+/* Text remains primary; symbols and border shapes make status readable without color. */
+.status-badge::before {
+  display: inline-grid;
+  place-items: center;
+  width: 1.15em;
+  height: 1.15em;
+  margin-right: .35em;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: .82em;
+  font-weight: 900;
+  line-height: 1;
+}
+.status-badge.status-confirmed::before { content: "✓"; }
+.status-badge.status-tested::before { content: "★"; }
+.status-badge.status-testing::before { content: "…"; }
+.status-badge.status-reference::before { content: "↗"; }
+.status-badge.status-unknown::before { content: "?"; }
+
+/* Selected controls keep text, a check mark, a stronger border and ARIA state. */
+.chip[aria-pressed="true"]::after,
+.level-nav button[aria-pressed="true"] > span::before {
+  content: "✓ ";
+  font-weight: 900;
+}
+.skill-tile[aria-pressed="true"] {
+  box-shadow: inset 4px 0 0 var(--gold-500);
+}
+.nav-link[aria-current="page"] {
+  box-shadow: inset 4px 0 0 var(--gold-400);
+}
+
+.profession-skill__summary[aria-expanded="true"] {
+  box-shadow: inset 4px 0 0 var(--gold-500);
+}
+.profession-skill__summary[aria-expanded="true"] .profession-skill__toggle {
+  font-weight: 900;
+}
+
+/* Five attributes retain game colors, while shape and text remain available. */
+.attribute-token::before {
+  content: "◆";
+  margin-right: .35em;
+  color: var(--attribute-color);
+  font-size: .72em;
+}
+.attribute-token.attribute-dexterity::before { content: "▲"; }
+.attribute-token.attribute-intelligence::before { content: "●"; }
+.attribute-token.attribute-will::before { content: "■"; }
+.attribute-token.attribute-luck::before { content: "✦"; }
+
+/* A closed off-canvas drawer and hidden contextual filters are not keyboard targets. */
+.sidebar[aria-hidden="true"],
+.sidebar-context-filter[aria-hidden="true"] {
+  visibility: hidden;
+}
+body.drawer-open .sidebar[aria-hidden="false"] {
+  visibility: visible;
+}
+
+/* Keep fixed controls away from mobile safe areas and the final footer text. */
+@media (max-width: 680px) {
+  .site-footer {
+    padding-bottom: max(92px, calc(env(safe-area-inset-bottom) + 72px));
+  }
+  .back-to-top {
+    right: max(16px, calc(env(safe-area-inset-right) + 10px));
+    bottom: max(18px, calc(env(safe-area-inset-bottom) + 12px));
+  }
+}
+
+html[data-palette="contrast"] .status-badge,
+html[data-palette="contrast"] .chip,
+html[data-palette="contrast"] .skill-tile,
+html[data-palette="contrast"] .profession-skill,
+html[data-palette="contrast"] .result-row {
+  border-width: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .quick-search-panel,
+  .theme-settings__backdrop {
+    backdrop-filter: none !important;
+  }
+  .back-to-top:hover,
+  .back-to-top:focus-visible {
+    transform: none !important;
+  }
+}
