@@ -25,6 +25,7 @@ jobs:
           node --check cooking.js
           node --check ui-enhancements.js
           node --check final-polish.js
+          node --check scripts/validate-data-contract.mjs
 
       - name: Validate JSON and content contracts
         run: |
@@ -73,6 +74,9 @@ jobs:
           console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, and 4 professions.`);
           NODE
 
+      - name: Validate public data and UI state contract
+        run: node scripts/validate-data-contract.mjs
+
       - name: Parse HTML
         run: |
           python - <<'PY'
@@ -94,6 +98,8 @@ jobs:
           test -f cooking.css
           test -f ui-enhancements.css
           test -f final-polish.css
+          test -f DATA_UI_STATE_CONTRACT.md
+          test -f docs/data-contract-examples.json
           grep -q '#/profession/greatsword-warrior' index.html
           grep -q '#/profession/archer' index.html
           grep -q 'final-polish.js' index.html
