@@ -1,8 +1,8 @@
 [
   {"id":"swordsman","name":"劍術士","icon":"◇","documented":true},
-  {"id":"greatsword-warrior","name":"大劍戰士","icon":"◆","documented":false},
+  {"id":"greatsword-warrior","name":"大劍戰士","icon":"◆","documented":true},
   {"id":"warrior","name":"戰士","icon":"⬡","documented":true},
-  {"id":"archer","name":"弓手","icon":"⌁","documented":false},
+  {"id":"archer","name":"弓手","icon":"⌁","documented":true},
   {"id":"longbowman","name":"長弓兵","icon":"⌁","documented":false},
   {"id":"crossbowman","name":"弩手","icon":"⌁","documented":false},
   {"id":"mage","name":"魔法師","icon":"✧","documented":false},
