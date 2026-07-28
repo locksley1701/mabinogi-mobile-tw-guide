@@ -75,10 +75,10 @@ html[data-palette="contrast"] {
   color: var(--attribute-color);
   font-size: .72em;
 }
-.attribute-dexterity::before { content: "▲"; }
-.attribute-intelligence::before { content: "●"; }
-.attribute-will::before { content: "■"; }
-.attribute-luck::before { content: "✦"; }
+.attribute-token.attribute-dexterity::before { content: "▲"; }
+.attribute-token.attribute-intelligence::before { content: "●"; }
+.attribute-token.attribute-will::before { content: "■"; }
+.attribute-token.attribute-luck::before { content: "✦"; }
 
 /* A closed off-canvas drawer and hidden contextual filters are not keyboard targets. */
 .sidebar[aria-hidden="true"],
