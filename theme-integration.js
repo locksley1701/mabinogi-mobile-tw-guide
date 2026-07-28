@@ -3,6 +3,7 @@
   const bootAppearance = root.dataset.appearance || 'system';
   const bootPalette = root.dataset.palette || 'forest';
 
+  window.FanatioThemeSystem = ThemeSystem;
   ThemeSystem.apply({appearance: bootAppearance, palette: bootPalette, persist: true});
   ThemeSystem.mount();
 
