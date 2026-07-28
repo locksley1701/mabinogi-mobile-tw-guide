@@ -21,16 +21,20 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
+          node --check theme-boot.js
           node --check search-normalization.js
           node --check app.js
           node --check cooking.js
           node --check ui-enhancements.js
           node --check search-enhancements.js
           node --check final-polish.js
+          node --check theme-system.js
+          node --check theme-integration.js
           node --check scripts/validate-data-contract.mjs
           node --check scripts/validate-name-normalization.mjs
           node --check tests/e2e/site-regression.spec.cjs
           node --check tests/e2e/name-normalization.spec.cjs
+          node --check tests/e2e/theme-system.spec.cjs
           node --check playwright.config.cjs
 
       - name: Validate JSON and content contracts
@@ -88,6 +92,18 @@ jobs:
       - name: Validate name targets and representative searches
         run: node scripts/validate-name-normalization.mjs
 
+      - name: Validate theme matrix declarations
+        run: |
+          for appearance in system light dark; do
+            grep -q "id: '$appearance'" theme-system.js
+          done
+          for palette in forest moonlight hearth amethyst contrast; do
+            grep -q "id: '$palette'" theme-system.js
+            grep -q "data-palette=\"$palette\"" theme-system.css
+          done
+          grep -q 'data-appearance="system"' index.html
+          grep -q 'data-palette="forest"' index.html
+
       - name: Parse HTML
         run: |
           python - <<'PY'
@@ -110,20 +126,30 @@ jobs:
           test -f ui-enhancements.css
           test -f search-enhancements.css
           test -f final-polish.css
+          test -f theme-system.css
+          test -f theme-boot.js
           test -f search-normalization.js
           test -f search-enhancements.js
+          test -f theme-system.js
+          test -f theme-integration.js
           test -f DATA_UI_STATE_CONTRACT.md
           test -f NAME_NORMALIZATION_CONTRACT.md
+          test -f THEME_SYSTEM_CONTRACT.md
           test -f docs/data-contract-examples.json
           test -f MANUAL_TEST_CHECKLIST.md
           test -f package.json
           test -f playwright.config.cjs
           test -f tests/e2e/site-regression.spec.cjs
           test -f tests/e2e/name-normalization.spec.cjs
+          test -f tests/e2e/theme-system.spec.cjs
           grep -q '#/profession/greatsword-warrior' index.html
           grep -q '#/profession/archer' index.html
+          grep -q 'theme-boot.js' index.html
           grep -q 'search-normalization.js' index.html
           grep -q 'search-enhancements.js' index.html
+          grep -q 'theme-system.js' index.html
+          grep -q 'theme-integration.js' index.html
+          grep -q 'theme-system.css' index.html
           grep -q 'final-polish.js' index.html
 
   browser-regression:

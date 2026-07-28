@@ -1,0 +1,13 @@
+@media (max-width: 680px) {
+  #top-theme-toggle {
+    display: grid !important;
+  }
+
+  .topbar__title {
+    min-width: 0;
+  }
+
+  .topbar__actions {
+    flex: 0 0 auto;
+  }
+}
