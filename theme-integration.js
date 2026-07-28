@@ -1,5 +1,9 @@
 (function integrateThemeSystem() {
-  ThemeSystem.applySavedPreferences();
+  const root = document.documentElement;
+  const bootAppearance = root.dataset.appearance || 'system';
+  const bootPalette = root.dataset.palette || 'forest';
+
+  ThemeSystem.apply({appearance: bootAppearance, palette: bootPalette, persist: true});
   ThemeSystem.mount();
 
   document.querySelectorAll('#theme-toggle, #top-theme-toggle').forEach(oldButton => {
@@ -8,5 +12,5 @@
     button.addEventListener('click', () => ThemeSystem.openPanel(button));
   });
 
-  ThemeSystem.applySavedPreferences();
+  ThemeSystem.apply({appearance: bootAppearance, palette: bootPalette, persist: true});
 })();
