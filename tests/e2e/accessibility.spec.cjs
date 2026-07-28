@@ -39,7 +39,6 @@ function contrastRatio(foreground, background) {
 
 async function resolvedThemeColors(page) {
   return page.evaluate(() => {
-    const style = getComputedStyle(document.documentElement);
     const resolve = variable => {
       const probe = document.createElement('span');
       probe.style.color = `var(${variable})`;
@@ -114,7 +113,6 @@ test('鍵盤焦點在一般、暗色與柔和高對比中保持清楚', async ({
     await page.evaluate(({ appearance, palette }) => {
       window.FanatioThemeSystem.apply({ appearance, palette, persist: false });
     }, { appearance, palette });
-    await page.keyboard.press('Tab');
     await page.locator('#top-search-button').focus();
     const focusStyle = await page.locator('#top-search-button').evaluate(element => {
       const style = getComputedStyle(element);
@@ -172,13 +170,15 @@ test('生活技能與料理篩選具備同步 aria-pressed 並可鍵盤切換', 
   await page.goto('/#/life');
   await waitForGuide(page);
 
+  const all = page.locator('[data-life-group="全部"]');
   const gathering = page.locator('[data-life-group="採集"]');
   const crafting = page.locator('[data-life-group="製作"]');
-  await expect(gathering).toHaveAttribute('aria-pressed', 'true');
+  await expect(all).toHaveAttribute('aria-pressed', 'true');
+  await expect(gathering).toHaveAttribute('aria-pressed', 'false');
   await crafting.focus();
   await page.keyboard.press('Enter');
   await expect(crafting).toHaveAttribute('aria-pressed', 'true');
-  await expect(gathering).toHaveAttribute('aria-pressed', 'false');
+  await expect(all).toHaveAttribute('aria-pressed', 'false');
 
   const cookingSkill = page.locator('[data-life-skill="cooking"]');
   await cookingSkill.focus();
@@ -228,7 +228,7 @@ test('主題 modal 限制焦點、背景 inert，關閉後回到觸發按鈕', a
   await page.keyboard.press('Enter');
   await expect(panel).toBeVisible();
   await expect(first).toBeFocused();
-  expect(await page.locator('.app-shell').evaluate(element => element.inert)).toBe(true);
+  await expect.poll(() => page.locator('.app-shell').evaluate(element => element.inert)).toBe(true);
 
   await last.focus();
   await page.keyboard.press('Tab');
@@ -239,7 +239,7 @@ test('主題 modal 限制焦點、背景 inert，關閉後回到觸發按鈕', a
   await page.keyboard.press('Escape');
   await expect(panel).toBeHidden();
   await expect(trigger).toBeFocused();
-  expect(await page.locator('.app-shell').evaluate(element => element.inert)).toBe(false);
+  await expect.poll(() => page.locator('.app-shell').evaluate(element => element.inert)).toBe(false);
 });
 
 test('狀態、選取與人物素質具有非色彩符號', async ({ page }, testInfo) => {
