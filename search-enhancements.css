@@ -1,0 +1,24 @@
+.result-row__title {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.search-alias-note {
+  width: fit-content;
+  max-width: 100%;
+  padding: 3px 8px;
+  border: 1px solid color-mix(in srgb, var(--gold-500) 54%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--gold-200) 24%, var(--surface-muted));
+  color: var(--ink-700);
+  font-size: .7rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+@media (max-width: 680px) {
+  .result-row__title {
+    align-items: start;
+  }
+}

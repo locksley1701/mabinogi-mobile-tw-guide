@@ -1,1 +1,134 @@
-[{"type":"藥草","other":"韌性草","tw":"毅力草","evidence":"法那提歐提供台版實機截圖確認"},{"type":"藥草","other":"成長蘑菇","tw":"咻咻蘑菇","evidence":"法那提歐提供台版實機截圖確認"},{"type":"藥草","other":"藏藏花","tw":"躲躲花","evidence":"法那提歐提供台版實機截圖確認"},{"type":"生活技能","other":"無工具採集","tw":"日常採集","evidence":"法那提歐提供台版實機截圖確認"},{"type":"工具","other":"斧","tw":"伐木斧","evidence":"法那提歐提供台版實機資料確認"},{"type":"工具","other":"十字鎬","tw":"鶴嘴鋤","evidence":"法那提歐提供台版實機資料確認"},{"type":"工具","other":"藥草工具","tw":"藥草鋤","evidence":"法那提歐提供台版實機資料確認"},{"type":"工具","other":"剪刀","tw":"羊毛剪","evidence":"法那提歐提供台版實機資料確認"},{"type":"工具","other":"鋤頭","tw":"小鋤頭","evidence":"法那提歐提供台版實機資料確認"},{"type":"工具","other":"捕蟲網","tw":"昆蟲捕捉網","evidence":"法那提歐提供台版實機資料確認"}]
+[
+  {
+    "id": "herb-stamina",
+    "targetType": "life",
+    "targetId": "herbalism",
+    "scope": "related-term",
+    "canonical": "毅力草",
+    "aliases": [
+      {"name": "韌性草", "kind": "other-version"}
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "herb-growth-mushroom",
+    "targetType": "life",
+    "targetId": "herbalism",
+    "scope": "related-term",
+    "canonical": "咻咻蘑菇",
+    "aliases": [
+      {"name": "成長蘑菇", "kind": "other-version"}
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "herb-hide-flower",
+    "targetType": "life",
+    "targetId": "herbalism",
+    "scope": "related-term",
+    "canonical": "躲躲花",
+    "aliases": [
+      {"name": "藏藏花", "kind": "other-version"}
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "life-daily-gathering",
+    "targetType": "life",
+    "targetId": "daily-gathering",
+    "scope": "entity",
+    "canonical": "日常採集",
+    "aliases": [
+      {"name": "無工具採集", "kind": "former-name"}
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "life-alchemy",
+    "targetType": "life",
+    "targetId": "alchemy",
+    "scope": "entity",
+    "canonical": "鍊金術",
+    "aliases": [
+      {"name": "煉金術", "kind": "common-typo"}
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "tool-logging-axe",
+    "targetType": "life",
+    "targetId": "logging",
+    "scope": "related-term",
+    "canonical": "伐木斧",
+    "aliases": [
+      {"name": "斧", "kind": "colloquial"}
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "tool-pickaxe",
+    "targetType": "life",
+    "targetId": "mining",
+    "scope": "related-term",
+    "canonical": "鶴嘴鋤",
+    "aliases": [
+      {"name": "十字鎬", "kind": "other-version"}
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "tool-herb-hoe",
+    "targetType": "life",
+    "targetId": "herbalism",
+    "scope": "related-term",
+    "canonical": "藥草鋤",
+    "aliases": [
+      {"name": "藥草工具", "kind": "colloquial"}
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "tool-wool-shears",
+    "targetType": "life",
+    "targetId": "shearing",
+    "scope": "related-term",
+    "canonical": "羊毛剪",
+    "aliases": [
+      {"name": "剪刀", "kind": "colloquial"}
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "tool-small-hoe",
+    "targetType": "life",
+    "targetId": "hoeing",
+    "scope": "related-term",
+    "canonical": "小鋤頭",
+    "aliases": [
+      {"name": "鋤頭", "kind": "colloquial"}
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "tool-insect-net",
+    "targetType": "life",
+    "targetId": "insects",
+    "scope": "related-term",
+    "canonical": "昆蟲捕捉網",
+    "aliases": [
+      {"name": "捕蟲網", "kind": "other-version"}
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "cooking-squeeze-snack",
+    "targetType": "cooking",
+    "targetId": "portable-snack",
+    "scope": "entity",
+    "canonical": "擠著吃的點心",
+    "aliases": [
+      {"name": "攜著吃的點心", "kind": "former-name"}
+    ],
+    "source": "台版遊戲內容"
+  }
+]

@@ -21,12 +21,16 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
+          node --check search-normalization.js
           node --check app.js
           node --check cooking.js
           node --check ui-enhancements.js
+          node --check search-enhancements.js
           node --check final-polish.js
           node --check scripts/validate-data-contract.mjs
+          node --check scripts/validate-name-normalization.mjs
           node --check tests/e2e/site-regression.spec.cjs
+          node --check tests/e2e/name-normalization.spec.cjs
           node --check playwright.config.cjs
 
       - name: Validate JSON and content contracts
@@ -45,9 +49,11 @@ jobs:
           const life = JSON.parse(fs.readFileSync('data/life-skill-categories.json', 'utf8'));
           const professions = JSON.parse(fs.readFileSync('data/professions.json', 'utf8'));
           const skills = JSON.parse(fs.readFileSync('data/profession-skills.json', 'utf8'));
+          const aliases = JSON.parse(fs.readFileSync('data/names.json', 'utf8'));
 
           if (cooking.length !== 26) throw new Error(`Expected 26 cooking records, got ${cooking.length}`);
           if (life.length !== 20) throw new Error(`Expected 20 life skills, got ${life.length}`);
+          if (aliases.length < 10) throw new Error(`Expected at least 10 alias definitions, got ${aliases.length}`);
 
           const expectedLevels = {'Lv.1': 9, 'Lv.3': 1, 'Lv.5': 6, 'Lv.10': 6, 'Lv.15': 4};
           for (const [level, expected] of Object.entries(expectedLevels)) {
@@ -73,11 +79,14 @@ jobs:
             }
           }
 
-          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, and 4 professions.`);
+          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 4 professions, and ${aliases.length} alias definitions.`);
           NODE
 
       - name: Validate public data and UI state contract
         run: node scripts/validate-data-contract.mjs
+
+      - name: Validate name targets and representative searches
+        run: node scripts/validate-name-normalization.mjs
 
       - name: Parse HTML
         run: |
@@ -99,15 +108,22 @@ jobs:
           test -f styles.css
           test -f cooking.css
           test -f ui-enhancements.css
+          test -f search-enhancements.css
           test -f final-polish.css
+          test -f search-normalization.js
+          test -f search-enhancements.js
           test -f DATA_UI_STATE_CONTRACT.md
+          test -f NAME_NORMALIZATION_CONTRACT.md
           test -f docs/data-contract-examples.json
           test -f MANUAL_TEST_CHECKLIST.md
           test -f package.json
           test -f playwright.config.cjs
           test -f tests/e2e/site-regression.spec.cjs
+          test -f tests/e2e/name-normalization.spec.cjs
           grep -q '#/profession/greatsword-warrior' index.html
           grep -q '#/profession/archer' index.html
+          grep -q 'search-normalization.js' index.html
+          grep -q 'search-enhancements.js' index.html
           grep -q 'final-polish.js' index.html
 
   browser-regression:
