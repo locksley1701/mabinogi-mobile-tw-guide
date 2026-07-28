@@ -1,0 +1,33 @@
+{
+  "confirmedSkillWithUnlock": {
+    "name": "尖銳之眼",
+    "description": "捕捉對手破綻的卓越眼力。",
+    "unlock": "劍術士 Lv.45 以上",
+    "status": "tw-confirmed",
+    "contributor": "法那提歐"
+  },
+  "confirmedSkillPendingStats": {
+    "name": "鞘擊",
+    "description": "以劍與劍鞘擊倒敵人的制壓攻擊。",
+    "detailStatus": "詳細傷害與冷卻數值待補。",
+    "status": "tw-testing",
+    "contributor": "法那提歐"
+  },
+  "testedGuide": {
+    "title": "採集掛機路線",
+    "status": "user-tested",
+    "statusLabel": "法那提歐實測",
+    "contributor": "法那提歐"
+  },
+  "anonymousContribution": {
+    "title": "任務獎勵補充",
+    "status": "tw-confirmed",
+    "contributor": "匿名"
+  },
+  "krReference": {
+    "title": "候選料理效果",
+    "status": "kr-reference",
+    "statusLabel": "韓國版參考",
+    "detailStatus": "台版效果尚待確認。"
+  }
+}
