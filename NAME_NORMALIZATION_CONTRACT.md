@@ -19,6 +19,7 @@
   "id": "life-daily-gathering",
   "targetType": "life",
   "targetId": "daily-gathering",
+  "scope": "entity",
   "canonical": "日常採集",
   "aliases": [
     {"name": "無工具採集", "kind": "former-name"}
@@ -34,8 +35,21 @@
 | `id` | 名稱定義的唯一 ID |
 | `targetType` | 搜尋分類，必須與全站搜尋類型一致 |
 | `targetId` | 目標內容的穩定識別碼，不使用顯示順序或模糊文字搜尋 |
+| `scope` | 這個正式名稱是目標本身，或只是目標內的相關搜尋詞 |
 | `canonical` | 台版正式名稱或正式用語 |
 | `aliases` | 一個以上的搜尋別名 |
+
+### `scope` 允許值
+
+| 值 | 語意 | 搜尋標題處理 |
+|---|---|---|
+| `entity` | 目標項目本身的正式名稱 | 可將舊資料中的顯示名稱正規化為 `canonical` |
+| `related-term` | 目標內容內的材料、工具、地名或用語 | 只加入搜尋關鍵字，不改變項目標題 |
+
+範例：
+
+- `日常採集`、`鍊金術`、`擠著吃的點心` 使用 `entity`。
+- `毅力草`、`伐木斧`、`昆蟲捕捉網` 使用 `related-term`，因為搜尋結果仍應顯示生活技能或攻略名稱。
 
 ### `targetType` 允許值
 
@@ -89,6 +103,7 @@
 - 搜尋會正規化 Unicode 全形／半形、英文字母大小寫、常見分隔符與多餘空白。
 - 正式名稱、介紹、關鍵字與別名共同參與比對。
 - 別名直接附加到正式搜尋項目，不建立會被去重丟棄的複製項目。
+- `entity` 名稱可修正搜尋項目的正式標題；`related-term` 只補充關鍵字。
 - 搜尋結果以正式名稱顯示。
 - 命中別名時顯示：
   - `由曾用名「無工具採集」找到`
@@ -115,10 +130,11 @@
 
 1. 以台版畫面確認正式名稱。
 2. 確認目標類型與穩定 ID。
-3. 判斷別名種類。
-4. 更新 `data/names.json`。
-5. 新增或更新代表性搜尋案例。
-6. 執行：
+3. 判斷為實體名稱或相關搜尋詞。
+4. 判斷別名種類。
+5. 更新 `data/names.json`。
+6. 新增或更新代表性搜尋案例。
+7. 執行：
 
 ```bash
 node scripts/validate-data-contract.mjs
@@ -126,11 +142,12 @@ node scripts/validate-name-normalization.mjs
 npm run test:e2e
 ```
 
-7. 更新 changelog。
+8. 更新 changelog。
 
 ## 7. 驗收門檻
 
 - 所有別名均指向存在的目標 ID。
+- 所有名稱定義均明確區分 `entity` 與 `related-term`。
 - 同一別名不得指向不同內容。
 - 別名不得與正式名稱相同。
 - 至少保留 10 個代表性搜尋案例。
