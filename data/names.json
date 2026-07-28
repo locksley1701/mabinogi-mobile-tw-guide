@@ -3,6 +3,7 @@
     "id": "herb-stamina",
     "targetType": "life",
     "targetId": "herbalism",
+    "scope": "related-term",
     "canonical": "毅力草",
     "aliases": [
       {"name": "韌性草", "kind": "other-version"}
@@ -13,6 +14,7 @@
     "id": "herb-growth-mushroom",
     "targetType": "life",
     "targetId": "herbalism",
+    "scope": "related-term",
     "canonical": "咻咻蘑菇",
     "aliases": [
       {"name": "成長蘑菇", "kind": "other-version"}
@@ -23,6 +25,7 @@
     "id": "herb-hide-flower",
     "targetType": "life",
     "targetId": "herbalism",
+    "scope": "related-term",
     "canonical": "躲躲花",
     "aliases": [
       {"name": "藏藏花", "kind": "other-version"}
@@ -33,6 +36,7 @@
     "id": "life-daily-gathering",
     "targetType": "life",
     "targetId": "daily-gathering",
+    "scope": "entity",
     "canonical": "日常採集",
     "aliases": [
       {"name": "無工具採集", "kind": "former-name"}
@@ -43,6 +47,7 @@
     "id": "life-alchemy",
     "targetType": "life",
     "targetId": "alchemy",
+    "scope": "entity",
     "canonical": "鍊金術",
     "aliases": [
       {"name": "煉金術", "kind": "common-typo"}
@@ -53,6 +58,7 @@
     "id": "tool-logging-axe",
     "targetType": "life",
     "targetId": "logging",
+    "scope": "related-term",
     "canonical": "伐木斧",
     "aliases": [
       {"name": "斧", "kind": "colloquial"}
@@ -63,6 +69,7 @@
     "id": "tool-pickaxe",
     "targetType": "life",
     "targetId": "mining",
+    "scope": "related-term",
     "canonical": "鶴嘴鋤",
     "aliases": [
       {"name": "十字鎬", "kind": "other-version"}
@@ -73,6 +80,7 @@
     "id": "tool-herb-hoe",
     "targetType": "life",
     "targetId": "herbalism",
+    "scope": "related-term",
     "canonical": "藥草鋤",
     "aliases": [
       {"name": "藥草工具", "kind": "colloquial"}
@@ -83,6 +91,7 @@
     "id": "tool-wool-shears",
     "targetType": "life",
     "targetId": "shearing",
+    "scope": "related-term",
     "canonical": "羊毛剪",
     "aliases": [
       {"name": "剪刀", "kind": "colloquial"}
@@ -93,6 +102,7 @@
     "id": "tool-small-hoe",
     "targetType": "life",
     "targetId": "hoeing",
+    "scope": "related-term",
     "canonical": "小鋤頭",
     "aliases": [
       {"name": "鋤頭", "kind": "colloquial"}
@@ -103,6 +113,7 @@
     "id": "tool-insect-net",
     "targetType": "life",
     "targetId": "insects",
+    "scope": "related-term",
     "canonical": "昆蟲捕捉網",
     "aliases": [
       {"name": "捕蟲網", "kind": "other-version"}
@@ -113,6 +124,7 @@
     "id": "cooking-squeeze-snack",
     "targetType": "cooking",
     "targetId": "portable-snack",
+    "scope": "entity",
     "canonical": "擠著吃的點心",
     "aliases": [
       {"name": "攜著吃的點心", "kind": "former-name"}
