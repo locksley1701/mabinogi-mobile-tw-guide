@@ -17,6 +17,7 @@
     root.dataset.appearance = appearance;
     root.dataset.theme = resolved;
     root.dataset.palette = palette;
+    localStorage.setItem('fanatio-theme', resolved);
   } catch {
     document.documentElement.dataset.appearance = 'system';
     document.documentElement.dataset.theme = 'light';
