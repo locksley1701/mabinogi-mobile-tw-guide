@@ -13,6 +13,22 @@ const allowedStatuses = new Set([
   'unconfirmed'
 ]);
 
+const allowedAliasTargetTypes = new Set([
+  'life',
+  'cooking',
+  'afk',
+  'profession',
+  'combatSkill'
+]);
+
+const allowedAliasKinds = new Set([
+  'former-name',
+  'other-version',
+  'common-typo',
+  'colloquial',
+  'abbreviation'
+]);
+
 const forbiddenStateFields = new Set([
   'disabled',
   'inactive',
@@ -51,6 +67,14 @@ function fail(location, message) {
 
 function warn(location, message) {
   warnings.push(`${location}: ${message}`);
+}
+
+function normalizeName(value = '') {
+  return String(value)
+    .normalize('NFKC')
+    .toLocaleLowerCase('zh-Hant-TW')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function readJson(filePath) {
@@ -159,20 +183,75 @@ function walk(value, location) {
 }
 
 function validateAliases(data, fileName) {
-  if (!Array.isArray(data)) return;
-  const seen = new Set();
-  data.forEach((alias, index) => {
+  if (!Array.isArray(data)) {
+    fail(fileName, '名稱別名資料必須是陣列');
+    return;
+  }
+
+  const seenIds = new Set();
+  const seenAliases = new Map();
+
+  data.forEach((definition, index) => {
     const location = `${fileName}[${index}]`;
-    if (!alias || typeof alias !== 'object') return;
-    for (const key of ['other', 'tw']) validateStringField(alias, key, location);
-    if (typeof alias.other === 'string' && typeof alias.tw === 'string') {
-      const other = alias.other.trim().toLocaleLowerCase('zh-Hant-TW');
-      const tw = alias.tw.trim().toLocaleLowerCase('zh-Hant-TW');
-      if (other === tw) fail(location, '別名與台版正式名稱不得相同');
-      const pair = `${other}=>${tw}`;
-      if (seen.has(pair)) fail(location, '重複的別名對照');
-      seen.add(pair);
+    if (!definition || typeof definition !== 'object' || Array.isArray(definition)) {
+      fail(location, '每筆名稱定義必須是物件');
+      return;
     }
+
+    for (const key of ['id', 'targetType', 'targetId', 'canonical']) {
+      validateStringField(definition, key, location);
+    }
+
+    if (typeof definition.id === 'string') {
+      if (seenIds.has(definition.id)) fail(`${location}.id`, '名稱定義 ID 重複');
+      seenIds.add(definition.id);
+    }
+
+    if (
+      typeof definition.targetType === 'string' &&
+      !allowedAliasTargetTypes.has(definition.targetType)
+    ) {
+      fail(`${location}.targetType`, `不允許的搜尋類型：${definition.targetType}`);
+    }
+
+    if (!Array.isArray(definition.aliases) || !definition.aliases.length) {
+      fail(`${location}.aliases`, '至少需要一個搜尋別名');
+      return;
+    }
+
+    const canonical = normalizeName(definition.canonical);
+    const localAliases = new Set();
+
+    definition.aliases.forEach((alias, aliasIndex) => {
+      const aliasLocation = `${location}.aliases[${aliasIndex}]`;
+      if (!alias || typeof alias !== 'object' || Array.isArray(alias)) {
+        fail(aliasLocation, '別名必須是物件');
+        return;
+      }
+      for (const key of ['name', 'kind']) validateStringField(alias, key, aliasLocation);
+
+      if (typeof alias.kind === 'string' && !allowedAliasKinds.has(alias.kind)) {
+        fail(`${aliasLocation}.kind`, `不允許的別名類型：${alias.kind}`);
+      }
+
+      if (typeof alias.name === 'string') {
+        const normalizedAlias = normalizeName(alias.name);
+        if (normalizedAlias === canonical) {
+          fail(`${aliasLocation}.name`, '別名不得與台版正式名稱相同');
+        }
+        if (localAliases.has(normalizedAlias)) {
+          fail(`${aliasLocation}.name`, '同一正式名稱下的別名重複');
+        }
+        localAliases.add(normalizedAlias);
+
+        const previousTarget = seenAliases.get(normalizedAlias);
+        const currentTarget = `${definition.targetType}:${definition.targetId}`;
+        if (previousTarget && previousTarget !== currentTarget) {
+          fail(`${aliasLocation}.name`, `同一別名同時指向不同內容：${previousTarget}、${currentTarget}`);
+        }
+        seenAliases.set(normalizedAlias, currentTarget);
+      }
+    });
   });
 }
 
