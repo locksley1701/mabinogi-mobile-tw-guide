@@ -29,14 +29,36 @@
     );
   }
 
+  function applyEntityCanonical(item, matchedDefinitions) {
+    const entityDefinition = matchedDefinitions.find(definition => definition.scope === 'entity');
+    if (!entityDefinition) return item;
+
+    const currentCanonical = item.canonicalName || item.title || '';
+    let title = item.title;
+
+    if (title === currentCanonical) {
+      title = entityDefinition.canonical;
+    } else if (currentCanonical && title.startsWith(`${currentCanonical}｜`)) {
+      title = `${entityDefinition.canonical}${title.slice(currentCanonical.length)}`;
+    }
+
+    return {
+      ...item,
+      title,
+      canonicalName: entityDefinition.canonical
+    };
+  }
+
   function enrichSearchItems(items = [], definitions = []) {
-    return items.map(item => {
-      const matchedDefinitions = definitionsForItem(item, definitions);
+    return items.map(originalItem => {
+      const matchedDefinitions = definitionsForItem(originalItem, definitions);
+      const item = applyEntityCanonical(originalItem, matchedDefinitions);
       const aliases = matchedDefinitions.flatMap(definition =>
         (definition.aliases || []).map(alias => ({
           ...alias,
           canonical: definition.canonical,
-          definitionId: definition.id
+          definitionId: definition.id,
+          scope: definition.scope
         }))
       );
       const canonicalTerms = matchedDefinitions.map(definition => definition.canonical);
@@ -72,6 +94,7 @@
     aliasKindLabels,
     normalizeSearch,
     definitionsForItem,
+    applyEntityCanonical,
     enrichSearchItems,
     findMatchedAlias,
     searchItemMatches,
