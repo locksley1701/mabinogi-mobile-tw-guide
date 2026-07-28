@@ -6,7 +6,10 @@
     "scope": "related-term",
     "canonical": "毅力草",
     "aliases": [
-      {"name": "韌性草", "kind": "other-version"}
+      {
+        "name": "韌性草",
+        "kind": "other-version"
+      }
     ],
     "source": "台版遊戲內容"
   },
@@ -17,7 +20,10 @@
     "scope": "related-term",
     "canonical": "咻咻蘑菇",
     "aliases": [
-      {"name": "成長蘑菇", "kind": "other-version"}
+      {
+        "name": "成長蘑菇",
+        "kind": "other-version"
+      }
     ],
     "source": "台版遊戲內容"
   },
@@ -28,7 +34,10 @@
     "scope": "related-term",
     "canonical": "躲躲花",
     "aliases": [
-      {"name": "藏藏花", "kind": "other-version"}
+      {
+        "name": "藏藏花",
+        "kind": "other-version"
+      }
     ],
     "source": "台版遊戲內容"
   },
@@ -39,7 +48,10 @@
     "scope": "entity",
     "canonical": "日常採集",
     "aliases": [
-      {"name": "無工具採集", "kind": "former-name"}
+      {
+        "name": "無工具採集",
+        "kind": "former-name"
+      }
     ],
     "source": "台版遊戲內容"
   },
@@ -50,7 +62,10 @@
     "scope": "entity",
     "canonical": "鍊金術",
     "aliases": [
-      {"name": "煉金術", "kind": "common-typo"}
+      {
+        "name": "煉金術",
+        "kind": "common-typo"
+      }
     ],
     "source": "台版遊戲內容"
   },
@@ -61,7 +76,10 @@
     "scope": "related-term",
     "canonical": "伐木斧",
     "aliases": [
-      {"name": "斧", "kind": "colloquial"}
+      {
+        "name": "斧",
+        "kind": "colloquial"
+      }
     ],
     "source": "台版遊戲內容"
   },
@@ -72,7 +90,10 @@
     "scope": "related-term",
     "canonical": "鶴嘴鋤",
     "aliases": [
-      {"name": "十字鎬", "kind": "other-version"}
+      {
+        "name": "十字鎬",
+        "kind": "other-version"
+      }
     ],
     "source": "台版遊戲內容"
   },
@@ -83,7 +104,10 @@
     "scope": "related-term",
     "canonical": "藥草鋤",
     "aliases": [
-      {"name": "藥草工具", "kind": "colloquial"}
+      {
+        "name": "藥草工具",
+        "kind": "colloquial"
+      }
     ],
     "source": "台版遊戲內容"
   },
@@ -94,7 +118,10 @@
     "scope": "related-term",
     "canonical": "羊毛剪",
     "aliases": [
-      {"name": "剪刀", "kind": "colloquial"}
+      {
+        "name": "剪刀",
+        "kind": "colloquial"
+      }
     ],
     "source": "台版遊戲內容"
   },
@@ -105,7 +132,10 @@
     "scope": "related-term",
     "canonical": "小鋤頭",
     "aliases": [
-      {"name": "鋤頭", "kind": "colloquial"}
+      {
+        "name": "鋤頭",
+        "kind": "colloquial"
+      }
     ],
     "source": "台版遊戲內容"
   },
@@ -116,7 +146,10 @@
     "scope": "related-term",
     "canonical": "昆蟲捕捉網",
     "aliases": [
-      {"name": "捕蟲網", "kind": "other-version"}
+      {
+        "name": "捕蟲網",
+        "kind": "other-version"
+      }
     ],
     "source": "台版遊戲內容"
   },
@@ -127,7 +160,24 @@
     "scope": "entity",
     "canonical": "擠著吃的點心",
     "aliases": [
-      {"name": "攜著吃的點心", "kind": "former-name"}
+      {
+        "name": "攜著吃的點心",
+        "kind": "former-name"
+      }
+    ],
+    "source": "台版遊戲內容"
+  },
+  {
+    "id": "combat-skill-swordsman-steel-wedge",
+    "targetType": "combatSkill",
+    "targetId": "swordsman:鋼楔",
+    "scope": "entity",
+    "canonical": "鋼楔",
+    "aliases": [
+      {
+        "name": "鋼梭",
+        "kind": "common-typo"
+      }
     ],
     "source": "台版遊戲內容"
   }
