@@ -1,0 +1,10 @@
+[
+  {"id":"boiled-egg","category":"cooking","level":"1–14","dish":"水煮蛋","unlock":"Lv.1","materials":"雞蛋、裝水的瓶子","source":"雞蛋可採集；水可補充","cp":"高（暫定）","use":"低成本大量製作","status":"tw-testing","statusLabel":"台版待實測","note":"料理名稱與等級已由台版截圖確認；效率仍待台版實測。"},
+  {"id":"level1-alternatives","category":"cooking","level":"1–4","dish":"煎蛋／烤整顆馬鈴薯／蘋果汁","unlock":"Lv.1","materials":"雞蛋／馬鈴薯／蘋果等","source":"多數可自行採集","cp":"待比較","use":"新手替代方案","status":"tw-confirmed","statusLabel":"已台版確認","note":"需補單次經驗、材料數量及製作時間。"},
+  {"id":"portable-snack","category":"cooking","level":"3–4","dish":"攜著吃的點心","unlock":"Lv.3","materials":"待查","source":"待查","cp":"待比較","use":"Lv.3 候選","status":"tw-confirmed","statusLabel":"已台版確認","note":"需要配方與經驗資料。"},
+  {"id":"cheese-corn","category":"cooking","level":"5–9","dish":"起司玉米","unlock":"Lv.5","materials":"玉米、起司等","source":"玉米可配合收割；其餘材料待確認","cp":"中～高（候選）","use":"兼練收割並消耗玉米","status":"tw-testing","statusLabel":"台版待實測","note":"需與炒蔬菜、牛奶燉豬肉等比較。"},
+  {"id":"stir-fry-vegetables","category":"cooking","level":"5–9","dish":"炒蔬菜","unlock":"Lv.5","materials":"蔬菜類材料","source":"可能可大量採集","cp":"待比較","use":"低加工候選","status":"tw-testing","statusLabel":"台版待實測","note":"需確認配方是否比起司玉米便宜。"},
+  {"id":"steamed-clams","category":"cooking","level":"10–14","dish":"蒸蛤蜊","unlock":"Lv.10","materials":"蛤蜊、裝水的瓶子及其他配料","source":"需採集與補水","cp":"高（韓版候選）","use":"水煮蛋效率下降後的替代候選","status":"kr-reference","statusLabel":"韓國版參考","note":"台版仍需比較材料成本與單次經驗。"},
+  {"id":"level10-alternatives","category":"cooking","level":"10–14","dish":"馬鈴薯湯／冰草莓飲","unlock":"Lv.10","materials":"馬鈴薯或草莓及其他材料","source":"主要原料可採集","cp":"待比較","use":"自給型替代方案","status":"tw-confirmed","statusLabel":"已台版確認","note":"需補完整配方與經驗。"},
+  {"id":"level15-fish","category":"cooking","level":"15–19","dish":"白肉魚奶油煎魚／馬賽魚湯／鯖魚與鮭魚排／鯰魚炸魚薯條","unlock":"Lv.15","materials":"魚類及加工配料","source":"仰賴釣魚與其他材料","cp":"待比較","use":"Lv.15 料理候選群","status":"tw-testing","statusLabel":"台版待實測","note":"需補材料量、製作時間與料理經驗。"}
+]
