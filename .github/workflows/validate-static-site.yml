@@ -29,12 +29,16 @@ jobs:
           node --check search-enhancements.js
           node --check final-polish.js
           node --check theme-system.js
+          node --check theme-copy-polish.js
           node --check theme-integration.js
+          node --check a11y-enhancements.js
           node --check scripts/validate-data-contract.mjs
           node --check scripts/validate-name-normalization.mjs
           node --check tests/e2e/site-regression.spec.cjs
           node --check tests/e2e/name-normalization.spec.cjs
           node --check tests/e2e/theme-system.spec.cjs
+          node --check tests/e2e/soft-contrast.spec.cjs
+          node --check tests/e2e/accessibility.spec.cjs
           node --check playwright.config.cjs
 
       - name: Validate JSON and content contracts
@@ -127,14 +131,20 @@ jobs:
           test -f search-enhancements.css
           test -f final-polish.css
           test -f theme-system.css
+          test -f soft-contrast.css
+          test -f theme-integration.css
+          test -f a11y.css
           test -f theme-boot.js
           test -f search-normalization.js
           test -f search-enhancements.js
           test -f theme-system.js
+          test -f theme-copy-polish.js
           test -f theme-integration.js
+          test -f a11y-enhancements.js
           test -f DATA_UI_STATE_CONTRACT.md
           test -f NAME_NORMALIZATION_CONTRACT.md
           test -f THEME_SYSTEM_CONTRACT.md
+          test -f ACCESSIBILITY_BASELINE.md
           test -f docs/data-contract-examples.json
           test -f MANUAL_TEST_CHECKLIST.md
           test -f package.json
@@ -142,6 +152,8 @@ jobs:
           test -f tests/e2e/site-regression.spec.cjs
           test -f tests/e2e/name-normalization.spec.cjs
           test -f tests/e2e/theme-system.spec.cjs
+          test -f tests/e2e/soft-contrast.spec.cjs
+          test -f tests/e2e/accessibility.spec.cjs
           grep -q '#/profession/greatsword-warrior' index.html
           grep -q '#/profession/archer' index.html
           grep -q 'theme-boot.js' index.html
@@ -149,7 +161,9 @@ jobs:
           grep -q 'search-enhancements.js' index.html
           grep -q 'theme-system.js' index.html
           grep -q 'theme-integration.js' index.html
+          grep -q 'a11y-enhancements.js' index.html
           grep -q 'theme-system.css' index.html
+          grep -q 'a11y.css' index.html
           grep -q 'final-polish.js' index.html
 
   browser-regression:
@@ -170,7 +184,7 @@ jobs:
       - name: Install Chromium for regression tests
         run: npx playwright install --with-deps chromium
 
-      - name: Run route and responsive browser regression
+      - name: Run route, responsive and accessibility browser regression
         run: npm run test:e2e
 
       - name: Upload browser traces on failure
