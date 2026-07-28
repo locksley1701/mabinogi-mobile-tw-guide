@@ -26,6 +26,8 @@ jobs:
           node --check ui-enhancements.js
           node --check final-polish.js
           node --check scripts/validate-data-contract.mjs
+          node --check tests/e2e/site-regression.spec.cjs
+          node --check playwright.config.cjs
 
       - name: Validate JSON and content contracts
         run: |
@@ -92,7 +94,7 @@ jobs:
           print('index.html parsed successfully')
           PY
 
-      - name: Check required assets and routes
+      - name: Check required assets, tests and routes
         run: |
           test -f styles.css
           test -f cooking.css
@@ -100,6 +102,42 @@ jobs:
           test -f final-polish.css
           test -f DATA_UI_STATE_CONTRACT.md
           test -f docs/data-contract-examples.json
+          test -f MANUAL_TEST_CHECKLIST.md
+          test -f package.json
+          test -f playwright.config.cjs
+          test -f tests/e2e/site-regression.spec.cjs
           grep -q '#/profession/greatsword-warrior' index.html
           grep -q '#/profession/archer' index.html
           grep -q 'final-polish.js' index.html
+
+  browser-regression:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pinned Playwright test runner
+        run: npm install --ignore-scripts
+
+      - name: Install Chromium for regression tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Run route and responsive browser regression
+        run: npm run test:e2e
+
+      - name: Upload browser traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failure-artifacts
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
