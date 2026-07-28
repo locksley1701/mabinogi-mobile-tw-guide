@@ -1,0 +1,49 @@
+name: Validate static site
+
+on:
+  push:
+    branches: [main, "agent/**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check JavaScript syntax
+        run: node --check app.js
+
+      - name: Validate JSON data
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          files = sorted(Path('data').glob('*.json'))
+          if not files:
+              raise SystemExit('No JSON data files found')
+
+          for path in files:
+              with path.open(encoding='utf-8') as handle:
+                  json.load(handle)
+              print(f'OK: {path}')
+          PY
+
+      - name: Parse HTML
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          class Parser(HTMLParser):
+              pass
+
+          Parser().feed(Path('index.html').read_text(encoding='utf-8'))
+          print('OK: index.html')
+          PY
