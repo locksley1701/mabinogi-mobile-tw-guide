@@ -176,21 +176,29 @@ test('職業技能可展開，解鎖條件保持正常可閱讀', async ({ page 
   await expect(secondSkill).toHaveAttribute('open', '');
 });
 
-test('明暗主題選擇會保存並在重新整理後恢復', async ({ page }, testInfo) => {
+test('外觀與配色會分別保存並在重新整理後恢復', async ({ page }) => {
   await gotoRoute(page, 'home', '手札總覽');
+  await page.locator('#top-theme-toggle').click();
+  await expect(page.locator('#theme-settings')).toBeVisible();
 
-  if (testInfo.project.name === 'mobile-chrome') {
-    await page.locator('#menu-button').click();
-    await page.locator('#theme-toggle').click();
-  } else {
-    await page.locator('#top-theme-toggle').click();
-  }
-
+  await page.locator('[data-appearance-choice="dark"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-appearance', 'dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  expect(await page.evaluate(() => localStorage.getItem('fanatio-theme'))).toBe('dark');
+
+  await page.locator('[data-palette-choice="moonlight"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-palette', 'moonlight');
+  expect(await page.evaluate(() => ({
+    appearance: localStorage.getItem('fanatio-appearance'),
+    palette: localStorage.getItem('fanatio-palette')
+  }))).toEqual({appearance: 'dark', palette: 'moonlight'});
+
+  await page.locator('.theme-settings__footer [data-theme-close]').click();
+  await expect(page.locator('#theme-settings')).toBeHidden();
   await page.reload();
   await waitForGuide(page);
+  await expect(page.locator('html')).toHaveAttribute('data-appearance', 'dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('html')).toHaveAttribute('data-palette', 'moonlight');
 });
 
 test('捲動過深後可回到頁首', async ({ page }) => {
