@@ -64,7 +64,7 @@ function renderCookingCard(item) {
       ` : ''}
 
       ${renderCookingMeta(item)}
-      <span class="attribution">✦ 台版實機確認：${escapeHtml(item.contributor)}</span>
+      <span class="attribution">✦ 資料整理：${escapeHtml(item.contributor)}</span>
     </article>
   `;
 }
@@ -79,14 +79,14 @@ renderCooking = function renderCookingPage() {
 
   workspace.innerHTML = `
     ${pageHead(
-      '台版實機圖鑑',
+      '台版遊戲圖鑑',
       '料理手札',
-      '依台版遊戲截圖逐道收錄料理效果、持續時間與原文介紹。料理練等效率仍待實測，這一頁不把候選推測混進正式效果。',
-      '台版實機確認：法那提歐'
+      '依台版遊戲內容逐道整理料理效果、持續時間與原文介紹。料理練等效率仍待實測，這一頁不把候選推測混進正式效果。',
+      '資料整理：法那提歐'
     )}
     <aside class="cooking-notice">
       <strong>本次先收錄文字資料</strong>
-      <p>官方圖標尚在另一條工作線整理，因此目前不使用替代圖示；待正式素材完成後再接入。</p>
+      <p>官方圖標仍由另一條工作線整理，因此目前不使用替代圖示；待正式素材完成後再接入。</p>
     </aside>
     <section class="cooking-layout">
       <nav class="level-nav" aria-label="料理解鎖等級">
