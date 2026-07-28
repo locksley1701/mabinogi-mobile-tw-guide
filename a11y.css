@@ -9,8 +9,12 @@ html[data-theme="dark"] {
   --focus-ring-backdrop: color-mix(in srgb, var(--page) 86%, transparent);
 }
 
-html[data-palette="contrast"] {
-  --focus-ring: #d58b24;
+html[data-palette="contrast"][data-theme="light"] {
+  --focus-ring: #8a4f00;
+  --focus-ring-backdrop: var(--surface-solid);
+}
+html[data-palette="contrast"][data-theme="dark"] {
+  --focus-ring: #ffd27a;
   --focus-ring-backdrop: var(--surface-solid);
 }
 
