@@ -138,6 +138,12 @@
     }
   }
 
+  function preserveDrawerTriggerOnEscape(event) {
+    if (event.key !== 'Escape' || !mobileQuery.matches || !document.body.classList.contains('drawer-open')) return;
+    const menuButton = document.querySelector('#menu-button');
+    requestAnimationFrame(() => menuButton?.focus({preventScroll: true}));
+  }
+
   function syncModalVisibility(modal) {
     if (!(modal instanceof HTMLElement)) return;
     if (!modal.hidden) {
@@ -165,7 +171,10 @@
     return nativeScrollIntoView.call(this, options);
   };
 
-  document.addEventListener('keydown', trapModalFocus, true);
+  document.addEventListener('keydown', event => {
+    preserveDrawerTriggerOnEscape(event);
+    trapModalFocus(event);
+  }, true);
   document.addEventListener('toggle', event => {
     if (event.target instanceof HTMLDetailsElement) syncDetails();
   }, true);
