@@ -1,6 +1,12 @@
 const originalBuildSearchItemsForEnhancements = buildSearchItems;
 const originalRenderLifeDetailForEnhancements = renderLifeDetail;
 
+attribution = function attributionWithPublicWording(item, fallback = '') {
+  const name = item.contributor || (item.source?.includes('法那提歐') ? '法那提歐' : '');
+  if (!name && !fallback) return '';
+  return `<span class="attribution">✦ 資料整理：${escapeHtml(name || fallback)}</span>`;
+};
+
 function findProfessionSkill(route, title) {
   const professionId = route.startsWith('profession/') ? route.split('/')[1] : '';
   const profession = state.professionSkills[professionId];
@@ -22,10 +28,10 @@ buildSearchItems = function buildSearchItemsWithDescriptions() {
   });
 };
 
-renderLifeDetail = function renderLifeDetailWithScreenshotAttribution() {
+renderLifeDetail = function renderLifeDetailWithPublicAttribution() {
   originalRenderLifeDetailForEnhancements();
   const source = workspace.querySelector('#life-detail > .attribution');
-  if (source) source.textContent = '✦ 台版實機確認：法那提歐';
+  if (source) source.textContent = '✦ 資料整理：法那提歐';
 };
 
 function renderProfessionSkill(skill, index, type) {
@@ -46,7 +52,7 @@ function renderProfessionSkill(skill, index, type) {
     return `
       <article class="profession-skill profession-skill--summary-only">
         <div class="profession-skill__summary">${header}</div>
-        <p class="profession-skill__pending">${escapeHtml(skill.detailStatus || '技能名稱與解鎖條件已確認，詳細效果待台版截圖補充。')}</p>
+        <p class="profession-skill__pending">${escapeHtml(skill.detailStatus || '技能名稱與解鎖條件已依台版遊戲內容整理，詳細效果待補。')}</p>
       </article>
     `;
   }
@@ -64,7 +70,7 @@ function renderProfessionSkill(skill, index, type) {
             ${skill.stats.map(stat => `<dt>${escapeHtml(stat.label)}</dt><dd>${escapeHtml(stat.value)}</dd>`).join('')}
           </dl>
         ` : ''}
-        <span class="attribution">✦ 台版實機確認：法那提歐</span>
+        <span class="attribution">✦ 資料整理：法那提歐</span>
       </div>
     </details>
   `;
@@ -101,16 +107,16 @@ renderProfession = function renderProfessionWithDetails(id) {
         <p class="eyebrow">台版職業手札</p>
         <h1>${escapeHtml(profession.name)}</h1>
         <p>${escapeHtml(profession.description)}</p>
-        <span class="attribution">✦ 台版實機確認：法那提歐</span>
+        <span class="attribution">✦ 資料整理：法那提歐</span>
       </div>
       <aside class="profession-summary">
         <span>偏好裝備</span><strong>${escapeHtml(profession.preferredArmor)}</strong>
         <span>技能收錄</span><strong>${active.length + passive.length} 個</strong>
         <span>完整效果</span><strong>${detailedCount} 個</strong>
-        <span>資料狀態</span>${badge({status:'tw-confirmed', statusLabel:'台版實機確認'})}
+        <span>資料狀態</span>${badge({status:'tw-confirmed', statusLabel:'台版遊戲資料'})}
       </aside>
     </section>
-    <p class="profession-detail-note">點選技能列即可展開台版說明與數值；尚未取得詳情截圖的技能會保留正常可閱讀樣式，不會被誤標為失效。</p>
+    <p class="profession-detail-note">點選技能列即可展開遊戲內說明與數值；尚未補齊詳情的技能會保留正常可閱讀樣式，不會被誤標為失效。</p>
     <section class="profession-skill-sections">
       ${renderProfessionSkillSection('主動技能', active, '主動')}
       ${renderProfessionSkillSection('被動技能', passive, '被動')}
@@ -118,16 +124,17 @@ renderProfession = function renderProfessionWithDetails(id) {
   `;
 };
 
-function applyScreenshotCorrections() {
+function applyPublicDataCorrections() {
   if (!state.cooking?.length) return false;
   const snack = state.cooking.find(item => item.id === 'portable-snack');
   if (snack) snack.dish = '擠著吃的點心';
+  state.cooking.forEach(item => { item.statusLabel = '台版遊戲資料'; });
   return true;
 }
 
-function waitForScreenshotData() {
-  if (!applyScreenshotCorrections()) {
-    setTimeout(waitForScreenshotData, 30);
+function waitForPublicData() {
+  if (!applyPublicDataCorrections()) {
+    setTimeout(waitForPublicData, 30);
     return;
   }
   if (getRoute() === 'cooking' || getRoute() === 'search' || getRoute() === 'home') renderRoute();
@@ -230,4 +237,4 @@ function setupBackToTop() {
 
 setupQuickSearch();
 setupBackToTop();
-waitForScreenshotData();
+waitForPublicData();
