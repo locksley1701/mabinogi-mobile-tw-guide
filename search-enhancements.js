@@ -53,10 +53,21 @@ function addStableSearchIdentity(item) {
 }
 
 buildSearchItems = function buildSearchItemsWithNameNormalization() {
-  const baseItems = buildSearchItemsBeforeNameNormalization().map(addStableSearchIdentity);
+  const aliasDefinitions = state.aliases;
+  let baseItems = [];
+
+  try {
+    // 舊版搜尋會把別名複製成新項目，再於去重時丟棄；暫時清空別名，
+    // 只取回正式搜尋項目，後續再依穩定 ID 正確附加。
+    state.aliases = [];
+    baseItems = buildSearchItemsBeforeNameNormalization().map(addStableSearchIdentity);
+  } finally {
+    state.aliases = aliasDefinitions;
+  }
+
   const categories = createLifeCategorySearchItems();
   const combined = [...categories, ...baseItems];
-  const enriched = SearchNormalization.enrichSearchItems(combined, state.aliases);
+  const enriched = SearchNormalization.enrichSearchItems(combined, aliasDefinitions);
   const seen = new Set();
 
   return enriched.filter(item => {
