@@ -8,6 +8,38 @@
   <title>法那提歐的愛爾琳手札｜瑪奇 Mobile 台版攻略</title>
   <link rel="icon" href="assets/emblem.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    :root { --page-gutter: clamp(16px, 2vw, 36px); }
+    .site-shell { width: min(1760px, 100%); padding-left: var(--page-gutter); padding-right: var(--page-gutter); }
+    .site-header { margin-left: calc(var(--page-gutter) * -1); margin-right: calc(var(--page-gutter) * -1); padding-left: var(--page-gutter); padding-right: var(--page-gutter); }
+    .status-badge { flex: 0 0 auto; justify-content: center; min-height: 32px; padding: 5px 12px; line-height: 1.1; white-space: nowrap; }
+    .info-card__top > div { min-width: 0; }
+    @media (min-width: 1480px) {
+      .card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .compact-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .name-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .table-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .table-card { grid-template-columns: 72px minmax(130px, .75fr) minmax(210px, 1.25fr) minmax(88px, .5fr) auto; gap: 12px; }
+    }
+    @media (min-width: 1880px) {
+      .card-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .compact-list { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .name-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (max-width: 1079px) {
+      .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .compact-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .future-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .table-card { grid-template-columns: 70px 1fr auto; }
+      .table-card p { grid-column: 2 / -1; }
+    }
+    @media (max-width: 680px) {
+      :root { --page-gutter: 16px; }
+      .card-grid, .compact-list, .name-grid, .future-grid { grid-template-columns: 1fr; }
+      .table-card { grid-template-columns: 70px 1fr; }
+      .table-card p, .table-card > .status-badge { grid-column: 1 / -1; }
+    }
+  </style>
 </head>
 <body>
   <a class="skip-link" href="#main-content">跳到主要內容</a>
@@ -81,7 +113,7 @@
             <span>資料狀態</span>
             <select id="status-filter">
               <option value="all">全部狀態</option>
-              <option value="tw-confirmed">已台版確認</option>
+              <option value="tw-confirmed">台版已確認</option>
               <option value="user-tested">使用者實測</option>
               <option value="tw-testing">台版待實測</option>
               <option value="kr-reference">韓國版參考</option>
@@ -91,7 +123,7 @@
         </div>
 
         <div class="status-legend" data-tour="status" aria-label="資料狀態說明">
-          <button type="button" class="status-badge status-badge--confirmed" data-status-pick="tw-confirmed">已台版確認</button>
+          <button type="button" class="status-badge status-badge--confirmed" data-status-pick="tw-confirmed">台版已確認</button>
           <button type="button" class="status-badge status-badge--tested" data-status-pick="user-tested">使用者實測</button>
           <button type="button" class="status-badge status-badge--testing" data-status-pick="tw-testing">台版待實測</button>
           <button type="button" class="status-badge status-badge--kr" data-status-pick="kr-reference">韓國版參考</button>
@@ -211,7 +243,7 @@
         <p>玩家自發建立的非官方攻略網站，與遊戲開發商及營運商無關。</p>
       </div>
       <div class="footer-links">
-        <a id="source-sheet-link" href="https://docs.google.com/spreadsheets/d/1IBhH084sqJ78t-FZoBAjSSZS39pUX0KG3leiQo0KzMg/edit" target="_blank" rel="noreferrer">資料試算表</a>
+        <a id="source-sheet-link" href="#" hidden aria-hidden="true" tabindex="-1">資料來源</a>
         <button type="button" id="footer-tour-button">重新觀看導覽</button>
       </div>
       <small>手札編纂者：法那提歐</small>
@@ -232,7 +264,7 @@
       <p class="eyebrow">旅人指南</p>
       <h2 id="guide-title">讀懂手札上的印記</h2>
       <div class="guide-copy">
-        <p><strong>資料狀態不是裝飾。</strong>「已台版確認」代表名稱或內容已有台版證據；「台版待實測」與「韓國版參考」都不能視為最終結論。</p>
+        <p><strong>資料狀態不是裝飾。</strong>「台版已確認」代表名稱或內容已有台版證據；「台版待實測」與「韓國版參考」都不能視為最終結論。</p>
         <p><strong>玩家投稿不會直接公開。</strong>所有情報都會經法那提歐核對，採用後才加入正式資料與貢獻者署名。</p>
       </div>
       <button class="primary-button" type="button" id="replay-tour-button">開始功能導覽</button>
@@ -274,5 +306,23 @@
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <script src="app.js" defer></script>
+
+  <script>
+    (() => {
+      const renameConfirmedLabels = () => {
+        document.querySelectorAll('.status-badge--confirmed').forEach((badge) => {
+          if (badge.textContent.trim() !== '台版已確認') badge.textContent = '台版已確認';
+        });
+        const tourCopy = document.querySelector('#tour-copy');
+        if (tourCopy?.textContent.includes('已台版確認')) {
+          tourCopy.textContent = tourCopy.textContent.replaceAll('已台版確認', '台版已確認');
+        }
+      };
+      window.addEventListener('DOMContentLoaded', () => {
+        renameConfirmedLabels();
+        new MutationObserver(renameConfirmedLabels).observe(document.body, { childList: true, subtree: true, characterData: true });
+      });
+    })();
+  </script>
 </body>
 </html>
