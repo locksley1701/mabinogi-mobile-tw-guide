@@ -1,0 +1,99 @@
+name: Validate static guide
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check app.js
+          node --check cooking.js
+          node --check ui-enhancements.js
+          node --check final-polish.js
+
+      - name: Validate JSON and content contracts
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+
+          const dataDir = path.join(process.cwd(), 'data');
+          const jsonFiles = fs.readdirSync(dataDir).filter(name => name.endsWith('.json'));
+          for (const name of jsonFiles) {
+            JSON.parse(fs.readFileSync(path.join(dataDir, name), 'utf8'));
+          }
+
+          const cooking = JSON.parse(fs.readFileSync('data/cooking.json', 'utf8'));
+          const life = JSON.parse(fs.readFileSync('data/life-skill-categories.json', 'utf8'));
+          const professions = JSON.parse(fs.readFileSync('data/professions.json', 'utf8'));
+          const skills = JSON.parse(fs.readFileSync('data/profession-skills.json', 'utf8'));
+
+          if (cooking.length !== 26) throw new Error(`Expected 26 cooking records, got ${cooking.length}`);
+          if (life.length !== 20) throw new Error(`Expected 20 life skills, got ${life.length}`);
+
+          const expectedLevels = {'Lv.1': 9, 'Lv.3': 1, 'Lv.5': 6, 'Lv.10': 6, 'Lv.15': 4};
+          for (const [level, expected] of Object.entries(expectedLevels)) {
+            const actual = cooking.filter(item => item.levelKey === level).length;
+            if (actual !== expected) throw new Error(`${level}: expected ${expected}, got ${actual}`);
+          }
+
+          const documented = professions.filter(item => item.documented).map(item => item.id).sort();
+          const expectedDocumented = ['archer', 'greatsword-warrior', 'swordsman', 'warrior'];
+          if (JSON.stringify(documented) !== JSON.stringify(expectedDocumented)) {
+            throw new Error(`Unexpected documented professions: ${documented.join(', ')}`);
+          }
+
+          for (const id of expectedDocumented) {
+            const profession = skills[id];
+            if (!profession) throw new Error(`Missing profession skill data: ${id}`);
+            const total = profession.active.length + profession.passive.length;
+            if (profession.active.length !== 6 || profession.passive.length !== 5 || total !== 11) {
+              throw new Error(`${id}: expected 6 active + 5 passive, got ${profession.active.length} + ${profession.passive.length}`);
+            }
+            for (const skill of [...profession.active, ...profession.passive]) {
+              if (!skill.name || !skill.description) throw new Error(`${id}: incomplete skill record`);
+            }
+          }
+
+          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, and 4 professions.`);
+          NODE
+
+      - name: Parse HTML
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          class Parser(HTMLParser):
+              pass
+
+          parser = Parser()
+          parser.feed(Path('index.html').read_text(encoding='utf-8'))
+          parser.close()
+          print('index.html parsed successfully')
+          PY
+
+      - name: Check required assets and routes
+        run: |
+          test -f styles.css
+          test -f cooking.css
+          test -f ui-enhancements.css
+          test -f final-polish.css
+          grep -q '#/profession/greatsword-warrior' index.html
+          grep -q '#/profession/archer' index.html
+          grep -q 'final-polish.js' index.html
