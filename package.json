@@ -1,0 +1,12 @@
+{
+  "name": "mabinogi-mobile-tw-guide",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:contract": "node scripts/validate-data-contract.mjs",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.0"
+  }
+}
