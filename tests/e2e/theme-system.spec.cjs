@@ -21,6 +21,7 @@ async function prepareCleanTheme(page) {
 async function waitForGuide(page) {
   await page.waitForFunction(() => document.querySelector('#workspace')?.childElementCount > 0);
   await expect(page.locator('#workspace')).not.toContainText('資料載入失敗');
+  await page.waitForFunction(() => Boolean(window.FanatioThemeSystem));
 }
 
 async function openSettings(page) {
@@ -122,7 +123,7 @@ test('五套配色在主要 route 上維持可讀且無水平溢位', async ({ p
 
   for (const palette of palettes) {
     await page.evaluate(paletteId => {
-      ThemeSystem.apply({appearance: 'light', palette: paletteId, persist: true});
+      window.FanatioThemeSystem.apply({appearance: 'light', palette: paletteId, persist: true});
     }, palette);
 
     for (const [route, title] of sampleRoutes) {
@@ -142,7 +143,7 @@ test('五大人物素質色不因配色主題改變', async ({ page }) => {
   const snapshots = [];
   for (const palette of palettes) {
     await page.evaluate(paletteId => {
-      ThemeSystem.apply({appearance: 'light', palette: paletteId, persist: false});
+      window.FanatioThemeSystem.apply({appearance: 'light', palette: paletteId, persist: false});
     }, palette);
     snapshots.push(await page.evaluate(() => {
       const style = getComputedStyle(document.documentElement);
