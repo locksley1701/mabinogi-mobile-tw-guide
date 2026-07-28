@@ -1,0 +1,181 @@
+:root {
+  --attribute-strength: #d94b3d;
+  --attribute-dexterity: #bd8c24;
+  --attribute-intelligence: #258fb5;
+  --attribute-will: #a24bbb;
+  --attribute-luck: #4a9948;
+}
+
+html[data-theme="dark"] {
+  --attribute-strength: #ff7565;
+  --attribute-dexterity: #e9bd55;
+  --attribute-intelligence: #55c8ec;
+  --attribute-will: #d87bea;
+  --attribute-luck: #7bd273;
+}
+
+/* Contextual cooking filters live beside the chapter navigation. */
+.sidebar-context-filter {
+  max-height: 0;
+  margin: 0 6px 0 42px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: max-height .24s ease, margin .24s ease, opacity .18s ease, transform .24s ease;
+}
+
+.sidebar-context-filter.is-visible {
+  max-height: 430px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.sidebar-context-filter__label {
+  margin: 5px 7px 7px;
+  color: var(--sidebar-muted);
+  font-size: .67rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+.sidebar-context-filter .level-nav {
+  position: static;
+  display: grid;
+  gap: 5px;
+  width: 100%;
+}
+
+.sidebar-context-filter .level-nav button {
+  min-height: 36px;
+  padding: 6px 9px;
+  border-color: rgba(232, 214, 168, .16);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .035);
+  color: var(--sidebar-text);
+}
+
+.sidebar-context-filter .level-nav button:hover,
+.sidebar-context-filter .level-nav button:focus-visible {
+  border-color: rgba(210, 179, 107, .58);
+  background: rgba(255, 255, 255, .075);
+  outline: none;
+}
+
+.sidebar-context-filter .level-nav button.is-active {
+  border-color: var(--gold-400);
+  background: linear-gradient(110deg, rgba(210, 179, 107, .24), rgba(255, 255, 255, .07));
+  color: #fff8e8;
+}
+
+.sidebar-context-filter .level-nav span {
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.sidebar-context-filter .level-nav small {
+  color: var(--sidebar-muted);
+  font-size: .65rem;
+}
+
+.cooking-layout--sidebar-filter {
+  display: block;
+}
+
+.cooking-layout--sidebar-filter > div {
+  min-width: 0;
+}
+
+/* The five character attributes follow the in-game semantic palette. */
+.attribute-token,
+.attribute-stat-label,
+.attribute-stat-value {
+  --attribute-color: var(--ink-700);
+}
+
+.attribute-strength { --attribute-color: var(--attribute-strength); }
+.attribute-dexterity { --attribute-color: var(--attribute-dexterity); }
+.attribute-intelligence { --attribute-color: var(--attribute-intelligence); }
+.attribute-will { --attribute-color: var(--attribute-will); }
+.attribute-luck { --attribute-color: var(--attribute-luck); }
+
+.cooking-effect-list span.attribute-token {
+  border-color: color-mix(in srgb, var(--attribute-color) 62%, var(--line));
+  background: color-mix(in srgb, var(--attribute-color) 13%, var(--surface-solid));
+  color: color-mix(in srgb, var(--attribute-color) 86%, var(--ink-900));
+  box-shadow: inset 3px 0 0 var(--attribute-color);
+}
+
+html[data-theme="dark"] .cooking-effect-list span.attribute-token {
+  background: color-mix(in srgb, var(--attribute-color) 16%, var(--surface-solid));
+  color: color-mix(in srgb, var(--attribute-color) 88%, white);
+}
+
+.attribute-stat-label,
+.attribute-stat-value {
+  color: var(--attribute-color) !important;
+}
+
+.attribute-stat-value {
+  position: relative;
+  padding-right: 10px;
+}
+
+.attribute-stat-value::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--attribute-color);
+  transform: translateY(-50%);
+}
+
+@media (max-width: 1279px) and (min-width: 960px) {
+  .sidebar-context-filter {
+    margin-inline: 3px;
+  }
+
+  .sidebar-context-filter__label,
+  .sidebar-context-filter .level-nav small {
+    display: none;
+  }
+
+  .sidebar-context-filter .level-nav button {
+    justify-content: center;
+    min-height: 34px;
+    padding-inline: 3px;
+  }
+
+  .sidebar-context-filter .level-nav span {
+    font-size: .67rem;
+  }
+}
+
+@media (max-width: 959px) {
+  .sidebar-context-filter {
+    margin-left: 44px;
+    margin-right: 8px;
+  }
+
+  .sidebar-context-filter .level-nav {
+    display: grid;
+    overflow: visible;
+  }
+
+  .sidebar-context-filter .level-nav button {
+    flex: initial;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-context-filter {
+    transition: none;
+  }
+}
