@@ -21,6 +21,11 @@ const allowedAliasTargetTypes = new Set([
   'combatSkill'
 ]);
 
+const allowedAliasScopes = new Set([
+  'entity',
+  'related-term'
+]);
+
 const allowedAliasKinds = new Set([
   'former-name',
   'other-version',
@@ -198,7 +203,7 @@ function validateAliases(data, fileName) {
       return;
     }
 
-    for (const key of ['id', 'targetType', 'targetId', 'canonical']) {
+    for (const key of ['id', 'targetType', 'targetId', 'scope', 'canonical']) {
       validateStringField(definition, key, location);
     }
 
@@ -212,6 +217,13 @@ function validateAliases(data, fileName) {
       !allowedAliasTargetTypes.has(definition.targetType)
     ) {
       fail(`${location}.targetType`, `不允許的搜尋類型：${definition.targetType}`);
+    }
+
+    if (
+      typeof definition.scope === 'string' &&
+      !allowedAliasScopes.has(definition.scope)
+    ) {
+      fail(`${location}.scope`, `不允許的名稱範圍：${definition.scope}`);
     }
 
     if (!Array.isArray(definition.aliases) || !definition.aliases.length) {
