@@ -18,7 +18,9 @@ const routes = [
 async function preparePage(page) {
   await page.addInitScript(() => {
     localStorage.setItem('fanatio-tour-v2', 'done');
-    localStorage.setItem('fanatio-theme', 'light');
+    if (!localStorage.getItem('fanatio-theme')) {
+      localStorage.setItem('fanatio-theme', 'light');
+    }
   });
 }
 
@@ -165,7 +167,7 @@ test('職業技能可展開，解鎖條件保持正常可閱讀', async ({ page 
   for (const opacity of opacities) expect(opacity).toBeGreaterThanOrEqual(0.99);
 
   const secondSkill = skills.nth(1);
-  if (!(await secondSkill.getAttribute('open'))) {
+  if (!(await secondSkill.evaluate(element => element.open))) {
     await secondSkill.locator('summary').click();
   }
   await expect(secondSkill).toHaveAttribute('open', '');
