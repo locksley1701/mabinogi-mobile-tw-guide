@@ -14,6 +14,14 @@
   const modalReturnFocus = new WeakMap();
   let syncing = false;
 
+  function setAttributeIfChanged(element, name, value) {
+    if (element.getAttribute(name) !== value) element.setAttribute(name, value);
+  }
+
+  function setInert(element, value) {
+    if (element.inert !== value) element.inert = value;
+  }
+
   function isVisible(element) {
     if (!(element instanceof HTMLElement) || element.hidden) return false;
     const style = getComputedStyle(element);
@@ -29,7 +37,7 @@
 
   function setPressedState(selector) {
     document.querySelectorAll(selector).forEach(element => {
-      element.setAttribute('aria-pressed', String(element.classList.contains('is-active')));
+      setAttributeIfChanged(element, 'aria-pressed', String(element.classList.contains('is-active')));
     });
   }
 
@@ -40,8 +48,8 @@
 
     const results = document.querySelector('#search-results');
     if (results) {
-      results.setAttribute('aria-live', 'polite');
-      results.setAttribute('aria-atomic', 'false');
+      setAttributeIfChanged(results, 'aria-live', 'polite');
+      setAttributeIfChanged(results, 'aria-atomic', 'false');
     }
   }
 
@@ -52,21 +60,21 @@
       if (!summary || !body) return;
       const id = body.id || `profession-skill-panel-${index + 1}`;
       body.id = id;
-      summary.setAttribute('aria-controls', id);
-      summary.setAttribute('aria-expanded', String(details.open));
+      setAttributeIfChanged(summary, 'aria-controls', id);
+      setAttributeIfChanged(summary, 'aria-expanded', String(details.open));
     });
   }
 
   function syncQuickSearch() {
     const panel = document.querySelector('#quick-search-panel');
     if (!panel) return;
-    panel.setAttribute('aria-hidden', String(panel.hidden));
+    setAttributeIfChanged(panel, 'aria-hidden', String(panel.hidden));
   }
 
   function syncContextFilters() {
     document.querySelectorAll('.sidebar-context-filter').forEach(filter => {
       const hidden = filter.getAttribute('aria-hidden') === 'true' || !filter.classList.contains('is-visible');
-      filter.inert = hidden;
+      setInert(filter, hidden);
     });
   }
 
@@ -77,18 +85,22 @@
     const open = document.body.classList.contains('drawer-open');
 
     if (mobile) {
-      sidebar.inert = !open;
-      sidebar.setAttribute('aria-hidden', String(!open));
+      setInert(sidebar, !open);
+      setAttributeIfChanged(sidebar, 'aria-hidden', String(!open));
     } else {
-      sidebar.inert = false;
-      sidebar.removeAttribute('aria-hidden');
+      setInert(sidebar, false);
+      if (sidebar.hasAttribute('aria-hidden')) sidebar.removeAttribute('aria-hidden');
     }
   }
 
-  function syncStatusBadges() {
-    document.querySelectorAll('.status-badge').forEach(badge => {
-      if (!badge.getAttribute('role')) badge.setAttribute('role', 'status');
-    });
+  function activeModal() {
+    return [document.querySelector('#theme-settings'), document.querySelector('#tour')]
+      .find(element => element && !element.hidden && isVisible(element));
+  }
+
+  function syncBackgroundInert() {
+    const appShell = document.querySelector('.app-shell');
+    if (appShell) setInert(appShell, Boolean(activeModal()));
   }
 
   function syncAll() {
@@ -100,14 +112,9 @@
       syncQuickSearch();
       syncContextFilters();
       syncDrawer();
-      syncStatusBadges();
+      syncBackgroundInert();
       syncing = false;
     });
-  }
-
-  function activeModal() {
-    return [document.querySelector('#theme-settings'), document.querySelector('#tour')]
-      .find(element => element && !element.hidden && isVisible(element));
   }
 
   function trapModalFocus(event) {
@@ -135,12 +142,14 @@
     if (!(modal instanceof HTMLElement)) return;
     if (!modal.hidden) {
       if (!modalReturnFocus.has(modal)) modalReturnFocus.set(modal, document.activeElement);
+      syncBackgroundInert();
       requestAnimationFrame(() => {
         if (!modal.contains(document.activeElement)) visibleFocusable(modal)[0]?.focus({preventScroll: true});
       });
       return;
     }
 
+    syncBackgroundInert();
     const returnTarget = modalReturnFocus.get(modal);
     modalReturnFocus.delete(modal);
     if (returnTarget instanceof HTMLElement && returnTarget.isConnected && isVisible(returnTarget)) {
