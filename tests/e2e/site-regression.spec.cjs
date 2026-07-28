@@ -151,7 +151,10 @@ test('料理側邊欄篩選可切換到 Lv.15 並顯示 4 筆', async ({ page },
   await expect(page.locator('.cooking-card')).toHaveCount(4);
 
   if (testInfo.project.name === 'mobile-chrome') {
-    await page.locator('#drawer-backdrop').click();
+    const backdrop = page.locator('#drawer-backdrop');
+    const box = await backdrop.boundingBox();
+    await backdrop.click({ position: { x: box.width - 8, y: 80 } });
+    await expect(page.locator('body')).not.toHaveClass(/drawer-open/);
   }
 });
 
