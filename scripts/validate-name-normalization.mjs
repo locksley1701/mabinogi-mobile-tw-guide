@@ -42,35 +42,40 @@ for (const definition of aliases) {
 
 const searchItems = [
   ...lifeCategories.map(item => ({
-    type: 'life', entityId: item.id, title: item.name, description: item.description,
+    type: 'life', entityId: item.id, canonicalName: item.name,
+    title: item.name, description: item.description,
     keywords: `${item.name} ${item.group}`, route: 'life'
   })),
   ...lifeGuides.map(item => ({
-    type: 'life', entityId: item.skillId, title: `${item.skill}｜Lv.${item.level}`,
+    type: 'life', entityId: item.skillId, canonicalName: item.skill,
+    title: `${item.skill}｜Lv.${item.level}`,
     description: item.recommendation,
     keywords: `${item.skill} ${item.level} ${item.location} ${item.requirements} ${item.note || ''}`,
     route: 'life'
   })),
   ...cooking.map(item => ({
-    type: 'cooking', entityId: item.id, title: item.dish, description: `${item.unlock}・${item.use}`,
+    type: 'cooking', entityId: item.id, canonicalName: item.dish,
+    title: item.dish, description: `${item.unlock}・${item.use}`,
     keywords: `${item.dish} ${item.level} ${item.materials} ${item.note || ''}`,
     route: 'cooking'
   })),
   ...afk.map(item => ({
-    type: 'afk', entityId: item.id || item.target, title: `${item.target}任務`,
+    type: 'afk', entityId: item.id || item.target, canonicalName: item.target,
+    title: `${item.target}任務`,
     description: `${item.skill}・${item.effect}`,
     keywords: `${item.target} ${item.skill} ${item.method} ${item.stop}`,
     route: 'afk'
   })),
   ...professions.map(item => ({
-    type: 'profession', entityId: item.id, title: item.name,
+    type: 'profession', entityId: item.id, canonicalName: item.name,
+    title: item.name,
     description: item.documented ? '已收錄職業介紹與技能' : '台版職業名稱已確認，詳細資料待收錄',
     keywords: item.name, route: item.documented ? `profession/${item.id}` : 'professions'
   })),
   ...Object.values(professionSkills).flatMap(profession =>
     [...profession.active, ...profession.passive].map(skill => ({
-      type: 'combatSkill', entityId: `${profession.id}:${skill.name}`, title: skill.name,
-      description: profession.name,
+      type: 'combatSkill', entityId: `${profession.id}:${skill.name}`, canonicalName: skill.name,
+      title: skill.name, description: profession.name,
       keywords: `${profession.name} ${skill.name} ${skill.unlock || ''}`,
       route: `profession/${profession.id}`
     }))
