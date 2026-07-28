@@ -1,0 +1,22 @@
+[
+  {"id":"daily-gathering","name":"日常採集","icon":"✋","group":"採集","description":"徒手或使用容器取得雞蛋、蘋果、蜘蛛網等日常素材。"},
+  {"id":"logging","name":"伐木","icon":"🪓","group":"採集","description":"使用伐木斧採集木材。"},
+  {"id":"mining","name":"採礦","icon":"⛏","group":"採集","description":"使用鶴嘴鋤採集礦石。"},
+  {"id":"herbalism","name":"採集藥草","icon":"☘","group":"採集","description":"使用藥草鋤採集藥草與蘑菇。"},
+  {"id":"shearing","name":"剪羊毛","icon":"✂","group":"採集","description":"使用羊毛剪取得羊毛。"},
+  {"id":"harvest","name":"收割","icon":"🌾","group":"採集","description":"使用鐮刀收割田間作物。"},
+  {"id":"hoeing","name":"鋤地","icon":"⌁","group":"採集","description":"使用小鋤頭挖掘農田素材。"},
+  {"id":"insects","name":"昆蟲採集","icon":"◉","group":"採集","description":"使用昆蟲捕捉網採集昆蟲。"},
+  {"id":"fishing","name":"釣魚","icon":"🎣","group":"採集","description":"使用釣竿與魚餌進行釣魚。"},
+  {"id":"smithing","name":"鍛造技術","icon":"⚒","group":"製作","description":"製作金屬武器、工具與相關物品。"},
+  {"id":"woodworking","name":"木工","icon":"▰","group":"製作","description":"製作木製武器、工具與相關物品。"},
+  {"id":"magic-craft","name":"魔法工藝","icon":"✧","group":"製作","description":"製作法杖、魔杖與魔法相關物品。"},
+  {"id":"heavy-armor","name":"重甲製作","icon":"♜","group":"製作","description":"製作重甲裝備。"},
+  {"id":"light-armor","name":"輕甲製作","icon":"♞","group":"製作","description":"製作輕甲裝備。"},
+  {"id":"cloth","name":"布衣製作","icon":"♙","group":"製作","description":"製作布衣裝備。"},
+  {"id":"potion","name":"藥水調製","icon":"⚗","group":"製作","description":"使用藥草與容器調製藥水。"},
+  {"id":"cooking","name":"料理","icon":"♨","group":"製作","description":"使用食材製作料理。"},
+  {"id":"handicraft","name":"手工藝","icon":"✎","group":"製作","description":"製作工具、飾品與其他手工物品。"},
+  {"id":"alchemy","name":"鍊金術","icon":"◫","group":"製作","description":"進行鍊金相關製作與強化。"},
+  {"id":"part-time","name":"兼職","icon":"◉","group":"其他","description":"完成城鎮 NPC 的兼職任務。"}
+]

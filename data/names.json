@@ -1,12 +1,13 @@
 [
-  {"id":"herb-tenacity","category":"name","type":"藥草","other":"韌性草","tw":"毅力草","status":"tw-confirmed","statusLabel":"已台版確認","evidence":"使用者台版實機確認；Lv.5"},
-  {"id":"mushroom-growth","category":"name","type":"藥草","other":"成長蘑菇","tw":"咻咻蘑菇","status":"tw-confirmed","statusLabel":"已台版確認","evidence":"使用者台版實機確認；Lv.10"},
-  {"id":"flower-hide","category":"name","type":"藥草","other":"藏藏花","tw":"躲躲花","status":"tw-confirmed","statusLabel":"已台版確認","evidence":"使用者台版實機確認；Lv.15"},
-  {"id":"daily-gathering","category":"name","type":"生活技能","other":"日常採集","tw":"無工具採集","status":"tw-confirmed","statusLabel":"已台版確認","evidence":"使用者台版介面確認"},
-  {"id":"axe","category":"name","type":"工具","other":"斧／伐木工具","tw":"伐木斧","status":"tw-confirmed","statusLabel":"已台版確認","evidence":"使用者台版實機確認"},
-  {"id":"pickaxe","category":"name","type":"工具","other":"十字鎬／採礦工具","tw":"鶴嘴鋤","status":"tw-confirmed","statusLabel":"已台版確認","evidence":"使用者台版實機確認"},
-  {"id":"herb-tool","category":"name","type":"工具","other":"藥草工具","tw":"藥草鋤","status":"tw-confirmed","statusLabel":"已台版確認","evidence":"使用者台版實機確認"},
-  {"id":"scissors","category":"name","type":"工具","other":"剪刀","tw":"羊毛剪","status":"tw-confirmed","statusLabel":"已台版確認","evidence":"使用者台版實機確認"},
-  {"id":"hoe","category":"name","type":"工具","other":"鋤頭","tw":"小鋤頭","status":"tw-confirmed","statusLabel":"已台版確認","evidence":"使用者台版實機確認"},
-  {"id":"bug-net","category":"name","type":"工具","other":"捕蟲網","tw":"昆蟲捕捉網","status":"tw-confirmed","statusLabel":"已台版確認","evidence":"使用者台版實機確認"}
+  {"type":"藥草","other":"韌性草","tw":"毅力草","evidence":"法那提歐提供台版實機截圖確認"},
+  {"type":"藥草","other":"成長蘑菇","tw":"咻咻蘑菇","evidence":"法那提歐提供台版實機截圖確認"},
+  {"type":"藥草","other":"藏藏花","tw":"躲躲花","evidence":"法那提歐提供台版實機截圖確認"},
+  {"type":"生活技能","other":"無工具採集","tw":"日常採集","evidence":"法那提歐提供台版實機截圖確認"},
+  {"type":"料理","other":"攜著吃的點心","tw":"旅行者點心","evidence":"法那提歐提供台版實機截圖確認"},
+  {"type":"工具","other":"斧","tw":"伐木斧","evidence":"法那提歐提供台版實機資料確認"},
+  {"type":"工具","other":"十字鎬","tw":"鶴嘴鋤","evidence":"法那提歐提供台版實機資料確認"},
+  {"type":"工具","other":"藥草工具","tw":"藥草鋤","evidence":"法那提歐提供台版實機資料確認"},
+  {"type":"工具","other":"剪刀","tw":"羊毛剪","evidence":"法那提歐提供台版實機資料確認"},
+  {"type":"工具","other":"鋤頭","tw":"小鋤頭","evidence":"法那提歐提供台版實機資料確認"},
+  {"type":"工具","other":"捕蟲網","tw":"昆蟲捕捉網","evidence":"法那提歐提供台版實機資料確認"}
 ]

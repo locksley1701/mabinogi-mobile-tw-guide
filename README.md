@@ -1,75 +1,79 @@
 # 法那提歐的愛爾琳手札
 
-《瑪奇 Mobile》台版全方位攻略網站。第一階段以生活技能、料理 CP 候選、掛機技巧、台版名稱對照與玩家投稿流程為主。
+《瑪奇 Mobile》台版全方位攻略網站。以台版實機截圖、法那提歐實測與經核對的玩家情報為核心。
 
 ## 專案特色
 
-- 手機優先、純靜態網站
-- HTML / CSS / 原生 JavaScript
-- GitHub Pages 可直接部署
+- 桌面固定側邊欄、平板精簡側欄、手機抽屜選單
+- hash route 章節切換，不使用單一無限長首頁
+- 生活技能、料理、掛機、職業與職業技能獨立章節
 - 台版實機資料優先
-- 所有未確認內容均保留資料狀態
-- 首次造訪功能導覽
+- 正式名稱與搜尋別名分離
+- 明確顯示情報提供者 ID
 - 亮色／深色凱爾特奇幻主題
-- 預留 Google 表單投稿入口
+- 純 HTML / CSS / 原生 JavaScript
+- GitHub Pages 直接部署
+
+## 主要路由
+
+```text
+#/home
+#/search
+#/life
+#/cooking
+#/afk
+#/professions
+#/profession/swordsman
+#/profession/warrior
+#/updates
+#/contribute
+```
 
 ## 本機預覽
 
-不要直接雙擊 `index.html`，瀏覽器會阻擋 JSON 載入。請在專案資料夾啟動本機伺服器：
+不要直接雙擊 `index.html`，瀏覽器會阻擋 JSON 載入。
 
 ```powershell
 Set-Location -LiteralPath 'D:\workbench\mabinogi-mobile-tw-guide'
 py -m http.server 8000
 ```
 
-接著開啟：
+開啟：
 
 ```text
 http://localhost:8000
 ```
 
-## 啟用情報投稿
-
-建立 Google 表單後，將表單公開網址填入：
+## 資料檔案
 
 ```text
-data/site.json
+data/
+  site.json
+  life-skill-categories.json
+  life-skills.json
+  cooking.json
+  afk-tips.json
+  names.json
+  professions.json
+  profession-skills.json
+  changelog.json
 ```
 
-欄位：
+`names.json` 只用於搜尋舊稱與資料正規化，不直接建立公開名稱對照頁。
+
+## 啟用情報投稿
+
+建立 Google 表單後，在 `data/site.json` 填入：
 
 ```json
 "submissionFormUrl": "https://docs.google.com/forms/d/e/.../viewform"
 ```
 
-## GitHub Pages
-
-Repository 建議名稱：`mabinogi-mobile-tw-guide`
-
-推送後前往：
-
-```text
-Settings → Pages → Build and deployment → Deploy from a branch
-```
-
-選擇：
-
-```text
-Branch: main
-Folder: /(root)
-```
-
-預期網址：
+## 網站
 
 ```text
 https://locksley1701.github.io/mabinogi-mobile-tw-guide/
 ```
-
-## 資料來源
-
-- Google 試算表：《瑪奇Mobile｜生活技能快速升級查詢表》
-- 使用者台版實機確認與截圖
-- 韓國版資料僅作候選參考
 
 ## 非官方聲明
 

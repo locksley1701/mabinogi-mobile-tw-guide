@@ -1,0 +1,30 @@
+{
+  "swordsman": {
+    "id": "swordsman",
+    "name": "劍術士",
+    "preferredArmor": "重甲",
+    "source": "法那提歐提供台版實機截圖",
+    "status": "tw-confirmed",
+    "description": "以一柄劍斬斷眼前一切阻礙的職業。\n即使在無休止的戰鬥中也不失專注，施展強烈的劍擊。\n偏好重甲，以卓越的劍術邁向勝利。",
+    "active": [
+      {"name":"鋼梭"},{"name":"鞘擊"},{"name":"疾風斬"},{"name":"秘劍"},{"name":"看破"},{"name":"一閃"}
+    ],
+    "passive": [
+      {"name":"集中"},{"name":"疾風架式"},{"name":"戰鬥熟練：威脅"},{"name":"連攜劍術"},{"name":"尖銳之眼","unlock":"劍術士 Lv.45 以上"}
+    ]
+  },
+  "warrior": {
+    "id": "warrior",
+    "name": "戰士",
+    "preferredArmor": "重甲",
+    "source": "法那提歐提供台版實機截圖",
+    "status": "tw-confirmed",
+    "description": "熟練操控劍與盾，毫不留情地壓制眼前敵人的職業。\n以鍛鍊過的體魄發揮力量，瞬間擊倒敵人並給予致命一擊，主導戰鬥節奏。\n偏好重甲，以堅固的防禦與強大的攻擊奪取勝利。",
+    "active": [
+      {"name":"連續斬"},{"name":"劍刃重擊"},{"name":"盾牌猛擊"},{"name":"突刺"},{"name":"戰場怒吼"},{"name":"劍刃衝擊","unlock":"戰士 Lv.20 以上"}
+    ],
+    "passive": [
+      {"name":"招架反擊"},{"name":"鬥志"},{"name":"戰鬥熟練：守護","unlock":"戰士 Lv.15 以上"},{"name":"復仇心","unlock":"戰士 Lv.30 以上"},{"name":"把握時機","unlock":"戰士 Lv.45 以上"}
+    ]
+  }
+}

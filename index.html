@@ -3,326 +3,95 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="法那提歐編纂的《瑪奇 Mobile》台版全方位攻略，收錄生活技能、料理、掛機技巧、台版名稱與玩家實測情報。">
-  <meta name="theme-color" content="#173f32">
+  <meta name="description" content="法那提歐編纂的《瑪奇 Mobile》台版全方位攻略，依台版實機截圖與玩家實測整理生活技能、職業與攻略情報。">
+  <meta name="theme-color" content="#123127">
   <title>法那提歐的愛爾琳手札｜瑪奇 Mobile 台版攻略</title>
   <link rel="icon" href="assets/emblem.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
-  <style>
-    :root { --page-gutter: clamp(16px, 2vw, 36px); }
-    .site-shell { width: min(1760px, 100%); padding-left: var(--page-gutter); padding-right: var(--page-gutter); }
-    .site-header { margin-left: calc(var(--page-gutter) * -1); margin-right: calc(var(--page-gutter) * -1); padding-left: var(--page-gutter); padding-right: var(--page-gutter); }
-    .status-badge { flex: 0 0 auto; justify-content: center; min-height: 32px; padding: 5px 12px; line-height: 1.1; white-space: nowrap; }
-    .info-card__top > div { min-width: 0; }
-    @media (min-width: 1480px) {
-      .card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .compact-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .name-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .table-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .table-card { grid-template-columns: 72px minmax(130px, .75fr) minmax(210px, 1.25fr) minmax(88px, .5fr) auto; gap: 12px; }
-    }
-    @media (min-width: 1880px) {
-      .card-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-      .compact-list { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-      .name-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    }
-    @media (max-width: 1079px) {
-      .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .compact-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .future-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .table-card { grid-template-columns: 70px 1fr auto; }
-      .table-card p { grid-column: 2 / -1; }
-    }
-    @media (max-width: 680px) {
-      :root { --page-gutter: 16px; }
-      .card-grid, .compact-list, .name-grid, .future-grid { grid-template-columns: 1fr; }
-      .table-card { grid-template-columns: 70px 1fr; }
-      .table-card p, .table-card > .status-badge { grid-column: 1 / -1; }
-    }
-  </style>
 </head>
 <body>
-  <a class="skip-link" href="#main-content">跳到主要內容</a>
+  <a class="skip-link" href="#workspace">跳到主要內容</a>
 
-  <div class="site-shell">
-    <header class="site-header" data-tour="brand">
-      <a class="brand" href="#top" aria-label="回到首頁">
-        <img class="brand__mark" src="assets/emblem.svg" alt="法那提歐的愛爾琳手札徽記">
-        <span class="brand__text">
-          <strong>法那提歐的愛爾琳手札</strong>
-          <small>瑪奇 Mobile 台版全方位攻略</small>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="手札章節">
+      <a class="sidebar__brand" href="#/home" aria-label="回到手札總覽">
+        <img src="assets/emblem.svg" alt="" width="44" height="44">
+        <span>
+          <strong>法那提歐的<br>愛爾琳手札</strong>
+          <small>台版全方位攻略</small>
         </span>
       </a>
-      <div class="header-actions">
-        <button class="icon-button" id="theme-toggle" type="button" aria-label="切換明暗主題" title="切換明暗主題">
-          <span aria-hidden="true">☾</span>
+
+      <nav class="sidebar__nav">
+        <p class="nav-label">手札首頁</p>
+        <a class="nav-link" href="#/home" data-route="home"><span aria-hidden="true">⌂</span><b>總覽</b></a>
+        <a class="nav-link" href="#/search" data-route="search"><span aria-hidden="true">⌕</span><b>快速查詢</b></a>
+
+        <p class="nav-label">生活技能</p>
+        <a class="nav-link" href="#/life" data-route="life"><span aria-hidden="true">⚒</span><b>生活技能</b></a>
+        <a class="nav-link" href="#/cooking" data-route="cooking"><span aria-hidden="true">♨</span><b>料理手札</b></a>
+        <a class="nav-link" href="#/afk" data-route="afk"><span aria-hidden="true">☘</span><b>掛機技巧</b></a>
+
+        <p class="nav-label">戰鬥與職業</p>
+        <a class="nav-link" href="#/professions" data-route="professions"><span aria-hidden="true">⚔</span><b>職業總覽</b></a>
+        <a class="nav-link nav-link--sub" href="#/profession/swordsman" data-route="profession/swordsman"><span aria-hidden="true">◇</span><b>劍術士</b></a>
+        <a class="nav-link nav-link--sub" href="#/profession/warrior" data-route="profession/warrior"><span aria-hidden="true">◇</span><b>戰士</b></a>
+
+        <p class="nav-label">關於手札</p>
+        <a class="nav-link" href="#/updates" data-route="updates"><span aria-hidden="true">✦</span><b>增補紀錄</b></a>
+        <a class="nav-link" href="#/contribute" data-route="contribute"><span aria-hidden="true">✉</span><b>提供情報</b></a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <button class="sidebar-action" id="theme-toggle" type="button"><span aria-hidden="true">☾</span><b>切換主題</b></button>
+        <button class="sidebar-action" id="tour-button" type="button"><span aria-hidden="true">?</span><b>功能導覽</b></button>
+        <small>手札編纂者：法那提歐</small>
+      </div>
+    </aside>
+
+    <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+
+    <div class="workspace-shell">
+      <header class="topbar">
+        <button class="menu-button" id="menu-button" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="開啟章節選單">
+          <span aria-hidden="true">☰</span>
         </button>
-        <button class="icon-button" id="help-button" type="button" aria-label="開啟旅人指南" title="旅人指南">
-          <span aria-hidden="true">?</span>
-        </button>
-      </div>
-    </header>
-
-    <nav class="section-nav" aria-label="主要內容">
-      <a href="#search">快速查詢</a>
-      <a href="#afk">掛機</a>
-      <a href="#cooking">料理</a>
-      <a href="#names">名稱對照</a>
-      <a href="#contribute">提供情報</a>
-    </nav>
-
-    <main id="main-content">
-      <section class="hero" id="top">
-        <div class="hero__ornament" aria-hidden="true">✦</div>
-        <p class="eyebrow">手札編纂者・法那提歐</p>
-        <h1>從營火旁的生活技藝，<br>到戰場上的劍與魔法。</h1>
-        <p class="hero__lead">記錄台版愛爾琳每一條值得相信的道路。實機資料優先，韓版情報只作參考，未知之處都會留下清楚標記。</p>
-        <div class="hero__badges" aria-label="網站特色">
-          <span>手機優先</span>
-          <span>台版名稱優先</span>
-          <span>玩家實測核對</span>
+        <div class="topbar__title">
+          <small id="page-eyebrow">法那提歐的愛爾琳手札</small>
+          <strong id="page-title">手札總覽</strong>
         </div>
-      </section>
-
-      <section class="search-panel parchment" id="search" data-tour="search">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">快速查詢</p>
-            <h2>今天想找什麼？</h2>
-          </div>
-          <span class="source-stamp" id="data-updated-at">資料讀取中</span>
+        <div class="topbar__actions">
+          <button class="icon-button" id="top-search-button" type="button" aria-label="快速查詢">⌕</button>
+          <button class="icon-button" id="top-theme-toggle" type="button" aria-label="切換明暗主題">☾</button>
         </div>
+      </header>
 
-        <label class="search-box" for="global-search">
-          <span aria-hidden="true">⌕</span>
-          <input id="global-search" type="search" autocomplete="off" placeholder="搜尋技能、料理、藥草、工具或掛機技巧……">
-        </label>
+      <main id="workspace" class="workspace" tabindex="-1" aria-live="polite"></main>
 
-        <div class="filter-row" data-tour="filters">
-          <label>
-            <span>分類</span>
-            <select id="category-filter">
-              <option value="all">全部分類</option>
-              <option value="life-skill">生活技能</option>
-              <option value="cooking">料理</option>
-              <option value="afk">掛機技巧</option>
-              <option value="name">台版名稱</option>
-            </select>
-          </label>
-          <label>
-            <span>資料狀態</span>
-            <select id="status-filter">
-              <option value="all">全部狀態</option>
-              <option value="tw-confirmed">台版已確認</option>
-              <option value="user-tested">使用者實測</option>
-              <option value="tw-testing">台版待實測</option>
-              <option value="kr-reference">韓國版參考</option>
-              <option value="unconfirmed">待確認</option>
-            </select>
-          </label>
-        </div>
-
-        <div class="status-legend" data-tour="status" aria-label="資料狀態說明">
-          <button type="button" class="status-badge status-badge--confirmed" data-status-pick="tw-confirmed">台版已確認</button>
-          <button type="button" class="status-badge status-badge--tested" data-status-pick="user-tested">使用者實測</button>
-          <button type="button" class="status-badge status-badge--testing" data-status-pick="tw-testing">台版待實測</button>
-          <button type="button" class="status-badge status-badge--kr" data-status-pick="kr-reference">韓國版參考</button>
-          <button type="button" class="status-badge status-badge--unknown" data-status-pick="unconfirmed">待確認</button>
-        </div>
-      </section>
-
-      <section class="metrics" aria-label="目前收錄概況">
-        <article><strong id="metric-life">—</strong><span>生活技能條目</span></article>
-        <article><strong id="metric-cooking">—</strong><span>料理候選</span></article>
-        <article><strong id="metric-tested">—</strong><span>台版實測技巧</span></article>
-        <article><strong id="metric-names">—</strong><span>名稱對照</span></article>
-      </section>
-
-      <section class="results-section" aria-labelledby="results-title" data-tour="cards">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">手札索引</p>
-            <h2 id="results-title">查詢結果</h2>
-          </div>
-          <span id="result-count" class="result-count">載入中</span>
-        </div>
-        <div id="search-results" class="card-grid" aria-live="polite"></div>
-        <div class="load-more-wrap"><button id="load-more-button" class="secondary-button" type="button" hidden>展開更多手札</button></div>
-        <div id="empty-state" class="empty-state" hidden>
-          <span aria-hidden="true">☘</span>
-          <h3>這頁手札還沒有記載</h3>
-          <p>換個名稱搜尋，或將新情報送往情報櫃台。</p>
-        </div>
-      </section>
-
-      <section id="afk" class="feature-section">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">今日推薦掛機</p>
-            <h2>讓四葉草替你延長旅程</h2>
-          </div>
-          <span class="status-badge status-badge--tested">使用者實測</span>
-        </div>
-        <article class="feature-card celtic-frame">
-          <div class="feature-card__icon" aria-hidden="true">☘</div>
-          <div>
-            <h3>四葉草取得任務</h3>
-            <p>身上保留至少一株四葉草，再建立「取得四葉草」任務。角色會持續採集藥草，直到取得十株四葉草才停止。</p>
-            <ul>
-              <li>適用技能：採集藥草</li>
-              <li>所需工具：藥草鋤</li>
-              <li>掛機適性：很高</li>
-            </ul>
-          </div>
-        </article>
-        <div id="afk-list" class="compact-list"></div>
-      </section>
-
-      <section id="cooking" class="content-section">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">料理 CP 候選</p>
-            <h2>先看成本，再決定鍋裡煮什麼</h2>
-          </div>
-          <span class="section-note">不將韓版效率直接視為台版結論</span>
-        </div>
-        <div id="cooking-list" class="table-cards"></div>
-      </section>
-
-      <section id="names" class="content-section">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">台版名稱對照</p>
-            <h2>別讓異版譯名把旅人帶錯路</h2>
-          </div>
-        </div>
-        <div id="name-list" class="name-grid"></div>
-      </section>
-
-      <section class="future-section parchment">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">手札將繼續增頁</p>
-            <h2>下一批章節</h2>
-          </div>
-        </div>
-        <div class="future-grid">
-          <article><span aria-hidden="true">⚔</span><h3>戰鬥技能</h3><p>技能路線、搭配與台版實測。</p></article>
-          <article><span aria-hidden="true">◈</span><h3>裝備成長</h3><p>裝備取得、強化與資源規劃。</p></article>
-          <article><span aria-hidden="true">⌖</span><h3>地圖與任務</h3><p>採集點、任務用途與活動情報。</p></article>
-          <article><span aria-hidden="true">✧</span><h3>角色養成</h3><p>從生活到戰鬥的完整成長手札。</p></article>
-        </div>
-      </section>
-
-      <section id="contribute" class="contribute-section celtic-frame" data-tour="contribute">
-        <div class="contribute-section__mark" aria-hidden="true">✦</div>
-        <p class="eyebrow">愛爾琳情報櫃台</p>
-        <h2>旅人，你發現新的情報嗎？</h2>
-        <p>台版名稱、採集位置、料理經驗、掛機技巧或實機截圖，都歡迎送來。情報經法那提歐核對後才會正式收錄，並可選擇留下遊戲 ID、自訂暱稱或匿名。</p>
-        <div class="contribute-actions">
-          <button type="button" class="primary-button" id="submit-info-button">提供愛爾琳情報</button>
-          <button type="button" class="secondary-button" id="contributor-guide-button">查看投稿規則</button>
-        </div>
-        <small>原始截圖與聯絡資訊不會放入公開 GitHub repository。</small>
-      </section>
-
-      <section id="changelog" class="content-section">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">手札增補紀錄</p>
-            <h2>最近更新</h2>
-          </div>
-        </div>
-        <ol id="changelog-list" class="timeline"></ol>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <div>
-        <strong>法那提歐的愛爾琳手札</strong>
-        <p>玩家自發建立的非官方攻略網站，與遊戲開發商及營運商無關。</p>
-      </div>
-      <div class="footer-links">
-        <a id="source-sheet-link" href="#" hidden aria-hidden="true" tabindex="-1">資料來源</a>
-        <button type="button" id="footer-tour-button">重新觀看導覽</button>
-      </div>
-      <small>手札編纂者：法那提歐</small>
-    </footer>
+      <footer class="site-footer">
+        <p><strong>法那提歐的愛爾琳手札</strong>・玩家自發建立的非官方攻略網站，與遊戲開發商及營運商無關。</p>
+      </footer>
+    </div>
   </div>
 
-  <div class="mobile-nav" aria-label="行動版快速導覽">
-    <a href="#search"><span aria-hidden="true">⌕</span>查詢</a>
-    <a href="#afk"><span aria-hidden="true">☘</span>掛機</a>
-    <a href="#cooking"><span aria-hidden="true">♨</span>料理</a>
-    <a href="#contribute"><span aria-hidden="true">✦</span>投稿</a>
-  </div>
-
-  <div class="modal" id="guide-modal" hidden>
-    <div class="modal__backdrop" data-close-modal></div>
-    <section class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="guide-title">
-      <button class="modal__close" type="button" data-close-modal aria-label="關閉">×</button>
-      <p class="eyebrow">旅人指南</p>
-      <h2 id="guide-title">讀懂手札上的印記</h2>
-      <div class="guide-copy">
-        <p><strong>資料狀態不是裝飾。</strong>「台版已確認」代表名稱或內容已有台版證據；「台版待實測」與「韓國版參考」都不能視為最終結論。</p>
-        <p><strong>玩家投稿不會直接公開。</strong>所有情報都會經法那提歐核對，採用後才加入正式資料與貢獻者署名。</p>
-      </div>
-      <button class="primary-button" type="button" id="replay-tour-button">開始功能導覽</button>
-    </section>
-  </div>
-
-  <div class="modal" id="submission-modal" hidden>
-    <div class="modal__backdrop" data-close-modal></div>
-    <section class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="submission-title">
-      <button class="modal__close" type="button" data-close-modal aria-label="關閉">×</button>
-      <p class="eyebrow">情報投稿</p>
-      <h2 id="submission-title">投稿入口正在架設</h2>
-      <p>網站骨架已預留 Google 表單入口。表單建立完成後，只要在 <code>data/site.json</code> 填入網址，按鈕就會直接開啟投稿頁。</p>
-      <ul class="plain-list">
-        <li>建議附上台版實機截圖</li>
-        <li>可選擇公開遊戲 ID、自訂暱稱或匿名</li>
-        <li>投稿通過核對後才會加入正式攻略</li>
-      </ul>
-    </section>
-  </div>
-
-  <div class="tour" id="tour" hidden aria-live="polite">
-    <div class="tour__shade"></div>
+  <div class="tour" id="tour" hidden>
+    <div class="tour__backdrop"></div>
     <section class="tour__card" role="dialog" aria-modal="true" aria-labelledby="tour-title">
-      <div class="tour__progress" id="tour-progress">1 / 5</div>
-      <p class="eyebrow" id="tour-eyebrow">新旅人的手札導覽</p>
-      <h2 id="tour-title">歡迎來到愛爾琳手札</h2>
-      <p id="tour-copy">先花一點時間看看這本手札怎麼使用。</p>
+      <div class="tour__step" id="tour-step">1 / 4</div>
+      <p class="eyebrow">新旅人的手札導覽</p>
+      <h2 id="tour-title">用側邊欄切換章節</h2>
+      <p id="tour-copy">桌面版側邊欄會常駐；手機版則從左上角選單開啟，不必再一路往下捲。</p>
       <div class="tour__actions">
-        <button type="button" class="text-button" id="tour-skip">跳過導覽</button>
+        <button class="text-button" id="tour-skip" type="button">跳過</button>
         <div>
-          <button type="button" class="secondary-button" id="tour-prev">上一步</button>
-          <button type="button" class="primary-button" id="tour-next">下一步</button>
+          <button class="secondary-button" id="tour-prev" type="button">上一步</button>
+          <button class="primary-button" id="tour-next" type="button">下一步</button>
         </div>
       </div>
     </section>
   </div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-
+  <div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
   <script src="app.js" defer></script>
-
-  <script>
-    (() => {
-      const renameConfirmedLabels = () => {
-        document.querySelectorAll('.status-badge--confirmed').forEach((badge) => {
-          if (badge.textContent.trim() !== '台版已確認') badge.textContent = '台版已確認';
-        });
-        const tourCopy = document.querySelector('#tour-copy');
-        if (tourCopy?.textContent.includes('已台版確認')) {
-          tourCopy.textContent = tourCopy.textContent.replaceAll('已台版確認', '台版已確認');
-        }
-      };
-      window.addEventListener('DOMContentLoaded', () => {
-        renameConfirmedLabels();
-        new MutationObserver(renameConfirmedLabels).observe(document.body, { childList: true, subtree: true, characterData: true });
-      });
-    })();
-  </script>
 </body>
 </html>

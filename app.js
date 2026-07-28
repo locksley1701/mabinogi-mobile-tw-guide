@@ -1,39 +1,60 @@
 const DATA_FILES = {
   site: 'data/site.json',
-  lifeSkills: 'data/life-skills.json',
+  lifeCategories: 'data/life-skill-categories.json',
+  lifeGuides: 'data/life-skills.json',
   cooking: 'data/cooking.json',
-  afkTips: 'data/afk-tips.json',
-  names: 'data/names.json',
+  afk: 'data/afk-tips.json',
+  aliases: 'data/names.json',
+  professions: 'data/professions.json',
+  professionSkills: 'data/profession-skills.json',
   changelog: 'data/changelog.json'
 };
 
 const state = {
   site: null,
-  lifeSkills: [],
+  lifeCategories: [],
+  lifeGuides: [],
   cooking: [],
-  afkTips: [],
-  names: [],
+  afk: [],
+  aliases: [],
+  professions: [],
+  professionSkills: {},
   changelog: [],
-  query: '',
-  category: 'all',
-  status: 'all',
-  visibleLimit: 12
+  selectedLifeGroup: '全部',
+  selectedLifeSkill: 'daily-gathering',
+  selectedCookingLevel: '全部',
+  searchQuery: '',
+  searchCategory: '全部'
+};
+
+const pageMeta = {
+  home: ['手札總覽', '總覽'],
+  search: ['快速查詢', '查詢'],
+  life: ['生活技能', '生活技能'],
+  cooking: ['料理手札', '料理'],
+  afk: ['掛機技巧', '掛機技巧'],
+  professions: ['職業總覽', '職業'],
+  updates: ['手札增補紀錄', '更新紀錄'],
+  contribute: ['愛爾琳情報櫃台', '提供情報']
 };
 
 const statusClass = {
-  'tw-confirmed': 'status-badge--confirmed',
-  'user-tested': 'status-badge--tested',
-  'tw-testing': 'status-badge--testing',
-  'kr-reference': 'status-badge--kr',
-  'unconfirmed': 'status-badge--unknown'
+  'tw-confirmed': 'status-confirmed',
+  'user-tested': 'status-tested',
+  'tw-testing': 'status-testing',
+  'kr-reference': 'status-reference',
+  'unconfirmed': 'status-unknown'
 };
 
-const categoryLabel = {
-  'life-skill': '生活技能',
+const searchCategoryLabels = {
+  life: '生活技能',
   cooking: '料理',
   afk: '掛機技巧',
-  name: '台版名稱'
+  profession: '職業',
+  combatSkill: '職業技能'
 };
+
+const workspace = document.querySelector('#workspace');
 
 function escapeHtml(value = '') {
   return String(value)
@@ -48,158 +69,377 @@ function normalize(value = '') {
   return String(value).toLocaleLowerCase('zh-Hant-TW').replace(/\s+/g, ' ').trim();
 }
 
-function highlight(text, query) {
-  const safe = escapeHtml(text);
-  if (!query) return safe;
-  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return safe.replace(new RegExp(`(${escaped})`, 'ig'), '<mark>$1</mark>');
-}
-
 function badge(item) {
-  return `<span class="status-badge ${statusClass[item.status] || statusClass.unconfirmed}">${escapeHtml(item.statusLabel || '待確認')}</span>`;
+  const label = item.statusLabel || ({
+    'tw-confirmed': '台版已確認',
+    'user-tested': '法那提歐實測',
+    'tw-testing': '台版待實測',
+    'kr-reference': '韓國版參考',
+    'unconfirmed': '待確認'
+  }[item.status] || '待確認');
+  return `<span class="status-badge ${statusClass[item.status] || statusClass.unconfirmed}">${escapeHtml(label)}</span>`;
 }
 
-function cardSearchText(item) {
-  return normalize(Object.values(item).join(' '));
+function attribution(item, fallback = '') {
+  const name = item.contributor || (item.source?.includes('法那提歐') ? '法那提歐' : '');
+  if (!name && !fallback) return '';
+  return `<span class="attribution">✦ 情報提供：${escapeHtml(name || fallback)}</span>`;
 }
 
-function allSearchItems() {
-  const life = state.lifeSkills.map(item => ({
-    ...item,
-    title: `${item.skill}｜Lv.${item.level}`,
-    summary: item.recommendation,
-    meta: [
-      ['地點／方式', item.location],
-      ['掛機適性', item.afk],
-      ['工具／材料', item.requirements]
-    ]
+function pageHead(eyebrow, title, copy, meta = '') {
+  return `
+    <header class="page-head">
+      <div class="page-head__copy">
+        <p class="eyebrow">${escapeHtml(eyebrow)}</p>
+        <h1>${escapeHtml(title)}</h1>
+        ${copy ? `<p>${escapeHtml(copy)}</p>` : ''}
+      </div>
+      ${meta ? `<div class="page-meta">${escapeHtml(meta)}</div>` : ''}
+    </header>
+  `;
+}
+
+function setTopbar(route, customTitle = '') {
+  const [title, eyebrow] = route.startsWith('profession/')
+    ? [customTitle || '職業手札', '職業技能']
+    : (pageMeta[route] || pageMeta.home);
+  document.querySelector('#page-title').textContent = title;
+  document.querySelector('#page-eyebrow').textContent = eyebrow;
+  document.title = `${title}｜法那提歐的愛爾琳手札`;
+}
+
+function setActiveNav(route) {
+  document.querySelectorAll('.nav-link').forEach(link => {
+    const linkRoute = link.dataset.route;
+    const active = route === linkRoute || (route.startsWith('profession/') && route === linkRoute);
+    link.classList.toggle('is-active', active);
+    if (active) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
+}
+
+function getRoute() {
+  return location.hash.replace(/^#\/?/, '') || 'home';
+}
+
+function closeDrawer() {
+  document.body.classList.remove('drawer-open');
+  document.querySelector('#drawer-backdrop').hidden = true;
+  document.querySelector('#menu-button').setAttribute('aria-expanded', 'false');
+}
+
+function navigate(route) {
+  if (location.hash === `#/${route}`) renderRoute();
+  else location.hash = `#/${route}`;
+  closeDrawer();
+}
+
+function renderHome() {
+  const documentedProfessions = state.professions.filter(item => item.documented).length;
+  const testedTips = state.afk.filter(item => item.status === 'user-tested').length;
+  const recent = state.changelog.slice(0, 3);
+  workspace.innerHTML = `
+    <section class="hero-panel">
+      <p class="eyebrow">手札編纂者・法那提歐</p>
+      <h1>從營火旁的生活技藝，<br>到戰場上的劍與魔法。</h1>
+      <p class="hero-panel__lead">這裡不再是一條無止盡的長卷。請從側邊欄選擇章節，直接前往生活技能、料理、掛機技巧或職業資料。</p>
+      <div class="hero-actions">
+        <button class="primary-button" type="button" data-nav="search">開始查詢</button>
+        <button class="secondary-button" type="button" data-nav="professions">查看職業</button>
+      </div>
+    </section>
+
+    <section class="metric-grid" aria-label="收錄概況">
+      <article class="metric"><strong>${state.lifeCategories.length}</strong><span>台版生活技能分類</span></article>
+      <article class="metric"><strong>${state.cooking.length}</strong><span>料理候選</span></article>
+      <article class="metric"><strong>${testedTips}</strong><span>法那提歐實測技巧</span></article>
+      <article class="metric"><strong>${documentedProfessions}/${state.professions.length}</strong><span>已編纂職業</span></article>
+    </section>
+
+    <section class="section-block">
+      <div class="section-heading">
+        <h2 class="section-title">選擇要翻開的章節</h2>
+        <span class="section-note">每次只顯示一個主題</span>
+      </div>
+      <div class="portal-grid">
+        <a class="portal-card" href="#/life"><span class="portal-card__icon">⚒</span><strong>生活技能</strong><small>20 個台版正式分類與目前攻略</small></a>
+        <a class="portal-card" href="#/cooking"><span class="portal-card__icon">♨</span><strong>料理手札</strong><small>依解鎖等級切換候選料理</small></a>
+        <a class="portal-card" href="#/afk"><span class="portal-card__icon">☘</span><strong>掛機技巧</strong><small>實測與待確認技巧分開呈現</small></a>
+        <a class="portal-card" href="#/professions"><span class="portal-card__icon">⚔</span><strong>職業總覽</strong><small>台版 18 個職業與技能手札</small></a>
+      </div>
+    </section>
+
+    <section class="section-block">
+      <div class="section-heading"><h2 class="section-title">最近增補</h2><a class="section-note" href="#/updates">查看全部</a></div>
+      ${recent.map(item => `
+        <article class="update-strip">
+          <time datetime="${escapeHtml(item.date)}">${escapeHtml(item.date)}</time>
+          <p><strong>${escapeHtml(item.item)}</strong>・${escapeHtml(item.change)}</p>
+          <a href="#/updates">詳情</a>
+        </article>
+      `).join('')}
+    </section>
+  `;
+  workspace.querySelectorAll('[data-nav]').forEach(button => button.addEventListener('click', () => navigate(button.dataset.nav)));
+}
+
+function buildSearchItems() {
+  const life = state.lifeGuides.map(item => ({
+    type: 'life', title: `${item.skill}｜Lv.${item.level}`, description: item.recommendation, route: 'life',
+    keywords: `${item.skill} ${item.level} ${item.location} ${item.requirements} ${item.note || ''}`, status: item.status, statusLabel: item.statusLabel
   }));
   const cooking = state.cooking.map(item => ({
-    ...item,
-    title: item.dish,
-    summary: `${item.level} 推薦候選；${item.use}`,
-    meta: [
-      ['解鎖', item.unlock],
-      ['材料', item.materials],
-      ['練等 CP', item.cp]
-    ]
+    type: 'cooking', title: item.dish, description: `${item.unlock}・${item.use}`, route: 'cooking',
+    keywords: `${item.dish} ${item.level} ${item.materials} ${item.source} ${item.note || ''}`, status: item.status, statusLabel: item.statusLabel
   }));
-  const afk = state.afkTips.map(item => ({
-    ...item,
-    title: `${item.target}任務掛機`,
-    summary: item.method,
-    meta: [
-      ['技能', item.skill],
-      ['停止條件', item.stop],
-      ['效果', item.effect]
-    ]
+  const afk = state.afk.map(item => ({
+    type: 'afk', title: `${item.target}任務`, description: `${item.skill}・${item.effect}`, route: 'afk',
+    keywords: `${item.target} ${item.skill} ${item.method} ${item.stop}`, status: item.status, statusLabel: item.statusLabel
   }));
-  const names = state.names.map(item => ({
-    ...item,
-    title: `${item.other} → ${item.tw}`,
-    summary: item.evidence,
-    meta: [
-      ['分類', item.type],
-      ['其他版本／舊稱', item.other],
-      ['台版正式名稱', item.tw]
-    ]
+  const professions = state.professions.map(item => ({
+    type: 'profession', title: item.name,
+    description: item.documented ? '已收錄職業介紹與技能' : '台版職業名稱已確認，詳細資料待收錄',
+    route: item.documented ? `profession/${item.id}` : 'professions', keywords: item.name,
+    status: item.documented ? 'tw-confirmed' : 'tw-testing', statusLabel: item.documented ? '台版已確認' : '資料待收錄'
   }));
-  return [...life, ...cooking, ...afk, ...names];
+  const combatSkills = Object.values(state.professionSkills).flatMap(profession =>
+    [...profession.active.map(skill => ({...skill, kind: '主動'})), ...profession.passive.map(skill => ({...skill, kind: '被動'}))]
+      .map(skill => ({
+        type: 'combatSkill', title: skill.name, description: `${profession.name}・${skill.kind}${skill.unlock ? `・${skill.unlock}` : ''}`,
+        route: `profession/${profession.id}`, keywords: `${profession.name} ${skill.name} ${skill.kind} ${skill.unlock || ''}`,
+        status: 'tw-confirmed', statusLabel: '台版已確認'
+      }))
+  );
+  const aliases = state.aliases.flatMap(alias => {
+    const target = [...life, ...cooking, ...afk].find(item => normalize(item.keywords).includes(normalize(alias.tw)));
+    return target ? [{...target, keywords: `${target.keywords} ${alias.other} ${alias.tw}`}] : [];
+  });
+  const combined = [...life, ...cooking, ...afk, ...professions, ...combatSkills, ...aliases];
+  const seen = new Set();
+  return combined.filter(item => {
+    const key = `${item.type}:${item.title}:${item.route}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
-function renderResults() {
-  const query = normalize(state.query);
-  const items = allSearchItems().filter(item => {
-    const matchQuery = !query || cardSearchText(item).includes(query);
-    const matchCategory = state.category === 'all' || item.category === state.category;
-    const matchStatus = state.status === 'all' || item.status === state.status;
-    return matchQuery && matchCategory && matchStatus;
+function renderSearch() {
+  workspace.innerHTML = `
+    ${pageHead('全站索引', '快速查詢', '搜尋生活技能、料理、掛機技巧、職業或職業技能。舊稱只用來協助搜尋，不會另外佔一整頁。', `資料更新：${state.site.updatedAt}`)}
+    <section class="search-panel">
+      <label class="search-input" for="site-search"><span aria-hidden="true">⌕</span><input id="site-search" type="search" autocomplete="off" placeholder="例如：日常採集、旅行者點心、戰士、疾風斬……" value="${escapeHtml(state.searchQuery)}"></label>
+      <select id="search-category" aria-label="搜尋分類">
+        ${['全部','life','cooking','afk','profession','combatSkill'].map(value => `<option value="${value}" ${state.searchCategory === value ? 'selected' : ''}>${value === '全部' ? '全部分類' : searchCategoryLabels[value]}</option>`).join('')}
+      </select>
+    </section>
+    <div class="search-results" id="search-results"></div>
+  `;
+  const input = workspace.querySelector('#site-search');
+  const select = workspace.querySelector('#search-category');
+  const rerender = () => { state.searchQuery = input.value; state.searchCategory = select.value; renderSearchResults(); };
+  input.addEventListener('input', rerender);
+  select.addEventListener('change', rerender);
+  renderSearchResults();
+  requestAnimationFrame(() => input.focus({preventScroll: true}));
+}
+
+function renderSearchResults() {
+  const container = workspace.querySelector('#search-results');
+  if (!container) return;
+  const query = normalize(state.searchQuery);
+  const items = buildSearchItems().filter(item => {
+    const categoryMatch = state.searchCategory === '全部' || item.type === state.searchCategory;
+    const queryMatch = !query || normalize(`${item.title} ${item.description} ${item.keywords}`).includes(query);
+    return categoryMatch && queryMatch;
   });
-
-  const container = document.querySelector('#search-results');
-  const empty = document.querySelector('#empty-state');
-  const count = document.querySelector('#result-count');
-  const loadMore = document.querySelector('#load-more-button');
-  const visibleItems = items.slice(0, state.visibleLimit);
-  count.textContent = `共 ${items.length} 筆${items.length > visibleItems.length ? `・已顯示 ${visibleItems.length} 筆` : ''}`;
-  empty.hidden = items.length > 0;
-  loadMore.hidden = items.length <= visibleItems.length;
-
-  container.innerHTML = visibleItems.map(item => `
-    <article class="info-card">
-      <div class="info-card__top">
-        <div>
-          <span class="info-card__type">${categoryLabel[item.category]}</span>
-          <h3>${highlight(item.title, query)}</h3>
-        </div>
-        ${badge(item)}
+  if (!items.length) {
+    container.innerHTML = `<div class="empty-state"><strong>這頁手札還沒有記載</strong><p>換個關鍵字，或把新情報送往情報櫃台。</p></div>`;
+    return;
+  }
+  const groups = Object.entries(searchCategoryLabels)
+    .map(([type, label]) => [type, label, items.filter(item => item.type === type)])
+    .filter(([, , group]) => group.length);
+  container.innerHTML = groups.map(([, label, group]) => `
+    <section class="result-group">
+      <h2>${label} <small>(${group.length})</small></h2>
+      <div class="result-list">
+        ${group.slice(0, 18).map(item => `
+          <article class="result-row"><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.description)}</p><a href="#/${escapeHtml(item.route)}">開啟章節</a></article>
+        `).join('')}
       </div>
-      <p>${highlight(item.summary, query)}</p>
-      <dl>
-        ${item.meta.map(([key, value]) => `<dt>${escapeHtml(key)}</dt><dd>${highlight(value, query)}</dd>`).join('')}
-        ${item.note ? `<dt>備註</dt><dd>${highlight(item.note, query)}</dd>` : ''}
-      </dl>
-    </article>
+    </section>
   `).join('');
 }
 
-function renderMetrics() {
-  document.querySelector('#metric-life').textContent = state.lifeSkills.length;
-  document.querySelector('#metric-cooking').textContent = state.cooking.length;
-  document.querySelector('#metric-tested').textContent = state.afkTips.filter(item => item.status === 'user-tested').length;
-  document.querySelector('#metric-names').textContent = state.names.length;
+function renderLife() {
+  const groups = ['全部', '採集', '製作', '其他'];
+  const visible = state.lifeCategories.filter(item => state.selectedLifeGroup === '全部' || item.group === state.selectedLifeGroup);
+  if (!visible.some(item => item.id === state.selectedLifeSkill)) state.selectedLifeSkill = visible[0]?.id || 'daily-gathering';
+  workspace.innerHTML = `
+    ${pageHead('台版正式分類', '生活技能', '依遊戲內「生活技能」頁面建立 20 個正式分類。選一項即可查看目前已編纂的練法，不再把每個等級區間全部攤在首頁。', '資料提供：法那提歐')}
+    <section class="master-detail">
+      <div class="panel">
+        <div class="filter-chips" role="group" aria-label="生活技能分類">
+          ${groups.map(group => `<button class="chip ${state.selectedLifeGroup === group ? 'is-active' : ''}" type="button" data-life-group="${group}">${group}</button>`).join('')}
+        </div>
+        <div class="skill-grid">
+          ${visible.map(item => {
+            const count = state.lifeGuides.filter(guide => guide.skillId === item.id).length;
+            return `<button class="skill-tile ${state.selectedLifeSkill === item.id ? 'is-active' : ''}" type="button" data-life-skill="${item.id}">
+              <span class="skill-tile__icon" aria-hidden="true">${escapeHtml(item.icon)}</span>
+              <span><strong>${escapeHtml(item.name)}</strong><small>${count ? `${count} 筆攻略` : '待編纂'}</small></span>
+            </button>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="detail-panel" id="life-detail"></div>
+    </section>
+  `;
+  workspace.querySelectorAll('[data-life-group]').forEach(button => button.addEventListener('click', () => { state.selectedLifeGroup = button.dataset.lifeGroup; renderLife(); }));
+  workspace.querySelectorAll('[data-life-skill]').forEach(button => button.addEventListener('click', () => {
+    state.selectedLifeSkill = button.dataset.lifeSkill;
+    renderLifeDetail();
+    workspace.querySelectorAll('.skill-tile').forEach(tile => tile.classList.toggle('is-active', tile.dataset.lifeSkill === state.selectedLifeSkill));
+    if (matchMedia('(max-width: 959px)').matches) workspace.querySelector('#life-detail').scrollIntoView({behavior: 'smooth', block: 'start'});
+  }));
+  renderLifeDetail();
 }
 
-function renderAfk() {
-  document.querySelector('#afk-list').innerHTML = state.afkTips
-    .filter(item => item.id !== 'four-leaf-clover')
-    .map(item => `
-      <article class="compact-item">
-        <h3>${escapeHtml(item.target)}｜${escapeHtml(item.skill)}</h3>
-        <p>${escapeHtml(item.method)}</p>
-        ${badge(item)}
-      </article>
-    `).join('');
+function renderLifeDetail() {
+  const container = workspace.querySelector('#life-detail');
+  if (!container) return;
+  const category = state.lifeCategories.find(item => item.id === state.selectedLifeSkill) || state.lifeCategories[0];
+  const guides = state.lifeGuides.filter(item => item.skillId === category.id);
+  container.innerHTML = `
+    <p class="detail-kicker">${escapeHtml(category.group)}類生活技能</p>
+    <h2 class="detail-title">${escapeHtml(category.name)}</h2>
+    <p class="detail-intro">${escapeHtml(category.description)}</p>
+    ${attribution({contributor: '法那提歐'})}
+    <div class="guide-stack">
+      ${guides.length ? guides.map(item => `
+        <article class="guide-entry">
+          <div class="guide-entry__head"><h3>Lv.${escapeHtml(item.level)}</h3>${badge(item)}</div>
+          <p>${escapeHtml(item.recommendation)}</p>
+          <dl>
+            <dt>地點／方式</dt><dd>${escapeHtml(item.location)}</dd>
+            <dt>掛機適性</dt><dd>${escapeHtml(item.afk)}</dd>
+            <dt>工具／材料</dt><dd>${escapeHtml(item.requirements)}</dd>
+            ${item.note ? `<dt>備註</dt><dd>${escapeHtml(item.note)}</dd>` : ''}
+          </dl>
+          ${attribution(item)}
+        </article>
+      `).join('') : `<div class="empty-state"><strong>這個分類尚未編纂攻略</strong><p>正式分類已由台版截圖確認，練等路線仍等待實測資料。</p></div>`}
+    </div>
+  `;
 }
 
 function renderCooking() {
-  document.querySelector('#cooking-list').innerHTML = state.cooking.map(item => `
-    <article class="table-card">
-      <span class="table-card__level">${escapeHtml(item.level)}</span>
-      <div><h3>${escapeHtml(item.dish)}</h3><small>${escapeHtml(item.unlock)}</small></div>
-      <p>${escapeHtml(item.materials)}<br><small>${escapeHtml(item.source)}</small></p>
-      <span class="table-card__cp">${escapeHtml(item.cp)}</span>
-      ${badge(item)}
-    </article>
-  `).join('');
+  const levels = ['全部', ...new Set(state.cooking.map(item => item.levelKey))];
+  const visible = state.selectedCookingLevel === '全部' ? state.cooking : state.cooking.filter(item => item.levelKey === state.selectedCookingLevel);
+  workspace.innerHTML = `
+    ${pageHead('料理 CP 候選', '料理手札', '依解鎖等級切換料理候選。名稱與解鎖可已確認，但效率、成本與經驗值仍會分開標示。', '料理名稱資料：法那提歐')}
+    <section class="cooking-layout">
+      <nav class="level-nav" aria-label="料理等級">
+        ${levels.map(level => `<button class="${state.selectedCookingLevel === level ? 'is-active' : ''}" type="button" data-cooking-level="${level}"><span>${level}</span><small>${level === '全部' ? state.cooking.length : state.cooking.filter(item => item.levelKey === level).length} 筆</small></button>`).join('')}
+      </nav>
+      <div class="cooking-grid">
+        ${visible.map(item => `
+          <article class="cooking-card">
+            <div class="cooking-card__head"><h2>${escapeHtml(item.dish)}</h2>${badge(item)}</div>
+            <p>${escapeHtml(item.use)}</p>
+            <dl>
+              <dt>解鎖</dt><dd>${escapeHtml(item.unlock)}</dd><dt>材料</dt><dd>${escapeHtml(item.materials)}</dd>
+              <dt>取得</dt><dd>${escapeHtml(item.source)}</dd><dt>練等 CP</dt><dd>${escapeHtml(item.cp)}</dd>
+              <dt>備註</dt><dd>${escapeHtml(item.note)}</dd>
+            </dl>
+            ${attribution(item)}
+          </article>
+        `).join('')}
+      </div>
+    </section>
+  `;
+  workspace.querySelectorAll('[data-cooking-level]').forEach(button => button.addEventListener('click', () => { state.selectedCookingLevel = button.dataset.cookingLevel; renderCooking(); }));
 }
 
-function renderNames() {
-  document.querySelector('#name-list').innerHTML = state.names.map(item => `
-    <article class="name-card">
-      <span class="name-card__old">${escapeHtml(item.other)}</span>
-      <span class="name-card__arrow" aria-hidden="true">→</span>
-      <span class="name-card__tw">${escapeHtml(item.tw)}</span>
-      <small>${escapeHtml(item.type)}・${escapeHtml(item.evidence)}</small>
-    </article>
-  `).join('');
+function renderAfk() {
+  workspace.innerHTML = `
+    ${pageHead('玩家實測與待確認', '掛機技巧', '已實測的技巧與仍待確認的假說分開呈現，避免把推測當成台版結論。', '實測者：法那提歐')}
+    <section class="afk-grid">
+      ${state.afk.map(item => `
+        <article class="afk-card">
+          <span class="afk-card__mark" aria-hidden="true">${item.status === 'unconfirmed' ? '?' : '☘'}</span>
+          <h2>${escapeHtml(item.target)}</h2>${badge(item)}<p>${escapeHtml(item.method)}</p>
+          <dl><dt>適用技能</dt><dd>${escapeHtml(item.skill)}</dd><dt>停止條件</dt><dd>${escapeHtml(item.stop)}</dd><dt>效果</dt><dd>${escapeHtml(item.effect)}</dd><dt>備註</dt><dd>${escapeHtml(item.note)}</dd></dl>
+          ${attribution(item)}
+        </article>
+      `).join('')}
+    </section>
+  `;
 }
 
-function renderChangelog() {
-  document.querySelector('#changelog-list').innerHTML = state.changelog.map(item => `
-    <li>
-      <time datetime="${escapeHtml(item.date)}">${escapeHtml(item.date)}</time>
-      <h3>${escapeHtml(item.item)}</h3>
-      <p>${escapeHtml(item.change)} <small>依據：${escapeHtml(item.basis)}</small></p>
-    </li>
-  `).join('');
+function renderProfessions() {
+  workspace.innerHTML = `
+    ${pageHead('台版職業分類', '職業總覽', '依台版遊戲內「職業」頁面建立 18 個正式職業。已取得完整截圖的職業可直接開啟技能手札。', '資料提供：法那提歐')}
+    <section class="profession-grid">
+      ${state.professions.map(item => `
+        <a class="profession-card ${item.documented ? 'is-documented' : ''}" href="${item.documented ? `#/profession/${item.id}` : '#/professions'}" ${item.documented ? '' : 'aria-disabled="true"'}>
+          <span class="profession-card__icon" aria-hidden="true">${escapeHtml(item.icon)}</span><strong>${escapeHtml(item.name)}</strong><small>${item.documented ? '已收錄職業技能' : '詳細資料待收錄'}</small>
+        </a>
+      `).join('')}
+    </section>
+  `;
+  workspace.querySelectorAll('[aria-disabled="true"]').forEach(link => link.addEventListener('click', event => { event.preventDefault(); showToast('這個職業已確認台版名稱，技能資料尚待收錄。'); }));
 }
 
-function renderSiteMeta() {
-  if (!state.site) return;
-  document.querySelector('#data-updated-at').textContent = `資料更新：${state.site.updatedAt}`;
-  const sourceLink = document.querySelector('#source-sheet-link');
-  sourceLink.href = state.site.sourceSheetUrl;
+function renderProfession(id) {
+  const profession = state.professionSkills[id];
+  if (!profession) { navigate('professions'); return; }
+  const active = profession.active;
+  const passive = profession.passive;
+  setTopbar(`profession/${id}`, profession.name);
+  workspace.innerHTML = `
+    <section class="profession-hero">
+      <div><p class="eyebrow">台版職業手札</p><h1>${escapeHtml(profession.name)}</h1><p>${escapeHtml(profession.description)}</p>${attribution({contributor:'法那提歐'})}</div>
+      <aside class="profession-summary"><span>偏好裝備</span><strong>${escapeHtml(profession.preferredArmor)}</strong><span>技能收錄</span><strong>${active.length + passive.length} 個</strong><span>資料狀態</span>${badge({status:'tw-confirmed',statusLabel:'台版已確認'})}</aside>
+    </section>
+    <section class="skill-columns">${renderCombatSkillColumn('主動技能', active, '主動')}${renderCombatSkillColumn('被動技能', passive, '被動')}</section>
+  `;
+}
+
+function renderCombatSkillColumn(title, skills, type) {
+  return `<article class="skill-column"><h2>${escapeHtml(title)}</h2><div class="combat-skill-list">
+    ${skills.map((skill, index) => `<div class="combat-skill ${skill.unlock ? 'is-locked' : ''}"><span class="combat-skill__icon" aria-hidden="true">${String(index + 1).padStart(2,'0')}</span><span><strong>${escapeHtml(skill.name)}</strong>${skill.unlock ? `<small>${escapeHtml(skill.unlock)}</small>` : ''}</span><span class="combat-skill__type">${escapeHtml(type)}</span></div>`).join('')}
+  </div></article>`;
+}
+
+function renderUpdates() {
+  workspace.innerHTML = `${pageHead('手札增補紀錄', '最近更新', '每次資料更正、介面重整與新章節收錄都留下紀錄。', `最後更新：${state.site.updatedAt}`)}
+    <section class="timeline">${state.changelog.map(item => `<article class="timeline-entry"><time datetime="${escapeHtml(item.date)}">${escapeHtml(item.date)}</time><div><h2>${escapeHtml(item.item)}</h2><p>${escapeHtml(item.change)} <small>依據：${escapeHtml(item.basis)}</small></p></div></article>`).join('')}</section>`;
+}
+
+function renderContribute() {
+  workspace.innerHTML = `<section class="contribute-panel"><p class="eyebrow">愛爾琳情報櫃台</p><h1>旅人，你發現新的情報嗎？</h1>
+    <p>台版名稱、職業技能、採集位置、料理經驗與掛機技巧都歡迎提供。投稿不會直接公開，會先由法那提歐核對，再依投稿者選擇顯示遊戲 ID、自訂暱稱或匿名。</p>
+    <ul class="rule-list"><li>建議附上台版實機截圖與可重現步驟。</li><li>原始截圖、Google 帳號與聯絡資訊不會放進公開 repository。</li><li>正式收錄後，資料頁會標示情報提供者 ID。</li></ul>
+    <div class="hero-actions"><button class="primary-button" id="submission-button" type="button">提供愛爾琳情報</button><button class="secondary-button" type="button" data-nav="updates">查看增補紀錄</button></div></section>`;
+  workspace.querySelector('#submission-button').addEventListener('click', () => {
+    const url = state.site.submissionFormUrl?.trim();
+    if (url) window.open(url, '_blank', 'noopener,noreferrer'); else showToast('投稿表單尚在架設中。');
+  });
+  workspace.querySelector('[data-nav="updates"]').addEventListener('click', () => navigate('updates'));
+}
+
+function renderRoute() {
+  const route = getRoute();
+  setActiveNav(route);
+  if (route.startsWith('profession/')) renderProfession(route.split('/')[1]);
+  else {
+    setTopbar(route);
+    ({home: renderHome, search: renderSearch, life: renderLife, cooking: renderCooking, afk: renderAfk, professions: renderProfessions, updates: renderUpdates, contribute: renderContribute}[route] || renderHome)();
+  }
+  workspace.focus({preventScroll: true});
+  window.scrollTo({top: 0, behavior: 'auto'});
 }
 
 function showToast(message) {
@@ -210,197 +450,74 @@ function showToast(message) {
   showToast.timer = setTimeout(() => { toast.hidden = true; }, 2600);
 }
 
-function openModal(id) {
-  const modal = document.querySelector(id);
-  modal.hidden = false;
-  modal.querySelector('button, a')?.focus();
-  document.body.style.overflow = 'hidden';
+function applySavedTheme() {
+  const saved = localStorage.getItem('fanatio-theme');
+  document.documentElement.dataset.theme = saved === 'light' || saved === 'dark' ? saved : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 }
 
-function closeModals() {
-  document.querySelectorAll('.modal').forEach(modal => { modal.hidden = true; });
-  document.body.style.overflow = '';
+function toggleTheme() {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  localStorage.setItem('fanatio-theme', next);
 }
 
 const tourSteps = [
-  {
-    target: '[data-tour="brand"]',
-    title: '歡迎來到愛爾琳手札',
-    copy: '這裡以台版實機資料為優先，所有未確認內容都會留下清楚標記。'
-  },
-  {
-    target: '[data-tour="search"]',
-    title: '直接搜尋需要的情報',
-    copy: '輸入料理、技能、藥草或工具名稱，就能從所有已收錄資料裡快速查找。'
-  },
-  {
-    target: '[data-tour="filters"]',
-    title: '用分類與狀態縮小範圍',
-    copy: '可以只看生活技能、料理、掛機技巧，或只看已台版確認的內容。'
-  },
-  {
-    target: '[data-tour="cards"]',
-    title: '每張卡片都保留資料依據',
-    copy: '卡片會列出推薦方式、材料、掛機適性與資料狀態，避免把候選資訊誤當定論。'
-  },
-  {
-    target: '[data-tour="contribute"]',
-    title: '也歡迎留下你的旅途發現',
-    copy: '情報經法那提歐核對後才會收錄，並可選擇顯示遊戲 ID、自訂暱稱或匿名。'
-  }
+  ['用側邊欄切換章節', '桌面版側邊欄會常駐；平板版收成圖示列；手機版則從左上角選單開啟。'],
+  ['首頁只負責帶路', '總覽頁只保留常用入口與最近增補，不再把所有攻略從上到下堆在一起。'],
+  ['每個章節有自己的工具', '生活技能使用分類與明細，料理使用等級切換，職業則有獨立技能頁。'],
+  ['資料來源會留下名字', '由法那提歐提供或實測的資料會直接署名；其他玩家投稿通過核對後也能顯示 ID。']
 ];
 let tourIndex = 0;
 
-function clearTourHighlight() {
-  document.querySelectorAll('.tour-highlight').forEach(element => element.classList.remove('tour-highlight'));
-}
-
-function renderTourStep() {
-  clearTourHighlight();
-  const step = tourSteps[tourIndex];
-  const target = document.querySelector(step.target);
-  if (target) {
-    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    setTimeout(() => target.classList.add('tour-highlight'), 260);
-  }
-  document.querySelector('#tour-progress').textContent = `${tourIndex + 1} / ${tourSteps.length}`;
-  document.querySelector('#tour-title').textContent = step.title;
-  document.querySelector('#tour-copy').textContent = step.copy;
+function renderTour() {
+  document.querySelector('#tour-step').textContent = `${tourIndex + 1} / ${tourSteps.length}`;
+  document.querySelector('#tour-title').textContent = tourSteps[tourIndex][0];
+  document.querySelector('#tour-copy').textContent = tourSteps[tourIndex][1];
   document.querySelector('#tour-prev').hidden = tourIndex === 0;
-  document.querySelector('#tour-next').textContent = tourIndex === tourSteps.length - 1 ? '完成並開始探索' : '下一步';
+  document.querySelector('#tour-next').textContent = tourIndex === tourSteps.length - 1 ? '開始探索' : '下一步';
 }
-
-function startTour() {
-  closeModals();
-  tourIndex = 0;
-  const tour = document.querySelector('#tour');
-  tour.hidden = false;
-  document.body.style.overflow = 'hidden';
-  renderTourStep();
-}
-
-function endTour() {
-  clearTourHighlight();
-  document.querySelector('#tour').hidden = true;
-  document.body.style.overflow = '';
-  localStorage.setItem('fanatio-tour-v1', 'done');
-}
+function openTour() { tourIndex = 0; document.querySelector('#tour').hidden = false; document.body.style.overflow = 'hidden'; renderTour(); }
+function closeTour() { document.querySelector('#tour').hidden = true; document.body.style.overflow = ''; localStorage.setItem('fanatio-tour-v2', 'done'); }
 
 function setupInteractions() {
-  const search = document.querySelector('#global-search');
-  const category = document.querySelector('#category-filter');
-  const status = document.querySelector('#status-filter');
-
-  search.addEventListener('input', event => {
-    state.query = event.target.value;
-    state.visibleLimit = 12;
-    renderResults();
+  window.addEventListener('hashchange', renderRoute);
+  document.querySelector('#menu-button').addEventListener('click', () => {
+    const opening = !document.body.classList.contains('drawer-open');
+    document.body.classList.toggle('drawer-open', opening);
+    document.querySelector('#drawer-backdrop').hidden = !opening;
+    document.querySelector('#menu-button').setAttribute('aria-expanded', String(opening));
   });
-  category.addEventListener('change', event => {
-    state.category = event.target.value;
-    state.visibleLimit = 12;
-    renderResults();
-  });
-  status.addEventListener('change', event => {
-    state.status = event.target.value;
-    state.visibleLimit = 12;
-    renderResults();
-  });
-  document.querySelectorAll('[data-status-pick]').forEach(button => {
-    button.addEventListener('click', () => {
-      const picked = button.dataset.statusPick;
-      state.status = state.status === picked ? 'all' : picked;
-      status.value = state.status;
-      state.visibleLimit = 12;
-      renderResults();
-      document.querySelector('#results-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
-
-  document.querySelector('#load-more-button').addEventListener('click', () => {
-    state.visibleLimit += 12;
-    renderResults();
-  });
-
-  document.querySelector('#theme-toggle').addEventListener('click', () => {
-    const current = document.documentElement.dataset.theme;
-    const next = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = next;
-    localStorage.setItem('fanatio-theme', next);
-  });
-
-  document.querySelector('#help-button').addEventListener('click', () => openModal('#guide-modal'));
-  document.querySelector('#contributor-guide-button').addEventListener('click', () => openModal('#guide-modal'));
-  document.querySelector('#footer-tour-button').addEventListener('click', startTour);
-  document.querySelector('#replay-tour-button').addEventListener('click', startTour);
-  document.querySelectorAll('[data-close-modal]').forEach(button => button.addEventListener('click', closeModals));
-
-  document.querySelector('#submit-info-button').addEventListener('click', () => {
-    const url = state.site?.submissionFormUrl?.trim();
-    if (url) {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    } else {
-      openModal('#submission-modal');
-    }
-  });
-
-  document.querySelector('#tour-next').addEventListener('click', () => {
-    if (tourIndex >= tourSteps.length - 1) return endTour();
-    tourIndex += 1;
-    renderTourStep();
-  });
-  document.querySelector('#tour-prev').addEventListener('click', () => {
-    if (tourIndex <= 0) return;
-    tourIndex -= 1;
-    renderTourStep();
-  });
-  document.querySelector('#tour-skip').addEventListener('click', endTour);
-
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') {
-      closeModals();
-      if (!document.querySelector('#tour').hidden) endTour();
-    }
-  });
-}
-
-function applySavedTheme() {
-  const saved = localStorage.getItem('fanatio-theme');
-  if (saved === 'light' || saved === 'dark') {
-    document.documentElement.dataset.theme = saved;
-    return;
-  }
-  document.documentElement.dataset.theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.querySelector('#drawer-backdrop').addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', closeDrawer));
+  document.querySelector('#theme-toggle').addEventListener('click', toggleTheme);
+  document.querySelector('#top-theme-toggle').addEventListener('click', toggleTheme);
+  document.querySelector('#top-search-button').addEventListener('click', () => navigate('search'));
+  document.querySelector('#tour-button').addEventListener('click', openTour);
+  document.querySelector('#tour-next').addEventListener('click', () => { if (tourIndex >= tourSteps.length - 1) return closeTour(); tourIndex += 1; renderTour(); });
+  document.querySelector('#tour-prev').addEventListener('click', () => { if (tourIndex <= 0) return; tourIndex -= 1; renderTour(); });
+  document.querySelector('#tour-skip').addEventListener('click', closeTour);
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') { closeDrawer(); if (!document.querySelector('#tour').hidden) closeTour(); } });
 }
 
 async function loadData() {
-  try {
-    const entries = await Promise.all(Object.entries(DATA_FILES).map(async ([key, path]) => {
-      const response = await fetch(path, { cache: 'no-store' });
-      if (!response.ok) throw new Error(`${path}: ${response.status}`);
-      return [key, await response.json()];
-    }));
-    entries.forEach(([key, value]) => { state[key] = value; });
-    renderSiteMeta();
-    renderMetrics();
-    renderResults();
-    renderAfk();
-    renderCooking();
-    renderNames();
-    renderChangelog();
-  } catch (error) {
-    console.error(error);
-    document.querySelector('#result-count').textContent = '資料載入失敗';
-    showToast('資料載入失敗，請確認網站是透過 HTTP 伺服器開啟。');
-  }
+  const entries = await Promise.all(Object.entries(DATA_FILES).map(async ([key, path]) => {
+    const response = await fetch(path, {cache: 'no-store'});
+    if (!response.ok) throw new Error(`${path}: ${response.status}`);
+    return [key, await response.json()];
+  }));
+  entries.forEach(([key, value]) => { state[key] = value; });
 }
 
 async function init() {
   applySavedTheme();
   setupInteractions();
-  await loadData();
-  if (!localStorage.getItem('fanatio-tour-v1')) {
-    setTimeout(startTour, 600);
+  try {
+    await loadData();
+    renderRoute();
+    if (!localStorage.getItem('fanatio-tour-v2')) setTimeout(openTour, 500);
+  } catch (error) {
+    console.error(error);
+    workspace.innerHTML = `<div class="empty-state"><strong>資料載入失敗</strong><p>請稍後重新整理頁面。</p></div>`;
   }
 }
 
