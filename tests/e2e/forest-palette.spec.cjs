@@ -100,12 +100,15 @@ test('愛爾琳森林暗色分離夜林、松木、苔石與內嵌層', async ({
   expect(values.meta).toBe('#09130f');
   expect(new Set([values.page, values.surface, values.solid, values.muted]).size).toBe(4);
 
-  await page.locator('details.profession-skill summary').first().click();
-  await expect(page.locator('.profession-skill__stats').first()).toBeVisible();
+  await page.locator('details.profession-skill').evaluateAll(items => {
+    items.forEach(item => { item.open = true; });
+  });
+  const openStats = page.locator('details.profession-skill[open] .profession-skill__stats').first();
+  await expect(openStats).toBeVisible();
   const layers = await page.evaluate(() => {
     const panel = getComputedStyle(document.querySelector('.profession-skill-section'));
-    const card = getComputedStyle(document.querySelector('.profession-skill'));
-    const inset = getComputedStyle(document.querySelector('.profession-skill__stats'));
+    const card = getComputedStyle(document.querySelector('details.profession-skill[open]'));
+    const inset = getComputedStyle(document.querySelector('details.profession-skill[open] .profession-skill__stats'));
     return {
       panelImage: panel.backgroundImage,
       card: card.backgroundColor,
