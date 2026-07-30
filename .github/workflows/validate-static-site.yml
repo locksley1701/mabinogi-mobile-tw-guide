@@ -29,6 +29,7 @@ jobs:
           node --check search-enhancements.js
           node --check final-polish.js
           node --check theme-system.js
+          node --check forest-palette.js
           node --check reading-system.js
           node --check theme-copy-polish.js
           node --check theme-integration.js
@@ -39,6 +40,7 @@ jobs:
           node --check tests/e2e/site-regression.spec.cjs
           node --check tests/e2e/name-normalization.spec.cjs
           node --check tests/e2e/theme-system.spec.cjs
+          node --check tests/e2e/forest-palette.spec.cjs
           node --check tests/e2e/soft-contrast.spec.cjs
           node --check tests/e2e/accessibility.spec.cjs
           node --check tests/e2e/reading-system.spec.cjs
@@ -118,6 +120,16 @@ jobs:
           grep -q 'data-palette="forest"' index.html
           grep -q 'data-reading-size="comfortable"' index.html
 
+      - name: Validate forest palette material declarations
+        run: |
+          grep -q -- '--page: #d8ddd3' forest-palette.css
+          grep -q -- '--page: #09130f' forest-palette.css
+          grep -q -- '--surface-solid: #f5f1e6' forest-palette.css
+          grep -q -- '--surface-solid: #1b2c24' forest-palette.css
+          grep -q -- '--icon-well-bg' forest-palette.css
+          grep -q 'forest-palette.css' index.html
+          grep -q 'forest-palette.js' index.html
+
       - name: Parse HTML
         run: |
           python - <<'PY'
@@ -142,6 +154,7 @@ jobs:
           test -f final-polish.css
           test -f theme-system.css
           test -f soft-contrast.css
+          test -f forest-palette.css
           test -f theme-integration.css
           test -f a11y.css
           test -f reading-system.css
@@ -149,6 +162,7 @@ jobs:
           test -f search-normalization.js
           test -f search-enhancements.js
           test -f theme-system.js
+          test -f forest-palette.js
           test -f reading-system.js
           test -f theme-copy-polish.js
           test -f theme-integration.js
@@ -158,6 +172,7 @@ jobs:
           test -f THEME_SYSTEM_CONTRACT.md
           test -f ACCESSIBILITY_BASELINE.md
           test -f READING_SYSTEM_CONTRACT.md
+          test -f FOREST_PALETTE_CONTRACT.md
           test -f docs/data-contract-examples.json
           test -f MANUAL_TEST_CHECKLIST.md
           test -f package.json
@@ -165,6 +180,7 @@ jobs:
           test -f tests/e2e/site-regression.spec.cjs
           test -f tests/e2e/name-normalization.spec.cjs
           test -f tests/e2e/theme-system.spec.cjs
+          test -f tests/e2e/forest-palette.spec.cjs
           test -f tests/e2e/soft-contrast.spec.cjs
           test -f tests/e2e/accessibility.spec.cjs
           test -f tests/e2e/reading-system.spec.cjs
@@ -174,10 +190,12 @@ jobs:
           grep -q 'search-normalization.js' index.html
           grep -q 'search-enhancements.js' index.html
           grep -q 'theme-system.js' index.html
+          grep -q 'forest-palette.js' index.html
           grep -q 'reading-system.js' index.html
           grep -q 'theme-integration.js' index.html
           grep -q 'a11y-enhancements.js' index.html
           grep -q 'theme-system.css' index.html
+          grep -q 'forest-palette.css' index.html
           grep -q 'reading-system.css' index.html
           grep -q 'a11y.css' index.html
           grep -q 'final-polish.js' index.html
