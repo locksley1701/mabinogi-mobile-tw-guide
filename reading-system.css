@@ -1,0 +1,222 @@
+/* Issue #26: shared typography and reading-size system. */
+:root {
+  --read-body-size: 16px;
+  --read-body-line: 1.65;
+  --read-copy-size: 1rem;
+  --read-copy-line: 1.7;
+  --read-card-title-size: 1rem;
+  --read-meta-size: .875rem;
+  --read-caption-size: .8125rem;
+  --read-sidebar-size: .9375rem;
+  --read-control-size: .9375rem;
+}
+
+html[data-reading-size="comfortable"] {
+  --read-body-size: 17px;
+  --read-body-line: 1.72;
+  --read-copy-size: 1.0625rem;
+  --read-copy-line: 1.75;
+  --read-card-title-size: 1.125rem;
+  --read-meta-size: .9375rem;
+  --read-caption-size: .875rem;
+  --read-sidebar-size: 1rem;
+  --read-control-size: 1rem;
+}
+
+html[data-reading-size="large"] {
+  --read-body-size: 18px;
+  --read-body-line: 1.76;
+  --read-copy-size: 1.125rem;
+  --read-copy-line: 1.78;
+  --read-card-title-size: 1.25rem;
+  --read-meta-size: 1rem;
+  --read-caption-size: .9375rem;
+  --read-sidebar-size: 1.0625rem;
+  --read-control-size: 1.0625rem;
+}
+
+body {
+  font-size: var(--read-body-size);
+  line-height: var(--read-body-line);
+}
+
+.page-head p,
+.hero-panel__lead,
+.detail-intro,
+.guide-entry > p,
+.guide-entry dd,
+.profession-hero p,
+.profession-skill__description,
+.cooking-card__description p,
+.cooking-card__section p,
+.afk-card > p,
+.contribute-panel > p,
+.rule-list,
+.timeline-entry p,
+.result-row p,
+.empty-state p {
+  font-size: var(--read-copy-size);
+  line-height: var(--read-copy-line);
+}
+
+.skill-tile strong,
+.profession-card strong,
+.profession-skill__identity strong,
+.guide-entry h3,
+.cooking-card h2,
+.afk-card h2,
+.result-row strong {
+  font-size: var(--read-card-title-size);
+  line-height: 1.38;
+}
+
+.guide-entry dl,
+.cooking-card__meta,
+.afk-card dl,
+.profession-skill__stats,
+.profession-summary,
+.cooking-effect-list {
+  font-size: var(--read-meta-size);
+  line-height: 1.6;
+}
+
+.detail-kicker,
+.eyebrow,
+.page-meta,
+.status-badge,
+.attribution,
+.skill-tile small,
+.profession-card small,
+.profession-detail-note,
+.profession-skill-section__head span,
+.profession-skill__identity small,
+.unlock-condition,
+.profession-skill__pending,
+.combat-skill__type,
+.combat-skill small,
+.level-nav small,
+.cooking-card__kicker,
+.cooking-card__section-head span,
+.cooking-shared-effect summary,
+.cooking-shared-effect p,
+.cooking-data-note,
+.timeline-entry small,
+.sidebar__footer small,
+.nav-label {
+  font-size: var(--read-caption-size);
+  line-height: 1.55;
+}
+
+.nav-link b,
+.sidebar-action b,
+.chip,
+.level-nav button,
+.primary-button,
+.secondary-button,
+.text-button,
+.search-panel input,
+.search-panel select,
+.quick-search-field input {
+  font-size: var(--read-control-size);
+}
+
+.nav-link b,
+.sidebar-action b {
+  font-size: var(--read-sidebar-size);
+}
+
+.profession-skill__stats {
+  gap: 8px 16px;
+}
+
+.profession-skill__description {
+  padding-top: 15px;
+}
+
+.profession-skill__identity,
+.skill-tile > span:last-child,
+.result-row > * {
+  min-width: 0;
+}
+
+.profession-skill__identity strong,
+.profession-skill__identity small,
+.skill-tile strong,
+.skill-tile small,
+.profession-card strong,
+.profession-card small,
+.unlock-condition {
+  overflow-wrap: anywhere;
+}
+
+html[data-reading-size="comfortable"] .profession-skill__summary,
+html[data-reading-size="large"] .profession-skill__summary {
+  min-height: 76px;
+  padding-block: 13px;
+}
+
+html[data-reading-size="comfortable"] .skill-tile,
+html[data-reading-size="large"] .skill-tile {
+  min-height: 78px;
+}
+
+html[data-reading-size="comfortable"] .profession-card,
+html[data-reading-size="large"] .profession-card {
+  min-height: 158px;
+}
+
+html[data-reading-size="large"] .unlock-condition {
+  max-width: 17rem;
+  white-space: normal;
+}
+
+.theme-settings__group-copy {
+  margin: -4px 0 12px;
+  color: var(--ink-500);
+  font-size: var(--read-caption-size);
+}
+
+.theme-choice-grid--reading {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.theme-choice--reading {
+  min-height: 104px;
+}
+
+.theme-choice__reading {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface-muted);
+  color: var(--ink-900);
+  font-family: var(--font-serif);
+  font-weight: 800;
+}
+
+.theme-choice__reading--standard { font-size: 15px; }
+.theme-choice__reading--comfortable { font-size: 18px; }
+.theme-choice__reading--large { font-size: 21px; }
+
+@media (max-width: 760px) {
+  .theme-choice-grid--reading {
+    grid-template-columns: 1fr;
+  }
+
+  .theme-choice--reading {
+    min-height: 78px;
+  }
+}
+
+@media (max-width: 620px) {
+  html[data-reading-size="large"] .profession-skill__summary {
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+  }
+
+  html[data-reading-size="large"] .profession-skill__body {
+    padding-inline: 14px;
+  }
+}
