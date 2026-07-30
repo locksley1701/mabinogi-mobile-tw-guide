@@ -6,6 +6,32 @@
   const sidebar = document.querySelector('#sidebar');
   let queued = false;
 
+  function ensureLayoutFix() {
+    if (document.querySelector('#issue7-icon-layout-fix')) return;
+    const style = document.createElement('style');
+    style.id = 'issue7-icon-layout-fix';
+    style.textContent = `
+      .skill-tile:has(.skill-tile__icon.has-pilot-icon) {
+        grid-template-columns: 52px minmax(0, 1fr);
+        column-gap: 12px;
+      }
+      .skill-tile:has(.skill-tile__icon.has-pilot-icon) > span:last-child {
+        min-width: 0;
+      }
+      .skill-tile:has(.skill-tile__icon.has-pilot-icon) strong,
+      .skill-tile:has(.skill-tile__icon.has-pilot-icon) small {
+        overflow-wrap: anywhere;
+      }
+      @media (max-width: 390px) {
+        .skill-tile:has(.skill-tile__icon.has-pilot-icon) {
+          grid-template-columns: 46px minmax(0, 1fr);
+          column-gap: 10px;
+        }
+      }
+    `;
+    document.head.append(style);
+  }
+
   function createImage(uri) {
     const image = document.createElement('img');
     image.src = uri;
@@ -60,6 +86,7 @@
 
   function patchAll() {
     queued = false;
+    ensureLayoutFix();
     addNotice();
     patchLife();
   }
