@@ -1,0 +1,178 @@
+/* Issue #27: Eirinn Forest palette — morning mist and night woodland. */
+
+html[data-palette="forest"] {
+  --icon-well-bg: color-mix(in srgb, var(--forest-700) 16%, var(--surface-muted));
+  --icon-well-border: color-mix(in srgb, var(--gold-500) 34%, var(--line));
+  --icon-well-ring: color-mix(in srgb, var(--forest-600) 42%, transparent);
+}
+
+html[data-palette="forest"][data-theme="light"] {
+  --forest-950: #0c1914;
+  --forest-900: #193027;
+  --forest-850: #254238;
+  --forest-800: #315449;
+  --forest-700: #4f705c;
+  --forest-600: #5f816b;
+  --moss-500: #788976;
+  --gold-500: #a98442;
+  --gold-400: #bc9954;
+  --gold-200: #dfc993;
+  --parchment-50: #f6f2e7;
+  --parchment-100: #eeeadd;
+  --parchment-200: #dddccf;
+  --ink-900: #29332e;
+  --ink-700: #4d5b54;
+  --ink-500: #68756e;
+  --line: rgba(61, 87, 73, .24);
+  --page: #d8ddd3;
+  --surface: rgba(238, 235, 222, .96);
+  --surface-solid: #f5f1e6;
+  --surface-muted: #e5e8dd;
+  --sidebar: #193027;
+  --sidebar-text: #f2ecde;
+  --sidebar-muted: #bac4bc;
+  --shadow: 0 18px 48px rgba(42, 56, 49, .14);
+  --theme-glow: rgba(181, 142, 69, .13);
+  --theme-pattern-strong: rgba(79, 112, 92, .045);
+  --theme-pattern-soft: rgba(79, 112, 92, .028);
+  --theme-sidebar-glow: rgba(196, 165, 92, .16);
+  --theme-sidebar-line: rgba(211, 192, 145, .20);
+  --theme-sidebar-divider: rgba(238, 226, 196, .18);
+  --theme-sidebar-hover: rgba(255, 255, 255, .07);
+  --theme-sidebar-hover-border: rgba(211, 192, 145, .18);
+  --theme-sidebar-active-start: rgba(196, 165, 92, .22);
+  --theme-sidebar-active-end: rgba(255, 255, 255, .055);
+  --theme-sidebar-active-border: rgba(223, 201, 147, .38);
+  --theme-sidebar-active-text: #fff9e9;
+  --theme-overlay: rgba(10, 22, 17, .70);
+  --forest-page-depth: #cbd3c9;
+  --forest-secondary-glow: rgba(79, 112, 92, .11);
+  --forest-panel-sheen: rgba(255, 255, 255, .30);
+  --forest-card-layer: #f7f3e9;
+  --forest-inset-layer: #e9e9dd;
+}
+
+html[data-palette="forest"][data-theme="dark"] {
+  --forest-950: #050c09;
+  --forest-900: #0c1914;
+  --forest-850: #14241d;
+  --forest-800: #20352b;
+  --forest-700: #456b56;
+  --forest-600: #6f987c;
+  --moss-500: #83927e;
+  --gold-500: #c4a55c;
+  --gold-400: #d4b96f;
+  --gold-200: #e6d39b;
+  --parchment-50: #eee7d9;
+  --parchment-100: #ddd5c7;
+  --parchment-200: #c3bcaf;
+  --ink-900: #e9e2d3;
+  --ink-700: #c4c2b7;
+  --ink-500: #a5afa7;
+  --line: rgba(196, 165, 92, .17);
+  --page: #09130f;
+  --surface: rgba(19, 34, 28, .96);
+  --surface-solid: #1b2c24;
+  --surface-muted: #26382f;
+  --sidebar: #070f0c;
+  --sidebar-text: #f1e9d8;
+  --sidebar-muted: #aeb8b0;
+  --shadow: 0 22px 58px rgba(0, 0, 0, .34);
+  --theme-glow: rgba(196, 165, 92, .10);
+  --theme-pattern-strong: rgba(126, 151, 132, .038);
+  --theme-pattern-soft: rgba(126, 151, 132, .024);
+  --theme-sidebar-glow: rgba(196, 165, 92, .12);
+  --theme-sidebar-line: rgba(196, 165, 92, .16);
+  --theme-sidebar-divider: rgba(233, 226, 211, .13);
+  --theme-sidebar-hover: rgba(255, 255, 255, .055);
+  --theme-sidebar-hover-border: rgba(196, 165, 92, .17);
+  --theme-sidebar-active-start: rgba(196, 165, 92, .22);
+  --theme-sidebar-active-end: rgba(111, 152, 124, .09);
+  --theme-sidebar-active-border: rgba(212, 185, 111, .38);
+  --theme-sidebar-active-text: #fff5de;
+  --theme-overlay: rgba(0, 0, 0, .76);
+  --forest-page-depth: #0d1b16;
+  --forest-secondary-glow: rgba(111, 152, 124, .08);
+  --forest-panel-sheen: rgba(196, 165, 92, .035);
+  --forest-card-layer: #203128;
+  --forest-inset-layer: #2a3d33;
+}
+
+html[data-palette="forest"] body {
+  background:
+    radial-gradient(circle at 82% -8%, var(--theme-glow), transparent 31rem),
+    radial-gradient(circle at 8% 94%, var(--forest-secondary-glow), transparent 35rem),
+    linear-gradient(180deg, var(--page), var(--forest-page-depth));
+}
+
+html[data-palette="forest"] body::before {
+  opacity: .14;
+  background-image:
+    linear-gradient(90deg, transparent 49.7%, var(--theme-pattern-strong) 50%, transparent 50.3%),
+    linear-gradient(transparent 49.7%, var(--theme-pattern-soft) 50%, transparent 50.3%);
+  background-size: 84px 84px;
+}
+
+html[data-palette="forest"] :is(
+  .hero-panel,
+  .panel,
+  .detail-panel,
+  .metric,
+  .portal-card,
+  .update-strip,
+  .search-panel,
+  .cooking-card,
+  .afk-card,
+  .profession-card,
+  .profession-hero,
+  .profession-skill-section,
+  .timeline-entry,
+  .contribute-panel,
+  .theme-settings__card
+) {
+  border-color: var(--line);
+  background:
+    linear-gradient(145deg, var(--forest-panel-sheen), transparent 42%),
+    var(--surface);
+  box-shadow: var(--shadow);
+}
+
+html[data-palette="forest"] :is(
+  .guide-entry,
+  .result-row,
+  .profession-skill,
+  .cooking-card__section,
+  .theme-choice
+) {
+  border-color: var(--line);
+  background: var(--forest-card-layer);
+}
+
+html[data-palette="forest"] :is(
+  .profession-skill__stats,
+  .cooking-party-effect,
+  .empty-state,
+  .theme-settings__footer
+) {
+  background: var(--forest-inset-layer);
+}
+
+html[data-palette="forest"] :is(
+  .skill-tile__icon,
+  .profession-card__icon,
+  .profession-skill__number,
+  .combat-skill__icon
+) {
+  background: var(--icon-well-bg);
+  box-shadow: inset 0 0 0 1px var(--icon-well-border), 0 0 0 3px var(--icon-well-ring);
+}
+
+[data-palette-choice="forest"] .theme-choice__swatches i:nth-child(1) { background: #4f705c; }
+[data-palette-choice="forest"] .theme-choice__swatches i:nth-child(2) { background: #eeeadd; }
+[data-palette-choice="forest"] .theme-choice__swatches i:nth-child(3) { background: #a98442; }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-palette="forest"] :is(.portal-card, .back-to-top) {
+    transition: none;
+  }
+}
