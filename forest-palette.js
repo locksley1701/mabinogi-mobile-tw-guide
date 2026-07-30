@@ -1,8 +1,8 @@
 (function polishForestPalette() {
   'use strict';
 
-  const forest = window.FanatioThemeSystem?.palettes?.find(item => item.id === 'forest')
-    || window.ThemeSystem?.palettes?.find(item => item.id === 'forest');
+  const system = typeof ThemeSystem !== 'undefined' ? ThemeSystem : null;
+  const forest = system?.palettes?.find(item => item.id === 'forest');
 
   if (forest) {
     forest.description = '晨霧森林、夜林苔石與柔和黃銅。';
