@@ -1,7 +1,21 @@
 const { test, expect } = require('@playwright/test');
 
 const readingSizes = ['standard', 'comfortable', 'large'];
-const sampleRoutes = ['home', 'life', 'cooking', 'profession/swordsman'];
+const representativeRoutes = ['home', 'life', 'cooking', 'profession/swordsman'];
+const allRoutes = [
+  'home',
+  'search',
+  'life',
+  'cooking',
+  'afk',
+  'professions',
+  'profession/swordsman',
+  'profession/warrior',
+  'profession/greatsword-warrior',
+  'profession/archer',
+  'updates',
+  'contribute'
+];
 
 async function prepare(page) {
   await page.addInitScript(() => {
@@ -86,6 +100,29 @@ test('舒適模式提高職業技能說明數值與署名字級', async ({ page 
   expect(sizes.identity).toBeGreaterThanOrEqual(18);
 });
 
+test('舒適模式不再留下約十到十二像素的必要文字', async ({ page }) => {
+  await page.goto('/#/cooking');
+  await waitForGuide(page);
+  await expect(page.locator('.cooking-card__kicker').first()).toBeVisible();
+  await expect(page.locator('.sidebar-context-filter__label')).toHaveCount(1);
+
+  const sizes = await page.evaluate(() => {
+    const px = selector => parseFloat(getComputedStyle(document.querySelector(selector)).fontSize);
+    const topbar = document.querySelector('.topbar__title');
+    return {
+      cookingKicker: px('.cooking-card__kicker'),
+      contextualLabel: px('.sidebar-context-filter__label'),
+      contextualCount: px('.sidebar-context-filter .level-nav small'),
+      sidebarBrand: px('.sidebar__brand small'),
+      mobileBrand: parseFloat(getComputedStyle(topbar, '::before').fontSize)
+    };
+  });
+
+  for (const [name, value] of Object.entries(sizes)) {
+    expect(value, `${name} 字級過小`).toBeGreaterThanOrEqual(13);
+  }
+});
+
 test('閱讀尺寸偏好會保存並跨 route 共用', async ({ page }) => {
   await page.goto('/#/home');
   await waitForGuide(page);
@@ -93,7 +130,7 @@ test('閱讀尺寸偏好會保存並跨 route 共用', async ({ page }) => {
   await page.locator('[data-reading-size-choice="large"]').click();
   await page.locator('.theme-settings__footer [data-theme-close]').click();
 
-  for (const route of sampleRoutes) {
+  for (const route of representativeRoutes) {
     await page.goto(`/#/${route}`);
     await waitForGuide(page);
     await expect(page.locator('html')).toHaveAttribute('data-reading-size', 'large');
@@ -102,13 +139,13 @@ test('閱讀尺寸偏好會保存並跨 route 共用', async ({ page }) => {
   expect(await page.evaluate(() => localStorage.getItem('fanatio-reading-size'))).toBe('large');
 });
 
-test('三種閱讀尺寸在主要 route 都沒有水平溢位', async ({ page }) => {
+test('三種閱讀尺寸在全站 route 都沒有水平溢位', async ({ page }) => {
   await page.goto('/#/home');
   await waitForGuide(page);
 
   for (const size of readingSizes) {
     await page.evaluate(value => window.FanatioReadingSystem.apply(value), size);
-    for (const route of sampleRoutes) {
+    for (const route of allRoutes) {
       await page.goto(`/#/${route}`);
       await waitForGuide(page);
       await expectNoHorizontalOverflow(page, `${size} ${route}`);
