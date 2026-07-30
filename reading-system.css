@@ -220,3 +220,36 @@ html[data-reading-size="large"] .unlock-condition {
     padding-inline: 14px;
   }
 }
+
+/* Keep secondary information readable without flattening the visual hierarchy. */
+.sidebar__brand small,
+.topbar__title small,
+.topbar__title::before,
+.metric span,
+.section-note,
+.update-strip time,
+.update-strip a,
+.profession-summary span,
+.timeline-entry time,
+.search-alias-note,
+.sidebar-context-filter__label,
+.sidebar-context-filter .level-nav small {
+  font-size: var(--read-caption-size);
+  line-height: 1.5;
+}
+
+.sidebar-context-filter .level-nav span {
+  font-size: var(--read-control-size);
+}
+
+/* cooking.css uses !important for this decorative label, so the reading layer must win explicitly. */
+.cooking-card__kicker {
+  font-size: var(--read-caption-size) !important;
+}
+
+@media (max-width: 420px) {
+  .topbar__title::before {
+    max-width: min(42vw, 190px);
+    font-size: var(--read-caption-size);
+  }
+}
