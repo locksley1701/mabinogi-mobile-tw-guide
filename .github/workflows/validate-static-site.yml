@@ -29,16 +29,19 @@ jobs:
           node --check search-enhancements.js
           node --check final-polish.js
           node --check theme-system.js
+          node --check reading-system.js
           node --check theme-copy-polish.js
           node --check theme-integration.js
           node --check a11y-enhancements.js
           node --check scripts/validate-data-contract.mjs
           node --check scripts/validate-name-normalization.mjs
+          node --check scripts/validate-reading-system.mjs
           node --check tests/e2e/site-regression.spec.cjs
           node --check tests/e2e/name-normalization.spec.cjs
           node --check tests/e2e/theme-system.spec.cjs
           node --check tests/e2e/soft-contrast.spec.cjs
           node --check tests/e2e/accessibility.spec.cjs
+          node --check tests/e2e/reading-system.spec.cjs
           node --check playwright.config.cjs
 
       - name: Validate JSON and content contracts
@@ -96,7 +99,10 @@ jobs:
       - name: Validate name targets and representative searches
         run: node scripts/validate-name-normalization.mjs
 
-      - name: Validate theme matrix declarations
+      - name: Validate reading-size contract
+        run: node scripts/validate-reading-system.mjs
+
+      - name: Validate theme and reading matrix declarations
         run: |
           for appearance in system light dark; do
             grep -q "id: '$appearance'" theme-system.js
@@ -105,8 +111,12 @@ jobs:
             grep -q "id: '$palette'" theme-system.js
             grep -q "data-palette=\"$palette\"" theme-system.css
           done
+          for reading in standard comfortable large; do
+            grep -q "id: '$reading'" reading-system.js
+          done
           grep -q 'data-appearance="system"' index.html
           grep -q 'data-palette="forest"' index.html
+          grep -q 'data-reading-size="comfortable"' index.html
 
       - name: Parse HTML
         run: |
@@ -134,10 +144,12 @@ jobs:
           test -f soft-contrast.css
           test -f theme-integration.css
           test -f a11y.css
+          test -f reading-system.css
           test -f theme-boot.js
           test -f search-normalization.js
           test -f search-enhancements.js
           test -f theme-system.js
+          test -f reading-system.js
           test -f theme-copy-polish.js
           test -f theme-integration.js
           test -f a11y-enhancements.js
@@ -145,6 +157,7 @@ jobs:
           test -f NAME_NORMALIZATION_CONTRACT.md
           test -f THEME_SYSTEM_CONTRACT.md
           test -f ACCESSIBILITY_BASELINE.md
+          test -f READING_SYSTEM_CONTRACT.md
           test -f docs/data-contract-examples.json
           test -f MANUAL_TEST_CHECKLIST.md
           test -f package.json
@@ -154,15 +167,18 @@ jobs:
           test -f tests/e2e/theme-system.spec.cjs
           test -f tests/e2e/soft-contrast.spec.cjs
           test -f tests/e2e/accessibility.spec.cjs
+          test -f tests/e2e/reading-system.spec.cjs
           grep -q '#/profession/greatsword-warrior' index.html
           grep -q '#/profession/archer' index.html
           grep -q 'theme-boot.js' index.html
           grep -q 'search-normalization.js' index.html
           grep -q 'search-enhancements.js' index.html
           grep -q 'theme-system.js' index.html
+          grep -q 'reading-system.js' index.html
           grep -q 'theme-integration.js' index.html
           grep -q 'a11y-enhancements.js' index.html
           grep -q 'theme-system.css' index.html
+          grep -q 'reading-system.css' index.html
           grep -q 'a11y.css' index.html
           grep -q 'final-polish.js' index.html
 
@@ -184,7 +200,7 @@ jobs:
       - name: Install Chromium for regression tests
         run: npx playwright install --with-deps chromium
 
-      - name: Run route, responsive and accessibility browser regression
+      - name: Run route, responsive, accessibility and reading regression
         run: npm run test:e2e
 
       - name: Upload browser traces on failure
