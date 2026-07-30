@@ -1,0 +1,191 @@
+/* Issue #7 preview-only official icon layer */
+.pilot-preview-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 12px 15px;
+  border: 1px solid color-mix(in srgb, var(--gold-500) 48%, var(--line));
+  border-left: 4px solid var(--gold-500);
+  border-radius: 0 14px 14px 0;
+  background: color-mix(in srgb, var(--gold-500) 9%, var(--surface));
+  color: var(--ink-700);
+  font-size: .82rem;
+}
+.pilot-preview-notice strong {
+  flex: 0 0 auto;
+  color: var(--ink-900);
+  font-family: var(--font-serif);
+}
+[data-pilot-icon-host] {
+  position: relative;
+  overflow: hidden;
+}
+[data-pilot-icon-host].has-pilot-icon {
+  display: grid;
+  place-items: center;
+  color: transparent;
+  background:
+    radial-gradient(circle at 34% 24%, color-mix(in srgb, white 28%, transparent), transparent 46%),
+    color-mix(in srgb, var(--surface-muted) 84%, var(--gold-500));
+  border-color: color-mix(in srgb, var(--gold-500) 34%, var(--line));
+}
+[data-pilot-icon-host].has-pilot-icon::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  z-index: 0;
+  border: 1px solid color-mix(in srgb, var(--gold-500) 42%, transparent);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.pilot-icon {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+}
+.nav-link--sub [data-pilot-icon-host] {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  border-radius: 7px;
+}
+.nav-link--sub [data-pilot-icon-host]::after {
+  inset: 2px;
+}
+.skill-tile__icon.has-pilot-icon {
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.profession-card__icon.has-pilot-icon {
+  width: 68px;
+  height: 68px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  font-size: 0;
+}
+.combat-skill__icon.has-pilot-icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  font-size: 0;
+}
+.pilot-detail-icon,
+.pilot-profession-hero-icon,
+.pilot-cooking-icon,
+.pilot-search-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--gold-500) 36%, var(--line));
+  background:
+    radial-gradient(circle at 34% 24%, color-mix(in srgb, white 28%, transparent), transparent 46%),
+    color-mix(in srgb, var(--surface-muted) 84%, var(--gold-500));
+}
+.pilot-detail-icon::after,
+.pilot-profession-hero-icon::after,
+.pilot-cooking-icon::after,
+.pilot-search-icon::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid color-mix(in srgb, var(--gold-500) 42%, transparent);
+  border-radius: inherit;
+}
+.pilot-detail-icon {
+  float: left;
+  width: 82px;
+  height: 82px;
+  margin: 0 18px 10px 0;
+  border-radius: 20px;
+}
+.pilot-profession-hero-icon {
+  width: 104px;
+  height: 104px;
+  border-radius: 25px;
+}
+.profession-hero:has(.pilot-profession-hero-icon) {
+  grid-template-columns: auto minmax(0, 1fr) minmax(220px, auto);
+  align-items: center;
+}
+.pilot-cooking-icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 21px;
+}
+.cooking-card__head:has(.pilot-cooking-icon) {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+}
+.cooking-card__head:has(.pilot-cooking-icon) > div {
+  min-width: 0;
+}
+.pilot-search-icon {
+  width: 44px;
+  height: 44px;
+  margin-right: 12px;
+  border-radius: 12px;
+}
+.result-row:has(.pilot-search-icon) {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+}
+.result-row:has(.pilot-search-icon) p {
+  grid-column: 2;
+}
+.result-row:has(.pilot-search-icon) a {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+}
+html[data-palette="contrast"] [data-pilot-icon-host],
+html[data-palette="contrast"] .pilot-detail-icon,
+html[data-palette="contrast"] .pilot-profession-hero-icon,
+html[data-palette="contrast"] .pilot-cooking-icon,
+html[data-palette="contrast"] .pilot-search-icon {
+  border-width: 2px;
+  box-shadow: none;
+}
+@media (max-width: 680px) {
+  .pilot-preview-notice {
+    display: grid;
+    gap: 2px;
+  }
+  .profession-hero:has(.pilot-profession-hero-icon) {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .profession-hero:has(.pilot-profession-hero-icon) .profession-summary {
+    grid-column: 1 / -1;
+  }
+  .pilot-profession-hero-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 19px;
+  }
+  .cooking-card__head:has(.pilot-cooking-icon) {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .cooking-card__head:has(.pilot-cooking-icon) > .status-badge {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  .pilot-cooking-icon {
+    width: 66px;
+    height: 66px;
+    border-radius: 17px;
+  }
+  .skill-tile__icon.has-pilot-icon {
+    width: 46px;
+    height: 46px;
+  }
+}
