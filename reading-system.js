@@ -130,3 +130,5 @@ const ReadingSystem = (() => {
     mountIntoThemePanel
   });
 })();
+
+window.FanatioReadingSystem = ReadingSystem;
