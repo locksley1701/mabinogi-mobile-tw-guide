@@ -1,0 +1,1 @@
+Issue #26 reading-size preview branch. Do not merge this preview-only branch.
