@@ -77,7 +77,7 @@
     const title = detail?.querySelector('.detail-title');
     if (selected && ICONS[selected] && title && !detail.querySelector('.pilot-detail-icon')) {
       const icon = document.createElement('span');
-      icon.className = 'pilot-detail-icon';
+      icon.className = 'pilot-detail-icon pilot-icon-host--life';
       icon.dataset.pilotIconHost = 'true';
       icon.append(createImage(ICONS[selected]));
       title.before(icon);
