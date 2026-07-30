@@ -1,0 +1,53 @@
+/* Issue #7 color tuning: palette-aware living-skill plates in dark appearance. */
+
+/*
+ * Light appearance keeps the approved warm parchment treatment.
+ * Dark appearance switches to an analogous, tone-on-tone plate derived from
+ * the active palette's semantic colors instead of using a fixed forest green.
+ */
+html[data-theme="dark"] .skill-tile__icon.pilot-icon-host--life.has-pilot-icon,
+html[data-theme="dark"] .pilot-detail-icon.pilot-icon-host--life {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .skill-tile__icon.pilot-icon-host--life.has-pilot-icon::after,
+html[data-theme="dark"] .pilot-detail-icon.pilot-icon-host--life::after {
+  border-color: transparent;
+}
+
+html[data-theme="dark"] .skill-tile__icon.pilot-icon-host--life.has-pilot-icon::before,
+html[data-theme="dark"] .pilot-detail-icon.pilot-icon-host--life::before {
+  background:
+    radial-gradient(
+      circle at 34% 25%,
+      color-mix(in srgb, var(--parchment-50) 12%, transparent),
+      transparent 38%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--forest-700) 58%, var(--surface-muted)),
+      color-mix(in srgb, var(--forest-900) 72%, var(--surface-solid)) 74%
+    );
+  border-color: color-mix(in srgb, var(--gold-400) 28%, var(--forest-600));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--parchment-50) 12%, transparent),
+    0 2px 7px color-mix(in srgb, var(--forest-950) 48%, transparent);
+}
+
+html[data-theme="dark"] .skill-tile.is-active .skill-tile__icon.pilot-icon-host--life::before {
+  border-color: color-mix(in srgb, var(--gold-400) 64%, var(--forest-600));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--parchment-50) 15%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--gold-500) 16%, transparent),
+    0 3px 9px color-mix(in srgb, var(--forest-950) 55%, transparent);
+}
+
+/* High-contrast remains explicit rather than decorative. */
+html[data-palette="contrast"][data-theme="dark"] .skill-tile__icon.pilot-icon-host--life.has-pilot-icon::before,
+html[data-palette="contrast"][data-theme="dark"] .pilot-detail-icon.pilot-icon-host--life::before {
+  background: #000;
+  border-color: var(--gold-400);
+  box-shadow: none;
+}
