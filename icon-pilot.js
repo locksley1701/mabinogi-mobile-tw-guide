@@ -17,7 +17,7 @@
     image.alt = '';
     image.width = item.width;
     image.height = item.height;
-    image.loading = context === 'detail' ? 'eager' : 'lazy';
+    image.loading = ['detail', 'hero'].includes(context) ? 'eager' : 'lazy';
     image.decoding = 'async';
     image.className = 'official-icon__image';
     image.dataset.officialIcon = item.id;
@@ -110,6 +110,12 @@
     const professionId = routeMatch?.[1] || '';
     if (!professionId) return;
 
+    document.querySelectorAll('.profession-skill').forEach(row => {
+      const name = normalize(row.querySelector('.profession-skill__identity strong')?.textContent);
+      const item = iconMaps.skillByKey.get(`${professionId}:${name}`);
+      if (item) replaceHost(row.querySelector('.profession-skill__number'), item, 'profession-skill');
+    });
+
     document.querySelectorAll('.combat-skill').forEach(row => {
       const name = normalize(row.querySelector('strong')?.textContent);
       const item = iconMaps.skillByKey.get(`${professionId}:${name}`);
@@ -118,6 +124,15 @@
   }
 
   function patchCooking(iconMaps) {
+    const notice = document.querySelector('.cooking-notice');
+    if (notice && notice.dataset.iconPilotUpdated !== 'true') {
+      const title = notice.querySelector('strong');
+      const copy = notice.querySelector('p');
+      if (title) title.textContent = '官方圖標小批次試點';
+      if (copy) copy.textContent = '本批已接入煎蛋、水煮蛋、烤整顆馬鈴薯與蘋果汁；其餘料理仍保留純文字呈現，待批次導入後補齊。';
+      notice.dataset.iconPilotUpdated = 'true';
+    }
+
     document.querySelectorAll('.cooking-card').forEach(card => {
       const head = card.querySelector('.cooking-card__head');
       const name = normalize(head?.querySelector('h2')?.textContent);
