@@ -37,7 +37,8 @@
 
 .skill-tile:has(.has-official-icon) > span:last-child,
 .profession-card:has(.has-official-icon) > :not(.profession-card__icon),
-.combat-skill:has(.has-official-icon) > :not(.combat-skill__icon) {
+.combat-skill:has(.has-official-icon) > :not(.combat-skill__icon),
+.profession-skill__summary:has(.has-official-icon) > :not(.profession-skill__number) {
   min-inline-size: 0;
 }
 
@@ -67,10 +68,23 @@
   margin: 0 18px 8px 0;
 }
 
-.combat-skill .has-official-icon {
+.combat-skill .has-official-icon,
+.profession-skill .has-official-icon {
   --official-icon-size: 52px;
   --official-icon-padding: 4px;
   border-radius: 16px;
+}
+
+.profession-skill__summary:has(.has-official-icon) {
+  grid-template-columns: 52px minmax(0, 1fr) auto auto;
+}
+
+.profession-skill:has(.has-official-icon) .profession-skill__body {
+  padding-inline-start: 76px;
+}
+
+.profession-skill:has(.has-official-icon) .profession-skill__pending {
+  margin-inline-start: 76px;
 }
 
 .cooking-card__head:has(.official-icon--card) {
@@ -86,6 +100,7 @@
   grid-row: 1 / span 2;
 }
 
+.cooking-card__head:has(.official-icon--card) > div,
 .cooking-card__head:has(.official-icon--card) h2 {
   min-inline-size: 0;
 }
@@ -137,6 +152,22 @@ html[data-palette="contrast"] .has-official-icon {
   #life-detail .official-icon--detail {
     --official-icon-size: 72px;
     margin-inline-end: 14px;
+  }
+
+  .profession-skill .has-official-icon {
+    --official-icon-size: 46px;
+  }
+
+  .profession-skill__summary:has(.has-official-icon) {
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+  }
+
+  .profession-skill:has(.has-official-icon) .profession-skill__body {
+    padding-inline-start: 14px;
+  }
+
+  .profession-skill:has(.has-official-icon) .profession-skill__pending {
+    margin-inline-start: 14px;
   }
 
   .cooking-card__head:has(.official-icon--card) {
