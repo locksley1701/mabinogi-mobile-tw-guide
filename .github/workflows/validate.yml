@@ -2,7 +2,7 @@ name: Validate static site
 
 on:
   push:
-    branches: [main, "agent/**", "ux/**"]
+    branches: [main, "agent/**", "ux/**", "design/**"]
   pull_request:
     branches: [main]
 
@@ -21,6 +21,7 @@ jobs:
           node --check app.js
           node --check theme-boot.js
           node --check theme-system.js
+          node --check forest-palette.js
           node --check reading-system.js
 
       - name: Validate contracts
