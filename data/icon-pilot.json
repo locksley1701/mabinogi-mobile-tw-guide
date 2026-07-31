@@ -1,0 +1,201 @@
+{
+  "version": 1,
+  "issue": 7,
+  "updatedAt": "2026-08-01",
+  "categories": {
+    "lifeSkills": [
+      {
+        "id": "daily-gathering",
+        "name": "日常採集",
+        "icon": "assets/icons/life-skills/daily-gathering.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "9e0a5474b1d7fa9ece1a87fc2ec571c5a24a5785af57ce8060348206f5dc341a",
+        "sourceClass": "台版客戶端 UI/Sprites/LivingSkill 核准輸出",
+        "approved": true
+      },
+      {
+        "id": "logging",
+        "name": "伐木",
+        "icon": "assets/icons/life-skills/logging.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "4165c007fece71cf4d827bdf9632457abc268897453c0f5954c2b0002f0773a1",
+        "sourceClass": "Assets/PatchableAssets/UI/Sprites/LivingSkill/LivingSkill_Logging.png",
+        "approved": true
+      },
+      {
+        "id": "mining",
+        "name": "採礦",
+        "icon": "assets/icons/life-skills/mining.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "f51d8fd5858abe87620c96d7cc5a5890538feaaa7040c53476846d18f2cbb3ba",
+        "sourceClass": "Assets/PatchableAssets/UI/Sprites/LivingSkill/LivingSkill_Mining.png",
+        "approved": true
+      },
+      {
+        "id": "herbalism",
+        "name": "採集藥草",
+        "icon": "assets/icons/life-skills/herbalism.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "fcab4523aa01050da7462a622a598d1f13a6e98a550e3f4466f84ffeb7face97",
+        "sourceClass": "台版客戶端 UI/Sprites/LivingSkill 核准輸出",
+        "approved": true
+      }
+    ],
+    "professions": [
+      {
+        "id": "swordsman",
+        "name": "劍術士",
+        "icon": "assets/icons/professions/swordsman.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "44d1f1820d29be3a4a7032217e180c6213ec427c2d974f5443b7a897f9bfc47e",
+        "sourceClass": "台版客戶端職業圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "warrior",
+        "name": "戰士",
+        "icon": "assets/icons/professions/warrior.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "b819854619987ef301e730653a2715f8a414da233c6c127804307b31e4539a8c",
+        "sourceClass": "台版客戶端職業圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "greatsword-warrior",
+        "name": "大劍戰士",
+        "icon": "assets/icons/professions/greatsword-warrior.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "725196dfa724eed79083813870e3d30e3d55dbeb961ccfc94aa0245596bf5d96",
+        "sourceClass": "台版客戶端職業圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "archer",
+        "name": "弓手",
+        "icon": "assets/icons/professions/archer.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "194baa326295e962afe0ae424706b43b56c014f747359a95f672dbbf8b822e7e",
+        "sourceClass": "台版客戶端職業圖標核准輸出",
+        "approved": true
+      }
+    ],
+    "professionSkills": [
+      {
+        "id": "swordmaster-steel-wedge",
+        "professionId": "swordsman",
+        "name": "鋼楔",
+        "icon": "assets/icons/profession-skills/swordmaster-steel-wedge.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "7b57e59843ad68f48c1781ff476c95a254eab4f64aee175b239f6fc0b35e1517",
+        "sourceClass": "台版客戶端基礎職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "swordmaster-detection",
+        "professionId": "swordsman",
+        "name": "看破",
+        "icon": "assets/icons/profession-skills/swordmaster-detection.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "e619d78742ff6cec28c62a1828408bba537911ba6b58b2a9be6424b8c2e0fa96",
+        "sourceClass": "台版客戶端基礎職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "expert-warrior-battle-cry",
+        "professionId": "warrior",
+        "name": "戰場怒吼",
+        "icon": "assets/icons/profession-skills/expert-warrior-battle-cry.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "8e01e024a04db52adefb7191114fd318c369ab534b557d41da467a7c4b2bb538",
+        "sourceClass": "台版客戶端基礎職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "expert-warrior-blade-smash",
+        "professionId": "warrior",
+        "name": "劍刃重擊",
+        "icon": "assets/icons/profession-skills/expert-warrior-blade-smash.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "a53f1dcbf52072bd20086bfdb1c2905eb3e5b999e4380ed53210aa9b2e038eab",
+        "sourceClass": "台版客戶端基礎職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "greatsword-warrior-blockade-front",
+        "professionId": "greatsword-warrior",
+        "name": "跺腳",
+        "icon": "assets/icons/profession-skills/greatsword-warrior-blockade-front.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "8b1d85f3239c341191c943c64883f93d875caa338980dae407d935595aa50622",
+        "sourceClass": "台版客戶端基礎職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "expert-archer-magnum-shot",
+        "professionId": "archer",
+        "name": "強力射擊",
+        "icon": "assets/icons/profession-skills/expert-archer-magnum-shot.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "11c1263e451419ffe9adff696ab833bcf9ebecfeb54bbb8873ea1af1a20432d0",
+        "sourceClass": "台版客戶端基礎職業技能圖標核准輸出",
+        "approved": true
+      }
+    ],
+    "cooking": [
+      {
+        "id": "fried-egg",
+        "name": "煎蛋",
+        "icon": "assets/icons/cooking/fried-egg.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "7d38a116b343904e8237cc2859a8b8d66b5d95a704e5a1496904d7c5d5001318",
+        "sourceClass": "台版客戶端料理圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "boiled-egg",
+        "name": "水煮蛋",
+        "icon": "assets/icons/cooking/boiled-egg.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "e8522be59212e8662612cb170af718b7d0034aff58ce1b97618a0a77365ae9e1",
+        "sourceClass": "台版客戶端料理圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "roasted-potato",
+        "name": "烤整顆馬鈴薯",
+        "icon": "assets/icons/cooking/roasted-potato.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "b951b906e0e8a45a68f2f2590e45e12beae05caaba25fe815b39a4bd8af8552f",
+        "sourceClass": "台版客戶端料理圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "apple-juice",
+        "name": "蘋果汁",
+        "icon": "assets/icons/cooking/apple-juice.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "e38ea0164bf8913646ec91bc82494e7f05d466debcaab5065cfe0d78b9712c0e",
+        "sourceClass": "台版客戶端料理圖標核准輸出",
+        "approved": true
+      }
+    ]
+  }
+}
