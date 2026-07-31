@@ -121,14 +121,12 @@ test('愛爾琳森林暗色分離夜林、松木、苔石與內嵌層', async ({
 
 test('愛爾琳森林亮暗外觀在代表頁面無水平溢位', async ({ page }) => {
   const routes = ['home', 'search', 'life', 'cooking', 'profession/swordsman'];
-  await page.goto('/#/home');
-  await waitForGuide(page);
 
   for (const appearance of ['light', 'dark']) {
-    await applyForest(page, appearance);
     for (const route of routes) {
       await page.goto(`/#/${route}`);
       await waitForGuide(page);
+      await applyForest(page, appearance);
       await expectNoHorizontalOverflow(page, `${appearance} ${route}`);
     }
   }
