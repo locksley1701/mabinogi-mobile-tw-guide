@@ -50,17 +50,19 @@ test.beforeEach(async ({ page }) => {
   await prepare(page);
 });
 
-test('生活技能14枚在列表與明細顯示核准圖標', async ({ page }) => {
+test('生活技能20枚在列表與明細顯示核准圖標', async ({ page }) => {
   await page.goto('/#/life');
   await waitForGuide(page);
   const selector = '.skill-tile[data-life-skill] img[data-official-icon]';
-  await waitForIcons(page, selector, 14);
+  await waitForIcons(page, selector, 20);
   await expectAccessibleDecorativeImages(page, selector);
 
   const ids = [
     'daily-gathering', 'logging', 'mining', 'herbalism',
     'shearing', 'harvest', 'hoeing', 'insects', 'fishing',
-    'smithing', 'woodworking', 'magic-craft', 'potion', 'handicraft'
+    'smithing', 'woodworking', 'magic-craft', 'heavy-armor',
+    'light-armor', 'cloth', 'potion', 'cooking', 'handicraft',
+    'alchemy', 'part-time'
   ];
 
   for (const id of ids) {
@@ -68,7 +70,7 @@ test('生活技能14枚在列表與明細顯示核准圖標', async ({ page }) =
     await expect(tile.locator(`img[data-official-icon="${id}"]`)).toBeVisible();
   }
 
-  for (const id of ['shearing', 'smithing', 'handicraft']) {
+  for (const id of ['heavy-armor', 'cooking', 'alchemy', 'part-time']) {
     await page.locator(`.skill-tile[data-life-skill="${id}"]`).click();
     await expect(page.locator(`#life-detail [data-official-icon-detail="${id}"]`)).toBeVisible();
   }

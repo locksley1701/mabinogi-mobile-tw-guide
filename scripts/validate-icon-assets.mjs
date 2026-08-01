@@ -46,7 +46,7 @@ const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 const lifeCategories = JSON.parse(readFileSync(lifeCategoriesPath, 'utf8'));
 const categories = manifest.categories || {};
 const expectedCounts = {
-  lifeSkills: 14,
+  lifeSkills: 20,
   professions: 4,
   professionSkills: 6,
   cooking: 4
@@ -59,12 +59,17 @@ for (const [category, count] of Object.entries(expectedCounts)) {
   if (items.length !== count) fail(`${category} 數量為 ${items.length}，預期 ${count}`);
   all.push(...items.map(item => ({ ...item, category })));
 }
-if (all.length !== 28) fail(`總數為 ${all.length}，預期 28`);
+if (all.length !== 34) fail(`總數為 ${all.length}，預期 34`);
 
 const lifeCategoryIds = new Set(lifeCategories.map(item => item.id));
 if (lifeCategoryIds.size !== 20) fail(`生活技能分類穩定 ID 數量為 ${lifeCategoryIds.size}，預期 20`);
-for (const item of categories.lifeSkills) {
-  if (!lifeCategoryIds.has(item.id)) fail(`生活技能圖標未對應正式分類：${item.id}`);
+const lifeIconIds = new Set(categories.lifeSkills.map(item => item.id));
+if (lifeIconIds.size !== 20) fail(`生活技能圖標穩定 ID 數量為 ${lifeIconIds.size}，預期 20`);
+for (const id of lifeCategoryIds) {
+  if (!lifeIconIds.has(id)) fail(`生活技能缺少正式圖標：${id}`);
+}
+for (const id of lifeIconIds) {
+  if (!lifeCategoryIds.has(id)) fail(`生活技能圖標未對應正式分類：${id}`);
 }
 
 const ids = new Set();
