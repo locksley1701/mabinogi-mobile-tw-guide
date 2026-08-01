@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "issue": 32,
+  "version": 3,
+  "issue": 34,
   "updatedAt": "2026-08-01",
   "categories": {
     "lifeSkills": [
@@ -125,12 +125,52 @@
         "approved": true
       },
       {
+        "id": "heavy-armor",
+        "name": "重甲製作",
+        "icon": "assets/icons/life-skills/heavy-armor.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "ef6d219daf5362661daf6c1051833ede71c052fedfadb53a15e6f23835163260",
+        "sourceClass": "台版客戶端 64px 生活技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "light-armor",
+        "name": "輕甲製作",
+        "icon": "assets/icons/life-skills/light-armor.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "98c36a625fb918764f0cade64b286cd572a98e48211d367951248867d0f99675",
+        "sourceClass": "台版客戶端 64px 生活技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "cloth",
+        "name": "布衣製作",
+        "icon": "assets/icons/life-skills/cloth.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "7dfee66c3dfe9dc1d77386f1c8d9c4bb1b535ab0365a7160547599cfb86e9c61",
+        "sourceClass": "台版客戶端 64px 生活技能圖標核准輸出",
+        "approved": true
+      },
+      {
         "id": "potion",
         "name": "藥水調製",
         "icon": "assets/icons/life-skills/potion.png",
         "width": 64,
         "height": 64,
         "sha256": "23789308d51f5683f5ecb96716c88e47d64b41d901d2182482e22d6f8bb53aa8",
+        "sourceClass": "台版客戶端 64px 生活技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "cooking",
+        "name": "料理",
+        "icon": "assets/icons/life-skills/cooking.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "8ee6d3bf4362d1f04d89cd83ee61aff4cf3b37f5fe572905063fcd1df3ec0203",
         "sourceClass": "台版客戶端 64px 生活技能圖標核准輸出",
         "approved": true
       },
@@ -142,6 +182,26 @@
         "height": 64,
         "sha256": "be3c840802d9e48156148e94a6f561b4133cc5e8c8e6ce0b0a5dd371f664518b",
         "sourceClass": "台版客戶端 64px 生活技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "alchemy",
+        "name": "鍊金術",
+        "icon": "assets/icons/life-skills/alchemy.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "a58a31df1c302556d0ddd81e323b1acebde167b6bec2c5313ed7747e4458767b",
+        "sourceClass": "台版客戶端 64px 鍊金術工具圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "part-time",
+        "name": "兼職",
+        "icon": "assets/icons/life-skills/part-time.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "45c60bd89b0045566803245b3e5b3b1e9124353fd7da10a60a6d623d3a745aa7",
+        "sourceClass": "台版客戶端 64px 城市兼職圖標核准輸出",
         "approved": true
       }
     ],
