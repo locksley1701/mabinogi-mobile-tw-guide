@@ -50,18 +50,28 @@ test.beforeEach(async ({ page }) => {
   await prepare(page);
 });
 
-test('生活技能4枚在列表與明細顯示核准圖標', async ({ page }) => {
+test('生活技能14枚在列表與明細顯示核准圖標', async ({ page }) => {
   await page.goto('/#/life');
   await waitForGuide(page);
   const selector = '.skill-tile[data-life-skill] img[data-official-icon]';
-  await waitForIcons(page, selector, 4);
+  await waitForIcons(page, selector, 14);
   await expectAccessibleDecorativeImages(page, selector);
 
-  for (const id of ['daily-gathering', 'logging', 'mining', 'herbalism']) {
+  const ids = [
+    'daily-gathering', 'logging', 'mining', 'herbalism',
+    'shearing', 'harvest', 'hoeing', 'insects', 'fishing',
+    'smithing', 'woodworking', 'magic-craft', 'potion', 'handicraft'
+  ];
+
+  for (const id of ids) {
     const tile = page.locator(`.skill-tile[data-life-skill="${id}"]`);
     await expect(tile.locator(`img[data-official-icon="${id}"]`)).toBeVisible();
   }
-  await expect(page.locator('#life-detail [data-official-icon-detail="daily-gathering"]')).toBeVisible();
+
+  for (const id of ['shearing', 'smithing', 'handicraft']) {
+    await page.locator(`.skill-tile[data-life-skill="${id}"]`).click();
+    await expect(page.locator(`#life-detail [data-official-icon-detail="${id}"]`)).toBeVisible();
+  }
 });
 
 test('職業4枚在總覽與職業頁 hero 顯示', async ({ page }) => {
