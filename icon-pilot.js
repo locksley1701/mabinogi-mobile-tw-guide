@@ -4,6 +4,9 @@
   const DATA_URL = 'data/icon-pilot.json';
   const workspace = document.querySelector('#workspace');
   const sidebar = document.querySelector('#sidebar');
+  const skillBindingOverrides = Object.freeze({
+    'greatsword-warrior-blockade-front': '肩撞'
+  });
   let data = null;
   let queued = false;
 
@@ -37,7 +40,13 @@
   }
 
   function replaceHost(host, item, kind) {
-    if (!host || host.dataset.officialIconHost === item.id) return;
+    if (!host
+      || host.dataset.officialIconHost === item.id
+      || host.dataset.officialIconFailed === item.id) return;
+
+    if (host.dataset.officialIconFailed && host.dataset.officialIconFailed !== item.id) {
+      delete host.dataset.officialIconFailed;
+    }
     if (!host.dataset.officialIconFallback) {
       host.dataset.officialIconFallback = normalize(host.textContent);
     }
@@ -46,6 +55,7 @@
     host.textContent = '';
     const image = createImage(item, 'list');
     image.addEventListener('error', () => {
+      host.dataset.officialIconFailed = item.id;
       host.classList.remove('has-official-icon', `official-icon-source--${kind}`);
       host.textContent = host.dataset.officialIconFallback || '';
       delete host.dataset.officialIconHost;
@@ -58,7 +68,10 @@
     return {
       lifeById: new Map((categories.lifeSkills || []).map(item => [item.id, item])),
       professionById: new Map((categories.professions || []).map(item => [item.id, item])),
-      skillByKey: new Map((categories.professionSkills || []).map(item => [`${item.professionId}:${item.name}`, item])),
+      skillByKey: new Map((categories.professionSkills || []).map(item => {
+        const bindingName = skillBindingOverrides[item.id] || item.name;
+        return [`${item.professionId}:${bindingName}`, item];
+      })),
       cookingByName: new Map((categories.cooking || []).map(item => [item.name, item]))
     };
   }
