@@ -25,6 +25,7 @@ jobs:
           node --check search-normalization.js
           node --check app.js
           node --check cooking.js
+          node --check icon-pilot.js
           node --check ui-enhancements.js
           node --check search-enhancements.js
           node --check final-polish.js
@@ -37,6 +38,7 @@ jobs:
           node --check scripts/validate-data-contract.mjs
           node --check scripts/validate-name-normalization.mjs
           node --check scripts/validate-reading-system.mjs
+          node --check scripts/validate-icon-assets.mjs
           node --check tests/e2e/site-regression.spec.cjs
           node --check tests/e2e/name-normalization.spec.cjs
           node --check tests/e2e/theme-system.spec.cjs
@@ -44,6 +46,7 @@ jobs:
           node --check tests/e2e/soft-contrast.spec.cjs
           node --check tests/e2e/accessibility.spec.cjs
           node --check tests/e2e/reading-system.spec.cjs
+          node --check tests/e2e/icon-pilot.spec.cjs
           node --check playwright.config.cjs
 
       - name: Validate JSON and content contracts
@@ -63,6 +66,7 @@ jobs:
           const professions = JSON.parse(fs.readFileSync('data/professions.json', 'utf8'));
           const skills = JSON.parse(fs.readFileSync('data/profession-skills.json', 'utf8'));
           const aliases = JSON.parse(fs.readFileSync('data/names.json', 'utf8'));
+          const icons = JSON.parse(fs.readFileSync('data/icon-pilot.json', 'utf8'));
 
           if (cooking.length !== 26) throw new Error(`Expected 26 cooking records, got ${cooking.length}`);
           if (life.length !== 20) throw new Error(`Expected 20 life skills, got ${life.length}`);
@@ -92,7 +96,10 @@ jobs:
             }
           }
 
-          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 4 professions, and ${aliases.length} alias definitions.`);
+          const iconCount = Object.values(icons.categories || {}).flat().length;
+          if (iconCount !== 18) throw new Error(`Expected 18 icon pilot records, got ${iconCount}`);
+
+          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 4 professions, ${aliases.length} alias definitions, and ${iconCount} icon records.`);
           NODE
 
       - name: Validate public data and UI state contract
@@ -103,6 +110,9 @@ jobs:
 
       - name: Validate reading-size contract
         run: node scripts/validate-reading-system.mjs
+
+      - name: Validate official icon asset contract
+        run: node scripts/validate-icon-assets.mjs
 
       - name: Validate theme and reading matrix declarations
         run: |
@@ -149,6 +159,7 @@ jobs:
         run: |
           test -f styles.css
           test -f cooking.css
+          test -f icon-pilot.css
           test -f ui-enhancements.css
           test -f search-enhancements.css
           test -f final-polish.css
@@ -161,18 +172,23 @@ jobs:
           test -f theme-boot.js
           test -f search-normalization.js
           test -f search-enhancements.js
+          test -f icon-pilot.js
           test -f theme-system.js
           test -f forest-palette.js
           test -f reading-system.js
           test -f theme-copy-polish.js
           test -f theme-integration.js
           test -f a11y-enhancements.js
+          test -f ICON_ASSET_CONTRACT.md
           test -f DATA_UI_STATE_CONTRACT.md
           test -f NAME_NORMALIZATION_CONTRACT.md
           test -f THEME_SYSTEM_CONTRACT.md
           test -f ACCESSIBILITY_BASELINE.md
           test -f READING_SYSTEM_CONTRACT.md
           test -f FOREST_PALETTE_CONTRACT.md
+          test -f data/icon-pilot.json
+          test -f scripts/validate-icon-assets.mjs
+          test -f docs/icon-pilot-validation.md
           test -f docs/data-contract-examples.json
           test -f MANUAL_TEST_CHECKLIST.md
           test -f package.json
@@ -184,11 +200,13 @@ jobs:
           test -f tests/e2e/soft-contrast.spec.cjs
           test -f tests/e2e/accessibility.spec.cjs
           test -f tests/e2e/reading-system.spec.cjs
+          test -f tests/e2e/icon-pilot.spec.cjs
           grep -q '#/profession/greatsword-warrior' index.html
           grep -q '#/profession/archer' index.html
           grep -q 'theme-boot.js' index.html
           grep -q 'search-normalization.js' index.html
           grep -q 'search-enhancements.js' index.html
+          grep -q 'icon-pilot.js' index.html
           grep -q 'theme-system.js' index.html
           grep -q 'forest-palette.js' index.html
           grep -q 'reading-system.js' index.html
@@ -196,6 +214,7 @@ jobs:
           grep -q 'a11y-enhancements.js' index.html
           grep -q 'theme-system.css' index.html
           grep -q 'forest-palette.css' index.html
+          grep -q 'icon-pilot.css' index.html
           grep -q 'reading-system.css' index.html
           grep -q 'a11y.css' index.html
           grep -q 'final-polish.js' index.html

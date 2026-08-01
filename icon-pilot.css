@@ -1,0 +1,202 @@
+.official-icon,
+.has-official-icon {
+  --official-icon-size: 48px;
+  --official-icon-padding: 7px;
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--official-icon-size);
+  block-size: var(--official-icon-size);
+  flex: 0 0 var(--official-icon-size);
+  padding: var(--official-icon-padding);
+  overflow: hidden;
+  border: 1px solid var(--icon-well-border, color-mix(in srgb, var(--forest-600) 32%, var(--line)));
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 24%, rgb(255 255 255 / 0.16), transparent 46%),
+    var(--icon-well-bg, color-mix(in srgb, var(--surface-muted) 78%, var(--forest-600) 22%));
+  box-shadow:
+    0 0 0 2px var(--icon-well-ring, color-mix(in srgb, var(--gold-500) 22%, transparent)),
+    inset 0 1px 0 rgb(255 255 255 / 0.08);
+  vertical-align: middle;
+}
+
+.official-icon__image,
+.has-official-icon > .official-icon__image {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.2));
+}
+
+.skill-tile:has(.has-official-icon) {
+  grid-template-columns: 52px minmax(0, 1fr);
+  column-gap: 12px;
+}
+
+.skill-tile:has(.has-official-icon) > span:last-child,
+.profession-card:has(.has-official-icon) > :not(.profession-card__icon),
+.combat-skill:has(.has-official-icon) > :not(.combat-skill__icon),
+.profession-skill__summary:has(.has-official-icon) > :not(.profession-skill__number) {
+  min-inline-size: 0;
+}
+
+.skill-tile .has-official-icon {
+  --official-icon-size: 48px;
+  --official-icon-padding: 6px;
+}
+
+.life-detail .official-icon--detail,
+#life-detail .official-icon--detail {
+  --official-icon-size: 80px;
+  --official-icon-padding: 10px;
+  float: inline-start;
+  margin: 0 16px 8px 0;
+}
+
+.profession-card .has-official-icon {
+  --official-icon-size: 64px;
+  --official-icon-padding: 7px;
+  margin-block-end: 4px;
+}
+
+.profession-hero .official-icon--hero {
+  --official-icon-size: 88px;
+  --official-icon-padding: 9px;
+  float: inline-start;
+  margin: 0 18px 8px 0;
+}
+
+.combat-skill .has-official-icon,
+.profession-skill .has-official-icon {
+  --official-icon-size: 52px;
+  --official-icon-padding: 4px;
+  border-radius: 16px;
+}
+
+.profession-skill__summary:has(.has-official-icon) {
+  grid-template-columns: 52px minmax(0, 1fr) auto auto;
+}
+
+.profession-skill:has(.has-official-icon) .profession-skill__body {
+  padding-inline-start: 76px;
+}
+
+.profession-skill:has(.has-official-icon) .profession-skill__pending {
+  margin-inline-start: 76px;
+}
+
+.cooking-card__head:has(.official-icon--card) {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px 12px;
+}
+
+.cooking-card__head .official-icon--card {
+  --official-icon-size: 64px;
+  --official-icon-padding: 4px;
+  grid-row: 1 / span 2;
+}
+
+.cooking-card__head:has(.official-icon--card) > div,
+.cooking-card__head:has(.official-icon--card) h2 {
+  min-inline-size: 0;
+}
+
+.result-row:has(.official-icon--search) {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 12px;
+}
+
+.result-row .official-icon--search {
+  --official-icon-size: 40px;
+  --official-icon-padding: 5px;
+  grid-row: 1 / span 2;
+}
+
+.result-row:has(.official-icon--search) p {
+  grid-column: 2;
+}
+
+.result-row:has(.official-icon--search) a {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+}
+
+html[data-palette="contrast"] .official-icon,
+html[data-palette="contrast"] .has-official-icon {
+  border-width: 2px;
+  box-shadow: 0 0 0 2px var(--ink-900);
+}
+
+@media (max-width: 720px) {
+  .skill-tile:has(.has-official-icon) {
+    grid-template-columns: 46px minmax(0, 1fr);
+    column-gap: 10px;
+  }
+
+  .skill-tile .has-official-icon {
+    --official-icon-size: 44px;
+  }
+
+  .profession-card .has-official-icon {
+    --official-icon-size: 58px;
+  }
+
+  .profession-hero .official-icon--hero,
+  .life-detail .official-icon--detail,
+  #life-detail .official-icon--detail {
+    --official-icon-size: 72px;
+    margin-inline-end: 14px;
+  }
+
+  .profession-skill .has-official-icon {
+    --official-icon-size: 46px;
+  }
+
+  .profession-skill__summary:has(.has-official-icon) {
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+  }
+
+  .profession-skill:has(.has-official-icon) .profession-skill__body {
+    padding-inline-start: 14px;
+  }
+
+  .profession-skill:has(.has-official-icon) .profession-skill__pending {
+    margin-inline-start: 14px;
+  }
+
+  .cooking-card__head:has(.official-icon--card) {
+    grid-template-columns: 58px minmax(0, 1fr);
+  }
+
+  .cooking-card__head .official-icon--card {
+    --official-icon-size: 56px;
+  }
+
+  .cooking-card__head:has(.official-icon--card) .status-badge {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .result-row:has(.official-icon--search) {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .result-row:has(.official-icon--search) a {
+    grid-column: 2;
+    grid-row: auto;
+    justify-self: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .official-icon__image,
+  .has-official-icon > .official-icon__image {
+    transition: none;
+  }
+}
