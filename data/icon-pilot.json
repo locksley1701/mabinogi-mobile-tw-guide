@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "issue": 7,
+  "version": 2,
+  "issue": 32,
   "updatedAt": "2026-08-01",
   "categories": {
     "lifeSkills": [
@@ -42,6 +42,106 @@
         "height": 64,
         "sha256": "fcab4523aa01050da7462a622a598d1f13a6e98a550e3f4466f84ffeb7face97",
         "sourceClass": "台版客戶端 UI/Sprites/LivingSkill 核准輸出",
+        "approved": true
+      },
+      {
+        "id": "shearing",
+        "name": "剪羊毛",
+        "icon": "assets/icons/life-skills/shearing.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "90b1b305d0158b29f368ddabcdd6a59d4c546fd3ea73c2cfa5b5fe0fa2ee60d7",
+        "sourceClass": "台版客戶端 64px 生活工具圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "harvest",
+        "name": "收割",
+        "icon": "assets/icons/life-skills/harvest.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "b2b27852c19f7f0bcfbe379e18a543b1c8dc0c53990b632a47e52f40caee56e4",
+        "sourceClass": "台版客戶端 64px 生活工具圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "hoeing",
+        "name": "鋤地",
+        "icon": "assets/icons/life-skills/hoeing.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "b553c541403277a3e3d92b9a81b7c29e8332a22c023100a6e548c229684b4037",
+        "sourceClass": "台版客戶端 64px 生活工具圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "insects",
+        "name": "昆蟲採集",
+        "icon": "assets/icons/life-skills/insects.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "374a22991c35ebb6a1bbdc3af6ef807e9ad1092e5a8ddc13e09b7113fba733bc",
+        "sourceClass": "台版客戶端 64px 生活工具圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "fishing",
+        "name": "釣魚",
+        "icon": "assets/icons/life-skills/fishing.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "c4f01d40e21a8313a3a16f77d057897326bbe78fe79e904f8be845b69ca34291",
+        "sourceClass": "台版客戶端 64px 生活工具圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "smithing",
+        "name": "鍛造技術",
+        "icon": "assets/icons/life-skills/smithing.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "c41a17f5f7e5a322ce09b6a7edcb19b7f39a441893de37405d4a8eb0a9c45596",
+        "sourceClass": "台版客戶端 64px 生活技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "woodworking",
+        "name": "木工",
+        "icon": "assets/icons/life-skills/woodworking.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "4f8cb061d1e9ad87e9b21a8444e66e928d889864498c6fe8fd7cb2aaf6fe22dd",
+        "sourceClass": "台版客戶端 64px 生活技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "magic-craft",
+        "name": "魔法工藝",
+        "icon": "assets/icons/life-skills/magic-craft.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "171cfc0b0a5a17b79d657a12b4f004aba4d387cf0e723f05fc16b110c25eab0d",
+        "sourceClass": "台版客戶端 64px 生活技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "potion",
+        "name": "藥水調製",
+        "icon": "assets/icons/life-skills/potion.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "23789308d51f5683f5ecb96716c88e47d64b41d901d2182482e22d6f8bb53aa8",
+        "sourceClass": "台版客戶端 64px 生活技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "handicraft",
+        "name": "手工藝",
+        "icon": "assets/icons/life-skills/handicraft.png",
+        "width": 64,
+        "height": 64,
+        "sha256": "be3c840802d9e48156148e94a6f561b4133cc5e8c8e6ce0b0a5dd371f664518b",
+        "sourceClass": "台版客戶端 64px 生活技能圖標核准輸出",
         "approved": true
       }
     ],

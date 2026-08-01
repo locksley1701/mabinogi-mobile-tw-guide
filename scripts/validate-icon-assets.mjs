@@ -4,6 +4,7 @@ import { extname, join, relative, resolve, sep } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const manifestPath = join(root, 'data', 'icon-pilot.json');
+const lifeCategoriesPath = join(root, 'data', 'life-skill-categories.json');
 const contractPath = join(root, 'ICON_ASSET_CONTRACT.md');
 const privateFragments = [
   'blob', 'bundle', 'segment', 'private', 'raw-screenshot',
@@ -38,12 +39,14 @@ function pngInfo(buffer) {
 }
 
 if (!existsSync(manifestPath)) fail('缺少 data/icon-pilot.json');
+if (!existsSync(lifeCategoriesPath)) fail('缺少 data/life-skill-categories.json');
 if (!existsSync(contractPath)) fail('缺少 ICON_ASSET_CONTRACT.md');
 
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+const lifeCategories = JSON.parse(readFileSync(lifeCategoriesPath, 'utf8'));
 const categories = manifest.categories || {};
 const expectedCounts = {
-  lifeSkills: 4,
+  lifeSkills: 14,
   professions: 4,
   professionSkills: 6,
   cooking: 4
@@ -56,7 +59,13 @@ for (const [category, count] of Object.entries(expectedCounts)) {
   if (items.length !== count) fail(`${category} 數量為 ${items.length}，預期 ${count}`);
   all.push(...items.map(item => ({ ...item, category })));
 }
-if (all.length !== 18) fail(`總數為 ${all.length}，預期 18`);
+if (all.length !== 28) fail(`總數為 ${all.length}，預期 28`);
+
+const lifeCategoryIds = new Set(lifeCategories.map(item => item.id));
+if (lifeCategoryIds.size !== 20) fail(`生活技能分類穩定 ID 數量為 ${lifeCategoryIds.size}，預期 20`);
+for (const item of categories.lifeSkills) {
+  if (!lifeCategoryIds.has(item.id)) fail(`生活技能圖標未對應正式分類：${item.id}`);
+}
 
 const ids = new Set();
 const paths = new Set();
@@ -102,4 +111,7 @@ for (const required of ['icon-pilot.css', 'icon-pilot.js']) {
   if (!index.includes(required)) fail(`index.html 尚未載入 ${required}`);
 }
 
-console.log(`ICON_ASSET_VALIDATION_PASS: ${all.length} assets, ${hashes.size} unique SHA256 hashes`);
+console.log(
+  `ICON_ASSET_VALIDATION_PASS: ${all.length} assets, ${hashes.size} unique SHA256 hashes, ` +
+  `${categories.lifeSkills.length}/${lifeCategoryIds.size} life-skill categories covered`
+);
