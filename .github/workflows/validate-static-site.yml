@@ -97,9 +97,12 @@ jobs:
           }
 
           const iconCount = Object.values(icons.categories || {}).flat().length;
-          if (iconCount !== 18) throw new Error(`Expected 18 icon pilot records, got ${iconCount}`);
+          if (iconCount !== 28) throw new Error(`Expected 28 approved icon records, got ${iconCount}`);
 
-          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 4 professions, ${aliases.length} alias definitions, and ${iconCount} icon records.`);
+          const lifeIconCount = icons.categories?.lifeSkills?.length || 0;
+          if (lifeIconCount !== 14) throw new Error(`Expected 14 approved life-skill icon records, got ${lifeIconCount}`);
+
+          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 4 professions, ${aliases.length} alias definitions, and ${iconCount} icon records (${lifeIconCount}/20 life-skill categories covered).`);
           NODE
 
       - name: Validate public data and UI state contract
