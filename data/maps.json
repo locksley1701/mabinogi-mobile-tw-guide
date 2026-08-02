@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "issue": 14,
+  "updatedAt": "2026-08-02",
+  "contributor": "法那提歐",
+  "sourceNote": "依現有台版生活技能查詢表整理；泛稱地點不視為正式地圖名稱。",
+  "maps": [
+    {
+      "id": "dunbarton-gathering-spots",
+      "name": "敦巴倫採集點",
+      "nameType": "verified-location-label",
+      "category": "城鎮採集區",
+      "summary": "查詢表記錄敦巴倫的雞蛋採集點與蜘蛛網密集區，適合無工具採集練等。",
+      "details": "目前只確認敦巴倫具有相關採集點；個別點位、刷新範圍與正式區域名稱仍待補圖核對。",
+      "requirements": "可前往敦巴倫並進行無工具採集。",
+      "status": "tw-testing",
+      "statusLabel": "台版地點已記錄・點位待細分",
+      "confidence": "medium",
+      "contributor": "法那提歐",
+      "aliases": ["敦巴倫蛋點", "蜘蛛網密集區"],
+      "updatedAt": "2026-08-02",
+      "route": "map/dunbarton-gathering-spots",
+      "gatheringSpots": [
+        {
+          "id": "dunbarton-eggs",
+          "label": "雞蛋採集點",
+          "lifeSkillIds": ["daily-gathering"],
+          "items": ["雞蛋"],
+          "note": "以移動距離短、固定點密集為優先；詳細座標待確認。"
+        },
+        {
+          "id": "dunbarton-cobwebs",
+          "label": "蜘蛛網密集區",
+          "lifeSkillIds": ["daily-gathering"],
+          "items": ["蜘蛛網"],
+          "note": "查詢表列為無工具採集候選；詳細區域仍待台版畫面核對。"
+        }
+      ]
+    },
+    {
+      "id": "ice-canyon-zone-3",
+      "name": "冰之峽谷 3 區",
+      "nameType": "formal-map",
+      "category": "峽谷區域",
+      "summary": "查詢表記錄躲躲花可在冰之峽谷 3 區的藥草區採集。",
+      "details": "此筆只公開已記錄的地圖與採集關聯；藥草區的精確位置、刷新範圍與其他產物仍待補圖。",
+      "requirements": "採集藥草 Lv.15 左右可將躲躲花作為練等目標；實際解鎖以台版遊戲為準。",
+      "status": "tw-testing",
+      "statusLabel": "台版名稱已記錄・位置待複核",
+      "confidence": "medium",
+      "contributor": "法那提歐",
+      "aliases": ["冰峽 3 區", "冰之峽谷三區"],
+      "updatedAt": "2026-08-02",
+      "route": "map/ice-canyon-zone-3",
+      "gatheringSpots": [
+        {
+          "id": "ice-canyon-zone-3-herbs",
+          "label": "藥草區",
+          "lifeSkillIds": ["herbalism"],
+          "items": ["躲躲花"],
+          "note": "可搭配遊戲內「附近位置」確認實際點位。"
+        }
+      ]
+    },
+    {
+      "id": "sheep-pasture-area",
+      "name": "羊放牧地",
+      "nameType": "generic-area",
+      "category": "區域泛稱",
+      "summary": "羊群密集、移動距離短的放牧區適合連續剪羊毛。",
+      "details": "「羊放牧地」目前是用途清楚的區域泛稱，不代表已確認的正式台版地圖名稱。",
+      "requirements": "攜帶羊毛剪；長時間採集技巧可另搭配已確認的金羊毛取得任務。",
+      "status": "tw-testing",
+      "statusLabel": "區域泛稱・正式名稱待確認",
+      "confidence": "high",
+      "contributor": "法那提歐",
+      "aliases": ["羊群密集區", "剪羊毛地點"],
+      "updatedAt": "2026-08-02",
+      "route": "map/sheep-pasture-area",
+      "gatheringSpots": [
+        {
+          "id": "sheep-pasture-wool",
+          "label": "羊群密集區",
+          "lifeSkillIds": ["shearing"],
+          "items": ["羊毛", "金羊毛"],
+          "note": "選擇不需長距離追羊的位置；正式地圖名稱待補。"
+        }
+      ]
+    },
+    {
+      "id": "farmland-area",
+      "name": "農田／田地",
+      "nameType": "generic-area",
+      "category": "區域泛稱",
+      "summary": "田地集中、可連續收割或鋤地的區域，適合供應作物與料理材料。",
+      "details": "此筆代表採集環境類型，不代表單一正式地圖；需後續補上台版地圖名稱與各作物點位。",
+      "requirements": "收割攜帶鐮刀；鋤地攜帶小鋤頭。",
+      "status": "tw-testing",
+      "statusLabel": "區域泛稱・正式名稱待確認",
+      "confidence": "medium",
+      "contributor": "法那提歐",
+      "aliases": ["農田", "田地", "作物採集區"],
+      "updatedAt": "2026-08-02",
+      "route": "map/farmland-area",
+      "gatheringSpots": [
+        {
+          "id": "farmland-harvest",
+          "label": "集中作物區",
+          "lifeSkillIds": ["harvest", "hoeing"],
+          "items": ["作物", "料理材料"],
+          "note": "玉米可延伸至料理；正式作物清單與地圖名稱待確認。"
+        }
+      ]
+    },
+    {
+      "id": "mining-camp-area",
+      "name": "礦脈密集區／採礦營地",
+      "nameType": "generic-area",
+      "category": "區域泛稱",
+      "summary": "礦脈集中、可降低移動距離的採礦區域，適合連續採集。",
+      "details": "目前只確認採礦應優先選礦脈密集區；正式地圖名稱、礦種與刷新位置仍待台版核對。",
+      "requirements": "攜帶鶴嘴鋤並準備足夠工具耐久。",
+      "status": "tw-testing",
+      "statusLabel": "區域泛稱・正式名稱待確認",
+      "confidence": "medium",
+      "contributor": "法那提歐",
+      "aliases": ["礦脈密集區", "採礦營地", "挖礦地點"],
+      "updatedAt": "2026-08-02",
+      "route": "map/mining-camp-area",
+      "gatheringSpots": [
+        {
+          "id": "mining-camp-veins",
+          "label": "集中礦脈",
+          "lifeSkillIds": ["mining"],
+          "items": ["礦石", "金屬材料"],
+          "note": "優先選成功率穩定且可連續採集的礦脈；礦種待確認。"
+        }
+      ]
+    }
+  ]
+}

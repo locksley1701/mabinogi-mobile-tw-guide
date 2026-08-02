@@ -33,28 +33,35 @@ const expected = {
     detailRoutePattern: 'equipment/:id',
     detailRoutePrefix: 'equipment/',
     searchType: 'equipment',
-    nextIssue: 13
+    nextIssue: 13,
+    allowedStates: [['tw-testing', '架構已建立']]
   },
   maps: {
     listRoute: 'maps',
     detailRoutePattern: 'map/:id',
     detailRoutePrefix: 'map/',
     searchType: 'map',
-    nextIssue: 14
+    nextIssue: 14,
+    allowedStates: [
+      ['tw-testing', '架構已建立'],
+      ['tw-testing', 'MVP 已建立']
+    ]
   },
   quests: {
     listRoute: 'quests',
     detailRoutePattern: 'quest/:id',
     detailRoutePrefix: 'quest/',
     searchType: 'quest',
-    nextIssue: 15
+    nextIssue: 15,
+    allowedStates: [['tw-testing', '架構已建立']]
   },
   events: {
     listRoute: 'events',
     detailRoutePattern: 'event/:id',
     detailRoutePrefix: 'event/',
     searchType: 'event',
-    nextIssue: 15
+    nextIssue: 15,
+    allowedStates: [['tw-testing', '架構已建立']]
   }
 };
 
@@ -70,11 +77,18 @@ for (const module of data.modules) {
 
   const expectation = expected[module.id];
   for (const [key, value] of Object.entries(expectation)) {
+    if (key === 'allowedStates') continue;
     if (module[key] !== value) fail(`${module.id}.${key} 為 ${module[key]}，預期 ${value}`);
   }
 
-  if (module.status !== 'tw-testing' || module.statusLabel !== '架構已建立') {
-    fail(`${module.id} 狀態必須是 tw-testing／架構已建立`);
+  const stateAllowed = expectation.allowedStates.some(
+    ([status, statusLabel]) => module.status === status && module.statusLabel === statusLabel
+  );
+  if (!stateAllowed) {
+    const allowedText = expectation.allowedStates
+      .map(([status, statusLabel]) => `${status}／${statusLabel}`)
+      .join(' 或 ');
+    fail(`${module.id} 狀態必須是 ${allowedText}`);
   }
 
   for (const key of ['name', 'navLabel', 'icon', 'summary', 'emptyTitle', 'emptyCopy']) {

@@ -41,10 +41,9 @@ test('首頁顯示四個世界與冒險章節入口', async ({ page }) => {
   await expectNoHorizontalOverflow(page, '首頁四模組入口');
 });
 
-test('四個列表 route 顯示架構與自然空狀態', async ({ page }) => {
+test('尚未實作的三個列表 route 顯示架構與自然空狀態', async ({ page }) => {
   const modules = [
     ['equipment', '裝備章節', 13],
-    ['maps', '地圖章節', 14],
     ['quests', '任務章節', 15],
     ['events', '活動章節', 15]
   ];
@@ -61,10 +60,9 @@ test('四個列表 route 顯示架構與自然空狀態', async ({ page }) => {
   }
 });
 
-test('詳情 route 保留請求 ID 並提供返回列表', async ({ page }) => {
+test('尚未實作的詳情 route 保留請求 ID 並提供返回列表', async ({ page }) => {
   const details = [
     ['equipment/test-sword', 'equipment', 'test-sword'],
-    ['map/dunbarton', 'maps', 'dunbarton'],
     ['quest/sample-quest', 'quests', 'sample-quest'],
     ['event/sample-event', 'events', 'sample-event']
   ];
