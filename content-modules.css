@@ -1,0 +1,188 @@
+.nav-disclosure {
+  margin-top: 8px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+}
+
+.nav-disclosure[open] {
+  border-color: rgba(210, 179, 107, .16);
+  background: rgba(255, 255, 255, .025);
+}
+
+.nav-disclosure > summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 45px;
+  padding: 9px 12px;
+  border-radius: 13px;
+  color: var(--sidebar-text);
+  cursor: pointer;
+  list-style: none;
+  font-size: .91rem;
+  font-weight: 700;
+}
+
+.nav-disclosure > summary::-webkit-details-marker { display: none; }
+
+.nav-disclosure > summary::before {
+  content: "⌘";
+  display: grid;
+  place-items: center;
+  width: 24px;
+  color: var(--gold-400);
+  font-size: 1.05rem;
+}
+
+.nav-disclosure > summary::after {
+  content: "⌄";
+  margin-left: auto;
+  color: var(--sidebar-muted);
+  transition: transform .18s ease;
+}
+
+.nav-disclosure[open] > summary::after { transform: rotate(180deg); }
+.nav-disclosure > summary:hover { background: rgba(255,255,255,.06); }
+.nav-disclosure .nav-link--sub { margin: 1px 4px 3px; padding-left: 18px; }
+
+.content-module-hero {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+  padding: clamp(22px, 3vw, 34px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.content-module-hero__mark {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border: 1px solid color-mix(in srgb, var(--gold-500) 42%, var(--line));
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--gold-200) 24%, var(--surface-muted));
+  color: var(--gold-500);
+  font-family: var(--font-serif);
+  font-size: 2.1rem;
+}
+
+.content-module-hero__title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.content-module-hero h2,
+.content-module-card h2,
+.content-module-empty h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+}
+
+.content-module-hero p {
+  max-width: 880px;
+  margin: 12px 0 16px;
+  color: var(--ink-700);
+}
+
+.content-module-hero code,
+.content-module-route-id code {
+  display: inline-flex;
+  max-width: 100%;
+  margin: 4px 8px 0 0;
+  padding: 5px 9px;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface-solid);
+  color: var(--ink-700);
+  font-size: .78rem;
+}
+
+.content-module-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.content-module-card {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.content-module-card h2 { font-size: 1.12rem; }
+.content-module-card ul { margin: 14px 0 0; padding-left: 1.2rem; color: var(--ink-700); }
+.content-module-card li + li { margin-top: 5px; }
+
+.content-module-empty {
+  margin-top: 18px;
+  padding: clamp(24px, 4vw, 40px);
+  border: 1px dashed color-mix(in srgb, var(--gold-500) 55%, var(--line));
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+}
+
+.content-module-empty h2 { font-size: clamp(1.35rem, 2.2vw, 2rem); }
+.content-module-empty p { max-width: 900px; color: var(--ink-700); }
+.content-module-empty__note { font-size: .86rem; }
+.content-module-empty--detail { min-height: 320px; }
+
+.content-module-route-id {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  margin-bottom: 22px;
+}
+
+.content-module-route-id span {
+  color: var(--ink-500);
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.content-module-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
+  text-decoration: none;
+}
+
+.content-module-portals .portal-card small {
+  line-height: 1.5;
+}
+
+@media (max-width: 1099px) {
+  .content-module-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 679px) {
+  .content-module-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .content-module-hero__mark {
+    width: 66px;
+    height: 66px;
+    border-radius: 19px;
+    font-size: 1.7rem;
+  }
+
+  .content-module-hero__title {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .content-module-portals {
+    grid-template-columns: 1fr;
+  }
+}
