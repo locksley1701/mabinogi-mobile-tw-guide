@@ -1,0 +1,43 @@
+name: Validate map data
+
+on:
+  push:
+    branches: [main, "feat/issue-14-**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  map-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check map JavaScript syntax
+        run: |
+          node --check map-module.js
+          node --check scripts/validate-map-data.mjs
+          node --check tests/e2e/map-module.spec.cjs
+
+      - name: Validate map data contract
+        run: npm run test:maps
+
+      - name: Check required map assets and routes
+        run: |
+          test -f data/maps.json
+          test -f map-module.css
+          test -f map-module.js
+          test -f scripts/validate-map-data.mjs
+          test -f tests/e2e/map-module.spec.cjs
+          grep -q 'map-module.css' index.html
+          grep -q 'map-module.js' index.html
+          grep -q '#/maps' index.html
+          grep -q 'map/:id' data/content-modules.json
