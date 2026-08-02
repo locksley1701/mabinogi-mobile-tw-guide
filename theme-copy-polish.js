@@ -44,7 +44,6 @@
   }
 
   function sanitizeWorkspace() {
-    if (currentRoute() === 'updates') return;
     const workspace = document.querySelector('#workspace');
     if (!workspace) return;
 
