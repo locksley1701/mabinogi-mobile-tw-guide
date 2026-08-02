@@ -39,13 +39,18 @@ test('投稿頁清楚說明私人審核而非自動公開', async ({ page }) => 
   await expectNoHorizontalOverflow(page, '投稿流程');
 });
 
-test('表單網址未接入時顯示誠實的不可用狀態', async ({ page }) => {
+test('公開投稿表單已接入且只使用安全填寫網址', async ({ page }) => {
   await openContribution(page);
 
-  const button = page.locator('.contribution-submit');
-  await expect(button).toBeDisabled();
-  await expect(button).toHaveText('投稿表單準備中');
-  await expect(page.locator('.contribution-status')).toContainText('不會提供假投稿入口');
+  const link = page.locator('.contribution-submit');
+  await expect(link).toHaveText('開啟情報投稿表單');
+  await expect(link).toHaveAttribute(
+    'href',
+    'https://docs.google.com/forms/d/e/1FAIpQLSe7N39rzuXWOParDuLuWF2tEFhbBoFx_JxfZjVqVEftFfq89g/viewform'
+  );
+  await expect(link).toHaveAttribute('target', '_blank');
+  await expect(link).toHaveAttribute('rel', /noopener/);
+  await expect(page.locator('.contribution-status')).toContainText('表單會在新分頁開啟');
   await expect(page.locator('[data-contribution-flow] a')).not.toHaveAttribute('href', /spreadsheets|drive\.google\.com/);
 });
 
