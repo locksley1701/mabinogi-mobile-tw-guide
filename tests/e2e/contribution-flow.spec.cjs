@@ -34,6 +34,8 @@ test('投稿頁清楚說明私人審核而非自動公開', async ({ page }) => 
   await expect(workspace).toContainText('投稿不會立即公開');
   await expect(workspace).toContainText('私人審核');
   await expect(workspace).toContainText('只有核准後的整理資料');
+  await expect(workspace.locator('.page-meta')).toHaveText('投稿表單已開放');
+  await expect(workspace.locator('.page-meta')).not.toContainText(/Issue\s*#/i);
   await expect(workspace.locator('.contribution-step')).toHaveCount(4);
   await expect(page.locator('[data-route="contribute"]')).toHaveAttribute('aria-current', 'page');
   await expectNoHorizontalOverflow(page, '投稿流程');

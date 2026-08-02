@@ -1,0 +1,68 @@
+.contribution-guidance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 22px;
+  padding: clamp(20px, 3vw, 28px);
+  border: 1px solid color-mix(in srgb, var(--gold-500) 36%, var(--line));
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--gold-200) 12%, var(--surface));
+}
+
+.contribution-guidance__copy {
+  min-width: 0;
+}
+
+.contribution-guidance .eyebrow {
+  margin-bottom: 6px;
+}
+
+.contribution-guidance h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.18rem, 2vw, 1.55rem);
+}
+
+.contribution-guidance p {
+  max-width: 760px;
+  margin: 10px 0 6px;
+  color: var(--ink-700);
+}
+
+.contribution-guidance small {
+  display: block;
+  color: var(--ink-500);
+  line-height: 1.6;
+}
+
+.contribution-guidance__link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.profession-card.is-contribution-entry {
+  border-style: dashed;
+}
+
+.profession-card.is-contribution-entry small {
+  color: var(--ink-700);
+}
+
+@media (max-width: 679px) {
+  .contribution-guidance {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .contribution-guidance__link {
+    width: 100%;
+    white-space: normal;
+  }
+}

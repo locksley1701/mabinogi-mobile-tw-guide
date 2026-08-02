@@ -76,7 +76,7 @@
             <h1>提供台版情報</h1>
             <p>歡迎提供職業、生活技能、料理、裝備、地圖、任務、活動與名稱更正。投稿不會立即公開，會先進入私人審核，再由法那提歐核對與整理。</p>
           </div>
-          <div class="page-meta">Issue #${escapeHtml(config.issue)}・${escapeHtml(config.formStatusLabel)}</div>
+          <div class="page-meta">${escapeHtml(config.formStatusLabel)}</div>
         </header>
 
         <section class="contribution-status" aria-labelledby="contribution-status-title">
