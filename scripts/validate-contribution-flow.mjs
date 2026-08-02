@@ -108,14 +108,13 @@ for (const token of ['contribution-flow.css', 'contribution-flow.js', '#/contrib
   if (!index.includes(token)) fail(`index.html 缺少 ${token}`);
 }
 
-const script = read('contribution-flow.js');
 for (const phrase of [
   '投稿不會立即公開',
   '私人審核',
   '原始附件不會放進公開 repository',
   '撤回'
 ]) {
-  if (!script.includes(phrase)) fail(`投稿頁缺少必要文案：${phrase}`);
+  if (!combined.includes(phrase)) fail(`投稿頁公開來源缺少必要文案：${phrase}`);
 }
 
 if (!process.exitCode) {
