@@ -1,0 +1,75 @@
+const { test, expect } = require('@playwright/test');
+
+async function prepare(page) {
+  await page.addInitScript(() => {
+    localStorage.setItem('fanatio-tour-v2', 'done');
+    localStorage.setItem('fanatio-reading-size', 'comfortable');
+    localStorage.setItem('fanatio-palette', 'forest');
+    localStorage.setItem('fanatio-appearance', 'light');
+  });
+}
+
+async function openContribution(page) {
+  await prepare(page);
+  await page.goto('/#/contribute');
+  await expect(page.locator('[data-contribution-flow]')).toBeVisible();
+  await expect(page.locator('#workspace')).not.toContainText('資料載入失敗');
+}
+
+async function expectNoHorizontalOverflow(page, label) {
+  const widths = await page.evaluate(() => ({
+    client: document.documentElement.clientWidth,
+    html: document.documentElement.scrollWidth,
+    body: document.body.scrollWidth
+  }));
+  expect(widths.html, `${label}: html 水平溢位`).toBeLessThanOrEqual(widths.client + 1);
+  expect(widths.body, `${label}: body 水平溢位`).toBeLessThanOrEqual(widths.client + 1);
+}
+
+test('投稿頁清楚說明私人審核而非自動公開', async ({ page }) => {
+  await openContribution(page);
+
+  const workspace = page.locator('#workspace');
+  await expect(workspace.locator('h1')).toHaveText('提供台版情報');
+  await expect(workspace).toContainText('投稿不會立即公開');
+  await expect(workspace).toContainText('私人審核');
+  await expect(workspace).toContainText('只有核准後的整理資料');
+  await expect(workspace.locator('.contribution-step')).toHaveCount(4);
+  await expect(page.locator('[data-route="contribute"]')).toHaveAttribute('aria-current', 'page');
+  await expectNoHorizontalOverflow(page, '投稿流程');
+});
+
+test('表單網址未接入時顯示誠實的不可用狀態', async ({ page }) => {
+  await openContribution(page);
+
+  const button = page.locator('.contribution-submit');
+  await expect(button).toBeDisabled();
+  await expect(button).toHaveText('投稿表單準備中');
+  await expect(page.locator('.contribution-status')).toContainText('不會提供假投稿入口');
+  await expect(page.locator('[data-contribution-flow] a')).not.toHaveAttribute('href', /spreadsheets|drive\.google\.com/);
+});
+
+test('投稿分類、署名與審核狀態符合公開契約', async ({ page }) => {
+  await openContribution(page);
+
+  const workspace = page.locator('#workspace');
+  await expect(workspace.locator('.contribution-category')).toHaveCount(9);
+  await expect(workspace.locator('.contribution-category-list')).toContainText('裝備');
+  await expect(workspace.locator('.contribution-category-list')).toContainText('任務');
+  await expect(workspace.locator('.contribution-card').nth(1)).toContainText('匿名');
+  await expect(workspace.locator('.contribution-card').nth(1)).toContainText('遊戲 ID');
+  await expect(workspace.locator('.contribution-card').nth(1)).toContainText('暱稱');
+  await expect(workspace.locator('.contribution-status-list span')).toHaveCount(7);
+});
+
+test('投稿頁顯示隱私與撤回規則', async ({ page }) => {
+  await openContribution(page);
+
+  const workspace = page.locator('#workspace');
+  await expect(workspace.locator('.contribution-privacy')).toContainText('真實姓名');
+  await expect(workspace.locator('.contribution-privacy')).toContainText('電話');
+  await expect(workspace.locator('.contribution-privacy')).toContainText('原始附件不會放進公開 repository');
+  await expect(workspace.locator('.contribution-withdrawal')).toContainText('撤回');
+  await expect(workspace.locator('.contribution-withdrawal')).toContainText('投稿編號');
+  await expectNoHorizontalOverflow(page, '投稿隱私與撤回');
+});
