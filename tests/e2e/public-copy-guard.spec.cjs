@@ -40,6 +40,7 @@ const publicRoutes = [
   'cooking',
   'afk',
   'professions',
+  'updates',
   'contribute',
   'equipment',
   'maps',
@@ -68,8 +69,21 @@ test('一般玩家 route 不顯示 GitHub 施工追蹤資訊', async ({ page }) 
   }
 });
 
-test('更新紀錄仍可保留開發追蹤依據', async ({ page }) => {
-  await page.goto('/#/updates');
-  await expect(page.locator('.timeline')).toBeVisible();
-  await expect(page.locator('#workspace')).toContainText('Issue #');
+test('更新紀錄頁隱藏施工編號，changelog JSON 保留追蹤依據', async ({ page }) => {
+  await waitForPublicRoute(page, 'updates');
+
+  const workspaceText = await page.locator('#workspace').innerText();
+  expect(workspaceText).not.toMatch(/\bIssue\s*#\d+/i);
+  expect(workspaceText).not.toMatch(/\bPR\s*#\d+/i);
+
+  const changelog = await page.evaluate(async () => {
+    const response = await fetch('data/changelog.json', { cache: 'no-store' });
+    if (!response.ok) throw new Error(`data/changelog.json: ${response.status}`);
+    return response.json();
+  });
+
+  expect(
+    changelog.some(item => /\b(?:Issue|PR)\s*#\d+/i.test(String(item.basis || ''))),
+    'repository 內的 changelog JSON 應保留 Issue／PR 追蹤依據'
+  ).toBeTruthy();
 });
