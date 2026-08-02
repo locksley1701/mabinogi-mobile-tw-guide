@@ -58,13 +58,23 @@ test('投稿分類、署名與審核狀態符合公開契約', async ({ page }) 
   await openContribution(page);
 
   const workspace = page.locator('#workspace');
-  await expect(workspace.locator('.contribution-category')).toHaveCount(9);
+  const categories = workspace.locator('.contribution-category');
+  await expect(categories).toHaveCount(9);
   await expect(workspace.locator('.contribution-category-list')).toContainText('裝備');
   await expect(workspace.locator('.contribution-category-list')).toContainText('任務');
+
+  const categoryStyles = await categories.evaluateAll(items => items.map(item => {
+    const style = getComputedStyle(item);
+    const dot = getComputedStyle(item, '::before');
+    return `${style.backgroundColor}|${style.borderColor}|${dot.backgroundColor}`;
+  }));
+  expect(new Set(categoryStyles).size, '投稿分類應具有多組可辨識語意色').toBeGreaterThanOrEqual(7);
+
   await expect(workspace.locator('.contribution-card').nth(1)).toContainText('匿名');
   await expect(workspace.locator('.contribution-card').nth(1)).toContainText('遊戲 ID');
   await expect(workspace.locator('.contribution-card').nth(1)).toContainText('暱稱');
   await expect(workspace.locator('.contribution-status-list span')).toHaveCount(7);
+  await expectNoHorizontalOverflow(page, '投稿分類標籤');
 });
 
 test('投稿頁顯示隱私與撤回規則', async ({ page }) => {
