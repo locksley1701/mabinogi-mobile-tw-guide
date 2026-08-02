@@ -2,9 +2,9 @@
   "version": 1,
   "issue": 8,
   "updatedAt": "2026-08-02",
-  "formStatus": "preparing",
-  "formStatusLabel": "投稿表單準備中",
-  "formUrl": "",
+  "formStatus": "open",
+  "formStatusLabel": "投稿表單已開放",
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLSe7N39rzuXWOParDuLuWF2tEFhbBoFx_JxfZjVqVEftFfq89g/viewform",
   "reviewer": "法那提歐",
   "categories": [
     "職業／技能",
