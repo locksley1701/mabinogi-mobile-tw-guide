@@ -51,7 +51,13 @@ test('公開投稿表單已接入且只使用安全填寫網址', async ({ page 
   await expect(link).toHaveAttribute('target', '_blank');
   await expect(link).toHaveAttribute('rel', /noopener/);
   await expect(page.locator('.contribution-status')).toContainText('表單會在新分頁開啟');
-  await expect(page.locator('[data-contribution-flow] a')).not.toHaveAttribute('href', /spreadsheets|drive\.google\.com/);
+
+  const publicHrefs = await page.locator('[data-contribution-flow] a').evaluateAll(anchors =>
+    anchors.map(anchor => anchor.getAttribute('href') || '')
+  );
+  expect(publicHrefs).not.toEqual(expect.arrayContaining([
+    expect.stringMatching(/spreadsheets|drive\.google\.com/)
+  ]));
 });
 
 test('投稿分類、署名與審核狀態符合公開契約', async ({ page }) => {
