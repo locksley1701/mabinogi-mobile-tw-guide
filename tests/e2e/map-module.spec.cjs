@@ -36,7 +36,7 @@ test('地圖列表顯示五筆來源支持的地圖與採集區', async ({ page 
   await expect(workspace.locator('h1')).toHaveText('地圖與採集位置');
   await expect(workspace.locator('.map-record')).toHaveCount(5);
   await expect(workspace.locator('a[href="#/map/ice-canyon-zone-3"]')).toContainText('冰之峽谷 3 區');
-  await expect(workspace.locator('.map-source-note')).toContainText('泛稱地點');
+  await expect(workspace.locator('.map-source-note')).toContainText('不會被寫成台版正式地圖');
   await expect(page.locator('[data-route="maps"]')).toHaveAttribute('aria-current', 'page');
   await expectNoHorizontalOverflow(page, '地圖列表');
 });
@@ -47,13 +47,16 @@ test('名稱類型篩選不會把區域泛稱冒充正式地圖', async ({ page 
 
   const workspace = page.locator('#workspace');
   await workspace.locator('[data-map-type="generic-area"]').click();
-  await expect(workspace.locator('.map-record')).toHaveCount(3);
-  await expect(workspace.locator('.map-record')).toContainText('區域泛稱');
-  await expect(workspace.locator('.map-record')).not.toContainText('冰之峽谷 3 區');
+  const genericRecords = workspace.locator('.map-record');
+  await expect(genericRecords).toHaveCount(3);
+  await expect(genericRecords.locator('.map-name-type--generic-area')).toHaveCount(3);
+  await expect(genericRecords.filter({ hasText: '冰之峽谷 3 區' })).toHaveCount(0);
 
   await workspace.locator('[data-map-type="formal-map"]').click();
-  await expect(workspace.locator('.map-record')).toHaveCount(1);
-  await expect(workspace.locator('.map-record')).toContainText('冰之峽谷 3 區');
+  const formalRecords = workspace.locator('.map-record');
+  await expect(formalRecords).toHaveCount(1);
+  await expect(formalRecords.first()).toContainText('冰之峽谷 3 區');
+  await expect(formalRecords.locator('.map-name-type--formal-map')).toHaveCount(1);
   await expectNoHorizontalOverflow(page, '地圖類型篩選');
 });
 
@@ -88,8 +91,12 @@ test('快速查詢可用採集物找到地圖詳情', async ({ page }) => {
 
   const workspace = page.locator('#workspace');
   await workspace.locator('#site-search').fill('躲躲花');
-  await expect(workspace.locator('.result-row')).toContainText('冰之峽谷 3 區');
-  await expect(workspace.locator('.result-row a[href="#/map/ice-canyon-zone-3"]')).toBeVisible();
+  const mapResult = workspace.locator('.result-row').filter({
+    has: page.locator('a[href="#/map/ice-canyon-zone-3"]')
+  });
+  await expect(mapResult).toHaveCount(1);
+  await expect(mapResult).toContainText('冰之峽谷 3 區');
+  await expect(mapResult.locator('a[href="#/map/ice-canyon-zone-3"]')).toBeVisible();
 
   await workspace.locator('#site-search').fill('');
   await workspace.locator('#search-category').selectOption('map');
