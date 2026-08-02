@@ -74,7 +74,7 @@ test('詳情 route 保留請求 ID 並提供返回列表', async ({ page }) => {
     await waitForModules(page);
     await expect(page.locator('.content-module-route-id code')).toHaveText(requestedId);
     await expect(page.locator('.content-module-empty')).toContainText('不以假資料代替正式內容');
-    await expect(page.locator(`a[href="#/${listRoute}"]`)).toBeVisible();
+    await expect(page.locator(`.content-module-back[href="#/${listRoute}"]`)).toBeVisible();
     await expect(page.locator(`[data-route="${listRoute}"]`)).toHaveAttribute('aria-current', 'page');
     await expectNoHorizontalOverflow(page, route);
   }
@@ -85,15 +85,25 @@ test('快速查詢可依四類模組篩選章節入口', async ({ page }) => {
   await waitForModules(page);
 
   const select = page.locator('#search-category');
+  const input = page.locator('#site-search');
   for (const value of ['equipment', 'map', 'quest', 'event']) {
     await expect(select.locator(`option[value="${value}"]`)).toHaveCount(1);
   }
 
-  await page.locator('#site-search').fill('地圖');
-  await expect(page.locator('.result-row')).toContainText('地圖章節');
-  await expect(page.locator('.result-row a[href="#/maps"]')).toBeVisible();
+  await input.fill('地圖');
+  const mapResult = page.locator('.result-row').filter({
+    has: page.locator('a[href="#/maps"]')
+  });
+  await expect(mapResult).toHaveCount(1);
+  await expect(mapResult).toContainText('地圖章節');
+  await expect(mapResult.locator('a[href="#/maps"]')).toBeVisible();
 
   await select.selectOption('event');
-  await expect(page.locator('.result-row')).toContainText('活動章節');
+  await input.fill('活動');
+  const eventResult = page.locator('.result-row').filter({
+    has: page.locator('a[href="#/events"]')
+  });
+  await expect(eventResult).toHaveCount(1);
+  await expect(eventResult).toContainText('活動章節');
   await expectNoHorizontalOverflow(page, '四模組搜尋');
 });
