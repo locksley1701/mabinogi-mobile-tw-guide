@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="soft-contrast.css">
   <link rel="stylesheet" href="forest-palette.css">
   <link rel="stylesheet" href="icon-pilot.css">
+  <link rel="stylesheet" href="content-modules.css">
   <link rel="stylesheet" href="theme-integration.css">
   <link rel="stylesheet" href="a11y.css">
   <link rel="stylesheet" href="reading-system.css">
@@ -50,6 +51,15 @@
         <a class="nav-link nav-link--sub" href="#/profession/greatsword-warrior" data-route="profession/greatsword-warrior"><span aria-hidden="true">◆</span><b>大劍戰士</b></a>
         <a class="nav-link nav-link--sub" href="#/profession/warrior" data-route="profession/warrior"><span aria-hidden="true">⬡</span><b>戰士</b></a>
         <a class="nav-link nav-link--sub" href="#/profession/archer" data-route="profession/archer"><span aria-hidden="true">⌁</span><b>弓手</b></a>
+
+        <p class="nav-label">世界與冒險</p>
+        <details class="nav-disclosure" data-content-module-nav>
+          <summary>裝備・地圖・任務・活動</summary>
+          <a class="nav-link nav-link--sub" href="#/equipment" data-route="equipment"><span aria-hidden="true">♜</span><b>裝備查詢</b></a>
+          <a class="nav-link nav-link--sub" href="#/maps" data-route="maps"><span aria-hidden="true">⌖</span><b>地圖與採集</b></a>
+          <a class="nav-link nav-link--sub" href="#/quests" data-route="quests"><span aria-hidden="true">▤</span><b>任務查詢</b></a>
+          <a class="nav-link nav-link--sub" href="#/events" data-route="events"><span aria-hidden="true">✦</span><b>活動查詢</b></a>
+        </details>
 
         <p class="nav-label">關於手札</p>
         <a class="nav-link" href="#/updates" data-route="updates"><span aria-hidden="true">✦</span><b>增補紀錄</b></a>
@@ -108,6 +118,7 @@
   <div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
   <script src="search-normalization.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="content-modules.js" defer></script>
   <script src="cooking.js" defer></script>
   <script src="icon-pilot.js" defer></script>
   <script src="ui-enhancements.js" defer></script>

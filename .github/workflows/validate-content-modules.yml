@@ -1,0 +1,46 @@
+name: Validate content modules
+
+on:
+  push:
+    branches: [main, "architecture/**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  content-modules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check module JavaScript syntax
+        run: |
+          node --check content-modules.js
+          node --check scripts/validate-content-modules.mjs
+          node --check tests/e2e/content-modules.spec.cjs
+
+      - name: Validate content module contract
+        run: npm run test:content-modules
+
+      - name: Check required module assets and routes
+        run: |
+          test -f CONTENT_MODULE_ARCHITECTURE.md
+          test -f content-modules.css
+          test -f content-modules.js
+          test -f data/content-modules.json
+          test -f scripts/validate-content-modules.mjs
+          test -f tests/e2e/content-modules.spec.cjs
+          grep -q 'content-modules.css' index.html
+          grep -q 'content-modules.js' index.html
+          grep -q '#/equipment' index.html
+          grep -q '#/maps' index.html
+          grep -q '#/quests' index.html
+          grep -q '#/events' index.html
