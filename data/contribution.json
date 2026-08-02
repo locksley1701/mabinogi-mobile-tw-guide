@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "issue": 8,
+  "updatedAt": "2026-08-02",
+  "formStatus": "open",
+  "formStatusLabel": "投稿表單已開放",
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLSe7N39rzuXWOParDuLuWF2tEFhbBoFx_JxfZjVqVEftFfq89g/viewform",
+  "reviewer": "法那提歐",
+  "categories": [
+    "職業／技能",
+    "生活技能",
+    "料理",
+    "裝備",
+    "地圖",
+    "任務",
+    "活動",
+    "名稱更正",
+    "其他"
+  ],
+  "signatureModes": [
+    "匿名",
+    "遊戲 ID",
+    "暱稱"
+  ],
+  "workflow": [
+    {
+      "id": "submit",
+      "title": "提交台版情報",
+      "copy": "填寫台版正式名稱、說明與必要佐證；不確定的內容請明確註明。"
+    },
+    {
+      "id": "private-review",
+      "title": "進入私人審核",
+      "copy": "原始回覆、附件與聯絡資訊只留在私人表單後台與審核台帳，不進入公開 repository。"
+    },
+    {
+      "id": "verify",
+      "title": "由法那提歐核對",
+      "copy": "依台版實機、既有資料或多個來源核對；資料不足時可能要求補件或不採用。"
+    },
+    {
+      "id": "publish",
+      "title": "整理後才公開",
+      "copy": "只有核准後的整理資料、選定署名與 changelog 會進入網站；投稿不會自動發布。"
+    }
+  ],
+  "privacyRules": [
+    "不要提交不必要的真實姓名、電話、地址、私人信箱或聊天紀錄。",
+    "截圖只保留核對所需畫面；原始附件不會放進公開 repository。",
+    "公開署名只使用匿名、遊戲 ID 或暱稱，不公開私人聯絡資訊。",
+    "投稿者可依投稿編號提出撤回；未發布內容停止使用，已發布內容將以可追溯方式更新或移除。"
+  ],
+  "reviewStatuses": [
+    "待初審",
+    "待補件",
+    "核對中",
+    "已核准待發布",
+    "已發布",
+    "不採用",
+    "已撤回"
+  ]
+}

@@ -55,7 +55,7 @@ const privateKeyPatterns = [
 
 const privateValuePatterns = [
   /drive\.google\.com/i,
-  /docs\.google\.com/i,
+  /docs\.google\.com\/(?!forms\/d\/e\/[^/?#]+\/viewform$)/i,
   /IMG_\d+\.(?:PNG|JPE?G|WEBP)/i,
   /file_[0-9a-f]{8,}/i,
   /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i

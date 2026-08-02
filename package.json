@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test:contract": "node scripts/validate-data-contract.mjs && node scripts/validate-name-normalization.mjs && node scripts/validate-reading-system.mjs && node scripts/validate-icon-assets.mjs && node scripts/validate-content-modules.mjs && node scripts/validate-map-data.mjs",
+    "test:contract": "node scripts/validate-data-contract.mjs && node scripts/validate-name-normalization.mjs && node scripts/validate-reading-system.mjs && node scripts/validate-icon-assets.mjs && node scripts/validate-content-modules.mjs && node scripts/validate-map-data.mjs && node scripts/validate-contribution-flow.mjs",
     "test:icons": "node scripts/validate-icon-assets.mjs",
     "test:content-modules": "node scripts/validate-content-modules.mjs",
     "test:maps": "node scripts/validate-map-data.mjs",
+    "test:contribution": "node scripts/validate-contribution-flow.mjs",
     "test:e2e": "playwright test"
   },
   "devDependencies": {

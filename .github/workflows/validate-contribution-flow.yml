@@ -1,0 +1,43 @@
+name: Validate contribution flow
+
+on:
+  push:
+    branches: [main, "feat/issue-8-**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  contribution-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check contribution JavaScript syntax
+        run: |
+          node --check contribution-flow.js
+          node --check scripts/validate-contribution-flow.mjs
+          node --check tests/e2e/contribution-flow.spec.cjs
+
+      - name: Validate contribution and privacy contract
+        run: npm run test:contribution
+
+      - name: Check required contribution assets
+        run: |
+          test -f CONTRIBUTION_WORKFLOW.md
+          test -f contribution-flow.css
+          test -f contribution-flow.js
+          test -f data/contribution.json
+          test -f scripts/validate-contribution-flow.mjs
+          test -f tests/e2e/contribution-flow.spec.cjs
+          grep -q 'contribution-flow.css' index.html
+          grep -q 'contribution-flow.js' index.html
+          grep -q '#/contribute' index.html
