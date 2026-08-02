@@ -41,26 +41,30 @@ test('首頁顯示四個世界與冒險章節入口', async ({ page }) => {
   await expectNoHorizontalOverflow(page, '首頁四模組入口');
 });
 
-test('尚未實作的三個列表 route 顯示架構與自然空狀態', async ({ page }) => {
+test('尚未實作的三個列表 route 顯示玩家可理解的自然空狀態', async ({ page }) => {
   const modules = [
-    ['equipment', '裝備章節', 13],
-    ['quests', '任務章節', 15],
-    ['events', '活動章節', 15]
+    ['equipment', '裝備章節'],
+    ['quests', '任務章節'],
+    ['events', '活動章節']
   ];
 
-  for (const [route, title, issue] of modules) {
+  for (const [route, title] of modules) {
     await page.goto(`/#/${route}`);
     await waitForModules(page);
-    await expect(page.locator('h1')).toContainText(title);
-    await expect(page.locator('.content-module-empty')).toContainText('不使用韓版資料或推測數值');
-    await expect(page.locator('.page-meta')).toContainText(`Issue #${issue}`);
+    const workspace = page.locator('#workspace');
+    await expect(workspace.locator('h1')).toContainText(title);
+    await expect(workspace.locator('.content-module-empty')).toContainText('不使用韓版資料或推測數值');
+    await expect(workspace.locator('.page-meta')).toContainText('台版資料待補');
+    await expect(workspace).not.toContainText(/Issue\s*#\d+/i);
+    await expect(workspace).not.toContainText('下一施工');
+    await expect(workspace.locator('.content-module-hero code')).toHaveCount(0);
     await expect(page.locator(`[data-route="${route}"]`)).toHaveAttribute('aria-current', 'page');
     await expect(page.locator('[data-content-module-nav]')).toHaveAttribute('open', '');
     await expectNoHorizontalOverflow(page, route);
   }
 });
 
-test('尚未實作的詳情 route 保留請求 ID 並提供返回列表', async ({ page }) => {
+test('尚未實作的資料頁保留查詢代碼並提供返回列表', async ({ page }) => {
   const details = [
     ['equipment/test-sword', 'equipment', 'test-sword'],
     ['quest/sample-quest', 'quests', 'sample-quest'],
@@ -70,9 +74,14 @@ test('尚未實作的詳情 route 保留請求 ID 並提供返回列表', async 
   for (const [route, listRoute, requestedId] of details) {
     await page.goto(`/#/${route}`);
     await waitForModules(page);
-    await expect(page.locator('.content-module-route-id code')).toHaveText(requestedId);
-    await expect(page.locator('.content-module-empty')).toContainText('不以假資料代替正式內容');
-    await expect(page.locator(`.content-module-back[href="#/${listRoute}"]`)).toBeVisible();
+    const workspace = page.locator('#workspace');
+    await expect(workspace.locator('.content-module-route-id code')).toHaveText(requestedId);
+    await expect(workspace.locator('.content-module-route-id')).toContainText('查詢代碼');
+    await expect(workspace.locator('.content-module-empty')).toContainText('不以假資料代替正式內容');
+    await expect(workspace.locator('.content-module-empty')).toContainText('待台版資料核對完成後');
+    await expect(workspace).not.toContainText(/Issue\s*#\d+/i);
+    await expect(workspace).not.toContainText(/\broute\b/i);
+    await expect(workspace.locator(`.content-module-back[href="#/${listRoute}"]`)).toBeVisible();
     await expect(page.locator(`[data-route="${listRoute}"]`)).toHaveAttribute('aria-current', 'page');
     await expectNoHorizontalOverflow(page, route);
   }
