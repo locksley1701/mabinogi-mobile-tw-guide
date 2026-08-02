@@ -73,8 +73,8 @@ for (const module of data.modules) {
     if (module[key] !== value) fail(`${module.id}.${key} 為 ${module[key]}，預期 ${value}`);
   }
 
-  if (module.status !== 'planned' || module.statusLabel !== '架構已建立') {
-    fail(`${module.id} 狀態必須是 planned／架構已建立`);
+  if (module.status !== 'tw-testing' || module.statusLabel !== '架構已建立') {
+    fail(`${module.id} 狀態必須是 tw-testing／架構已建立`);
   }
 
   for (const key of ['name', 'navLabel', 'icon', 'summary', 'emptyTitle', 'emptyCopy']) {
