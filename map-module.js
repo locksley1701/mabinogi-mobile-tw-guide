@@ -261,6 +261,13 @@
     baseRenderRoute();
   }
 
+  function rerenderCurrentMapSurface() {
+    const route = getRoute();
+    if (route === 'maps' || route.startsWith('map/') || (state.site && route === 'search')) {
+      enhancedRenderRoute();
+    }
+  }
+
   window.removeEventListener('hashchange', baseRenderRoute);
   renderRoute = enhancedRenderRoute;
   window.addEventListener('hashchange', enhancedRenderRoute);
@@ -273,8 +280,7 @@
     .then(data => {
       mapState.maps = data.maps || [];
       mapState.loaded = true;
-      const route = getRoute();
-      if (route === 'maps' || route.startsWith('map/') || (state.site && route === 'search')) enhancedRenderRoute();
+      rerenderCurrentMapSurface();
       return mapState.maps;
     })
     .catch(error => {
@@ -285,6 +291,13 @@
       if (route === 'maps' || route.startsWith('map/')) enhancedRenderRoute();
       return [];
     });
+
+  Promise.allSettled([
+    ready,
+    Promise.resolve(window.FanatioContentModules?.ready)
+  ]).then(() => {
+    if (mapState.loaded) rerenderCurrentMapSurface();
+  });
 
   window.FanatioMapData = {
     ready,
