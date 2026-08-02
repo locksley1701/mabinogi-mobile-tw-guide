@@ -107,7 +107,7 @@
     openModuleDisclosure();
     setTopbar(module.listRoute, `${module.name}詳情`);
     workspace.innerHTML = `
-      ${pageHead(`${module.name}詳情 route`, '這筆資料尚未收錄', `已收到可分享的詳情網址，但目前沒有核准的台版資料可顯示。`, `請求 ID：${requestedId || '未提供'}`)}
+      ${pageHead(`${module.name}詳情 route`, '這筆資料尚未收錄', '已收到可分享的詳情網址，但目前沒有核准的台版資料可顯示。', `請求 ID：${requestedId || '未提供'}`)}
       <section class="content-module-empty content-module-empty--detail">
         <div class="content-module-route-id"><span>請求 ID</span><code>${escapeHtml(requestedId || '(empty)')}</code></div>
         <h2>不以假資料代替正式內容</h2>
@@ -193,6 +193,14 @@
   };
 
   renderSearch = function enhancedRenderSearch() {
+    if (!state.site) {
+      workspace.innerHTML = `
+        ${pageHead('全站索引', '快速查詢載入中', '正在讀取網站資料與四類內容模組。')}
+        <div class="empty-state"><strong>正在建立搜尋索引</strong><p>請稍候片刻。</p></div>
+      `;
+      return;
+    }
+
     const categories = ['全部', 'life', 'cooking', 'afk', 'profession', 'combatSkill', 'equipment', 'map', 'quest', 'event'];
     workspace.innerHTML = `
       ${pageHead('全站索引', '快速查詢', '搜尋生活技能、料理、掛機技巧、職業、裝備、地圖、任務或活動。舊稱只用來協助搜尋，不會另外佔一整頁。', `資料更新：${state.site.updatedAt}`)}
@@ -239,7 +247,8 @@
     .then(data => {
       moduleState.modules = data.modules || [];
       moduleState.loaded = true;
-      if (routeConfig(getRoute()) || ['home', 'search'].includes(getRoute())) enhancedRenderRoute();
+      const route = getRoute();
+      if (routeConfig(route) || (state.site && ['home', 'search'].includes(route))) enhancedRenderRoute();
       return moduleState.modules;
     })
     .catch(error => {
