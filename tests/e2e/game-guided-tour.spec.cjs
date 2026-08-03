@@ -34,6 +34,23 @@ async function completeTour(page) {
   await expect(page.locator('body')).not.toHaveClass(/quick-search-open|drawer-open|game-guided-tour-open/);
 }
 
+async function loadCompletedContribution(page, options) {
+  await page.addInitScript(() => {
+    localStorage.setItem('fanatio-guide-tour-version', '1');
+    localStorage.setItem('fanatio-guide-tour-status', 'completed');
+  });
+  await page.goto('/#/contribute', options);
+  await expect(page.locator(TOUR)).toBeHidden();
+}
+
+async function expectTourClosedForAtLeast500ms(page) {
+  await expect(page.locator(TOUR)).toBeHidden();
+  await expect(page.locator('html')).not.toHaveClass(/game-guided-tour-open/);
+  await page.waitForTimeout(550);
+  await expect(page.locator(TOUR)).toBeHidden();
+  await expect(page.locator('html')).not.toHaveClass(/game-guided-tour-open/);
+}
+
 test('全新訪客會自動開始，完成後不再自動顯示且搜尋目標可操作', async ({ page }) => {
   await freshVisitor(page);
   await page.goto('/#/home');
@@ -60,6 +77,53 @@ test('略過會保存，公開入口可重新觀看', async ({ page }) => {
   await page.locator('#top-tour-button').click();
   await waitForTour(page);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('fanatio-guide-tour-status'))).toBe('skipped');
+});
+
+test('投稿頁頂部重播只有一個 session，略過或 Escape 一次即可完全退出', async ({ page }) => {
+  await loadCompletedContribution(page);
+  const trigger = page.locator('#top-tour-button');
+  await trigger.click();
+  await waitForTour(page);
+  await expect(page.locator(TOUR)).toHaveCount(1);
+  await expect(page.locator(`${TOUR} [role="dialog"]:visible`)).toHaveCount(1);
+  await page.locator(`${TOUR} [data-tour-action="skip"]`).click();
+  await expectTourClosedForAtLeast500ms(page);
+  await expect(page.locator('#quick-search-panel')).toBeHidden();
+  await expect(page.locator('body')).not.toHaveClass(/drawer-open|quick-search-open/);
+  await expect(trigger).toBeFocused();
+
+  await trigger.click();
+  await waitForTour(page);
+  await page.keyboard.press('Escape');
+  await expectTourClosedForAtLeast500ms(page);
+  await expect(trigger).toBeFocused();
+});
+
+test('投稿頁側欄重播不會建立第二個 session', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile-chrome', '手機側欄在收合狀態不可操作');
+  await loadCompletedContribution(page);
+  const trigger = page.locator('#tour-button');
+  await trigger.click();
+  await waitForTour(page);
+  await expect(page.locator(TOUR)).toHaveCount(1);
+  await expect(page.locator(`${TOUR} [role="dialog"]:visible`)).toHaveCount(1);
+  await page.locator(`${TOUR} [data-tour-action="skip"]`).click();
+  await expectTourClosedForAtLeast500ms(page);
+  await expect(trigger).toBeFocused();
+});
+
+test('剛載入投稿頁後的快速重播連點會去重且不會在略過後復活', async ({ page }) => {
+  await loadCompletedContribution(page, {waitUntil: 'domcontentloaded'});
+  await page.locator('#top-tour-button').evaluate(button => {
+    button.click();
+    button.click();
+    button.click();
+  });
+  await waitForTour(page);
+  await expect(page.locator(TOUR)).toHaveCount(1);
+  await expect(page.locator(`${TOUR} [role="dialog"]:visible`)).toHaveCount(1);
+  await page.locator(`${TOUR} [data-tour-action="skip"]`).click();
+  await expectTourClosedForAtLeast500ms(page);
 });
 
 test('非目標背景 click 不會觸發 route，搜尋目標仍可操作', async ({ page }) => {

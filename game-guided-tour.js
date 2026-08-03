@@ -1,6 +1,8 @@
 (function setupGameGuidedTour() {
   'use strict';
 
+  if (window.FanatioGuidedTour?.initialized || document.querySelector('#game-guided-tour')) return;
+
   const VERSION = '1';
   const STORAGE_VERSION = 'fanatio-guide-tour-version';
   const STORAGE_STATUS = 'fanatio-guide-tour-status';
@@ -15,8 +17,16 @@
   let target = null;
   let returnFocus = null;
   let guardPaused = false;
+  let sessionGeneration = 0;
+  let automaticStartTimer = 0;
+  let startRetryTimer = 0;
   let missingTimer = 0;
   let positionFrame = 0;
+  let stepFrame = 0;
+  let focusFrame = 0;
+  let guardFrame = 0;
+  let actionAdvanceTimer = 0;
+  let hashPositionTimer = 0;
   let viewportTimer = 0;
   let viewportScrollPending = false;
   let viewportAttempts = 0;
@@ -89,7 +99,41 @@
 
   function withoutGuard(callback) {
     guardPaused = true;
-    try { callback(); } finally { requestAnimationFrame(() => { guardPaused = false; }); }
+    const generation = sessionGeneration;
+    try { callback(); } finally {
+      cancelAnimationFrame(guardFrame);
+      guardFrame = requestAnimationFrame(() => {
+        if (generation === sessionGeneration) guardPaused = false;
+      });
+    }
+  }
+
+  function cancelPendingSessionWork({cancelAutomatic = false} = {}) {
+    sessionGeneration += 1;
+    clearTimeout(startRetryTimer);
+    clearTimeout(missingTimer);
+    clearTimeout(viewportTimer);
+    clearTimeout(actionAdvanceTimer);
+    clearTimeout(hashPositionTimer);
+    if (cancelAutomatic) clearTimeout(automaticStartTimer);
+    cancelAnimationFrame(positionFrame);
+    cancelAnimationFrame(stepFrame);
+    cancelAnimationFrame(focusFrame);
+    cancelAnimationFrame(guardFrame);
+    startRetryTimer = 0;
+    missingTimer = 0;
+    viewportTimer = 0;
+    actionAdvanceTimer = 0;
+    hashPositionTimer = 0;
+    if (cancelAutomatic) automaticStartTimer = 0;
+    guardPaused = false;
+    viewportScrollPending = false;
+    return sessionGeneration;
+  }
+
+  function automaticStartIsSuppressed() {
+    const completed = safeStorageGet(STORAGE_VERSION) === VERSION && ['completed', 'skipped'].includes(safeStorageGet(STORAGE_STATUS));
+    return completed || safeStorageGet(LEGACY_STORAGE_STATUS) === 'done';
   }
 
   function closeQuickSearch({force = false} = {}) {
@@ -207,10 +251,15 @@
     preferred?.focus({preventScroll: true});
   }
 
-  function showMissingFallback() {
-    if (!active || target) return;
+  function showMissingFallback(generation = sessionGeneration) {
+    if (!active || generation !== sessionGeneration || target) return;
     fallback.hidden = false;
     shell.classList.add('is-fallback');
+  }
+
+  function scheduleMissingFallback(delay, generation = sessionGeneration) {
+    clearTimeout(missingTimer);
+    missingTimer = setTimeout(() => showMissingFallback(generation), delay);
   }
 
   function hideIndicators() {
@@ -218,7 +267,7 @@
     arrow.hidden = true;
   }
 
-  function requestViewportTarget(candidate) {
+  function requestViewportTarget(candidate, generation = sessionGeneration) {
     if (viewportScrollPending || viewportAttempts >= 2) return false;
     viewportAttempts += 1;
     viewportScrollPending = true;
@@ -234,6 +283,7 @@
     }
     clearTimeout(viewportTimer);
     viewportTimer = setTimeout(() => {
+      if (!active || generation !== sessionGeneration) return;
       viewportScrollPending = false;
       positionCard();
     }, reducedMotionQuery.matches ? 0 : 360);
@@ -241,9 +291,10 @@
   }
 
   function positionCard() {
+    const generation = sessionGeneration;
     cancelAnimationFrame(positionFrame);
     positionFrame = requestAnimationFrame(() => {
-      if (!active) return;
+      if (!active || generation !== sessionGeneration) return;
       target = resolveTarget();
       fallback.hidden = Boolean(target);
       shell.classList.toggle('is-fallback', !target);
@@ -252,8 +303,7 @@
         hideIndicators();
         card.style.removeProperty('--tour-card-x');
         card.style.removeProperty('--tour-card-y');
-        clearTimeout(missingTimer);
-        missingTimer = setTimeout(showMissingFallback, 500);
+        scheduleMissingFallback(500, generation);
         return;
       }
 
@@ -263,8 +313,8 @@
         card.style.removeProperty('--tour-card-x');
         card.style.removeProperty('--tour-card-y');
         clearTimeout(missingTimer);
-        if (requestViewportTarget(resolveTarget())) return;
-        missingTimer = setTimeout(showMissingFallback, 0);
+        if (requestViewportTarget(resolveTarget(), generation)) return;
+        scheduleMissingFallback(0, generation);
         return;
       }
 
@@ -320,6 +370,7 @@
 
   function goTo(index) {
     if (!active) return;
+    const generation = sessionGeneration;
     steps[currentIndex]?.leave?.();
     clearTimeout(viewportTimer);
     viewportScrollPending = false;
@@ -327,7 +378,9 @@
     currentIndex = Math.max(0, Math.min(index, totalSteps - 1));
     steps[currentIndex]?.prepare?.();
     renderStep();
-    requestAnimationFrame(() => {
+    cancelAnimationFrame(stepFrame);
+    stepFrame = requestAnimationFrame(() => {
+      if (!active || generation !== sessionGeneration) return;
       positionCard();
       focusCardControl();
     });
@@ -341,31 +394,28 @@
     setCompletionStatus(status);
     active = false;
     target = null;
-    clearTimeout(missingTimer);
-    clearTimeout(viewportTimer);
-    viewportScrollPending = false;
+    const closingGeneration = cancelPendingSessionWork({cancelAutomatic: true});
     shell.hidden = true;
     document.documentElement.classList.remove('game-guided-tour-open');
     const focusTarget = returnFocus instanceof HTMLElement && returnFocus.isConnected && isInViewport(returnFocus)
       ? returnFocus
       : document.querySelector('#top-tour-button') || document.querySelector('#tour-button');
-    requestAnimationFrame(() => {
+    focusFrame = requestAnimationFrame(() => {
+      if (active || closingGeneration !== sessionGeneration) return;
       const fallback = isInViewport(focusTarget) ? focusTarget : document.querySelector('#menu-button');
       fallback?.focus({preventScroll: true});
     });
   }
 
-  function start({automatic = false} = {}) {
-    if (active) return;
+  function beginStart(generation, automatic) {
+    if (active || generation !== sessionGeneration) return;
+    if (automatic && automaticStartIsSuppressed()) return;
     if (!document.querySelector('#workspace')?.childElementCount) {
-      setTimeout(() => start({automatic}), 40);
+      clearTimeout(startRetryTimer);
+      startRetryTimer = setTimeout(() => beginStart(generation, automatic), 40);
       return;
     }
-    if (automatic) {
-      const completed = safeStorageGet(STORAGE_VERSION) === VERSION && ['completed', 'skipped'].includes(safeStorageGet(STORAGE_STATUS));
-      const legacyCompleted = safeStorageGet(LEGACY_STORAGE_STATUS) === 'done';
-      if (completed || legacyCompleted) return;
-    }
+    startRetryTimer = 0;
     returnFocus = document.activeElement;
     tourOpenedQuickSearch = false;
     tourOpenedDrawer = false;
@@ -373,6 +423,12 @@
     shell.hidden = false;
     document.documentElement.classList.add('game-guided-tour-open');
     goTo(0);
+  }
+
+  function start() {
+    if (active) return;
+    const generation = cancelPendingSessionWork({cancelAutomatic: true});
+    beginStart(generation, false);
   }
 
   function blockBackgroundPointer(event) {
@@ -414,7 +470,11 @@
   function actionAdvance(event) {
     const selector = steps[currentIndex]?.advanceOnAction;
     if (!active || !selector || !(event.target instanceof Element) || !event.target.closest(selector)) return;
-    setTimeout(() => goTo(currentIndex + 1), 0);
+    const generation = sessionGeneration;
+    clearTimeout(actionAdvanceTimer);
+    actionAdvanceTimer = setTimeout(() => {
+      if (active && generation === sessionGeneration) goTo(currentIndex + 1);
+    }, 0);
   }
 
   shell.addEventListener('click', event => {
@@ -429,14 +489,28 @@
   document.addEventListener('focusin', keepFocusInTour, true);
   document.addEventListener('keydown', handleKeyboard, true);
   document.addEventListener('fanatio:route-rendered', positionCard);
-  window.addEventListener('hashchange', () => setTimeout(positionCard, 0));
+  window.addEventListener('hashchange', () => {
+    const generation = sessionGeneration;
+    clearTimeout(hashPositionTimer);
+    hashPositionTimer = setTimeout(() => {
+      if (active && generation === sessionGeneration) positionCard();
+    }, 0);
+  });
   window.addEventListener('resize', positionCard, {passive: true});
   window.addEventListener('scroll', positionCard, {passive: true, capture: true});
   mobileQuery.addEventListener('change', positionCard);
   document.addEventListener('toggle', positionCard, true);
   new MutationObserver(positionCard).observe(document.body, {subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'hidden', 'open', 'aria-hidden']});
 
-  document.querySelectorAll('#tour-button, #top-tour-button').forEach(button => button.addEventListener('click', () => start()));
-  window.FanatioGuidedTour = {start, storage: {version: VERSION, versionKey: STORAGE_VERSION, statusKey: STORAGE_STATUS}};
-  setTimeout(() => start({automatic: true}), 80);
+  document.querySelectorAll('#tour-button, #top-tour-button').forEach(button => {
+    if (button.dataset.guidedTourBound === 'true') return;
+    button.dataset.guidedTourBound = 'true';
+    button.addEventListener('click', start);
+  });
+  window.FanatioGuidedTour = {initialized: true, start, storage: {version: VERSION, versionKey: STORAGE_VERSION, statusKey: STORAGE_STATUS}};
+  automaticStartTimer = setTimeout(() => {
+    automaticStartTimer = 0;
+    if (active || sessionGeneration !== 0) return;
+    beginStart(sessionGeneration, true);
+  }, 80);
 })();
