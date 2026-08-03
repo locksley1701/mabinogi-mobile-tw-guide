@@ -21,13 +21,10 @@
   const INTERNAL_BRANCH_PATTERN = /\b(?:feat|fix|chore|refactor|docs|test|architecture)\/[A-Za-z0-9._/-]+\b/g;
   const COMMIT_SHA_PATTERN = /\b[0-9a-f]{40}\b/gi;
 
-  function currentRoute() {
-    return location.hash.replace(/^#\/?/, '') || 'home';
-  }
-
   function sanitizeText(value = '') {
     return String(value)
       .replace(/下一施工[：:]\s*Issue\s*#\d+/gi, '台版資料待補')
+      .replace(/下一施工/g, '後續作業')
       .replace(/待後續\s*Issue\s*完成台版核對後/g, '待台版資料核對完成後')
       .replace(/待後續\s*Issue\s*完成/g, '待資料核對完成')
       .replace(/\bIssue\s*#\d+\s*[・·]?\s*/gi, '')
