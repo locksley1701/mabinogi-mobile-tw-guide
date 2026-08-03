@@ -29,7 +29,7 @@ async function completeTour(page) {
   await expect(page.locator('.contribution-submit, #submission-button')).toBeVisible();
   await next.click();
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 6／6');
-  await next.click();
+  await next.press('Enter');
   await expect(page.locator(TOUR)).toBeHidden();
   await expect(page.locator('body')).not.toHaveClass(/quick-search-open|drawer-open|game-guided-tour-open/);
 }
@@ -49,6 +49,14 @@ async function expectTourClosedForAtLeast500ms(page) {
   await page.waitForTimeout(550);
   await expect(page.locator(TOUR)).toBeHidden();
   await expect(page.locator('html')).not.toHaveClass(/game-guided-tour-open/);
+}
+
+async function pointerActivate(page, locator) {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error('導覽控制按鈕不可定位');
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  return box;
 }
 
 test('全新訪客會自動開始，完成後不再自動顯示且搜尋目標可操作', async ({ page }) => {
@@ -97,6 +105,57 @@ test('投稿頁頂部重播只有一個 session，略過或 Escape 一次即可�
   await page.keyboard.press('Escape');
   await expectTourClosedForAtLeast500ms(page);
   await expect(trigger).toBeFocused();
+});
+
+test('導覽卡 pointerdown 不會關閉搜尋或讓略過按鈕在 click 前移位', async ({ page }) => {
+  await loadCompletedContribution(page);
+  await page.locator('#top-tour-button').click();
+  await waitForTour(page);
+  const skip = page.locator(`${TOUR} [data-tour-action="skip"]`);
+  const card = page.locator(`${TOUR} .game-guided-tour__card`);
+  const before = await card.boundingBox();
+  await pointerActivate(page, skip);
+  await expect(page.locator('#quick-search-panel')).toBeVisible();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 1／6');
+  await expect(page.locator('.game-guided-tour__fallback')).toBeHidden();
+  expect(await card.boundingBox()).toEqual(before);
+  await page.mouse.up();
+  await expectTourClosedForAtLeast500ms(page);
+  await expect(page.locator('#quick-search-panel')).toBeHidden();
+});
+
+test('導覽卡下一步的真實 pointer 序列只前進一次且不經 fallback', async ({ page }) => {
+  await loadCompletedContribution(page);
+  await page.locator('#top-tour-button').click();
+  await waitForTour(page);
+  const next = page.locator(`${TOUR} [data-tour-action="next"]`);
+  const card = page.locator(`${TOUR} .game-guided-tour__card`);
+  const before = await card.boundingBox();
+  await pointerActivate(page, next);
+  await expect(page.locator('#quick-search-panel')).toBeVisible();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 1／6');
+  await expect(page.locator('.game-guided-tour__fallback')).toBeHidden();
+  expect(await card.boundingBox()).toEqual(before);
+  await page.mouse.up();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 2／6');
+  await expect(page.locator('.game-guided-tour__fallback')).toBeHidden();
+});
+
+test('導覽卡上一步與 Enter／Space 控制會維持正確步驟與目標操作', async ({ page }) => {
+  await loadCompletedContribution(page);
+  await page.locator('#top-tour-button').click();
+  await waitForTour(page);
+  const next = page.locator(`${TOUR} [data-tour-action="next"]`);
+  await next.press('Enter');
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 2／6');
+  await page.locator(`${TOUR} [data-tour-action="previous"]`).click();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 1／6');
+  await next.press('Space');
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 2／6');
+  await page.locator(`${TOUR} [data-tour-action="previous"]`).click();
+  await expect(page.locator('#quick-search-input')).toBeVisible();
+  await page.locator('#quick-search-input').fill('日常採集');
+  await expect(page.locator('#quick-search-input')).toHaveValue('日常採集');
 });
 
 test('投稿頁側欄重播不會建立第二個 session', async ({ page }, testInfo) => {

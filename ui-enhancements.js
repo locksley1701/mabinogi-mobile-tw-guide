@@ -198,7 +198,7 @@ function setupQuickSearch() {
     navigate('search');
   });
   document.addEventListener('pointerdown', event => {
-    if (panel.hidden || panel.contains(event.target) || button.contains(event.target)) return;
+    if (panel.hidden || panel.contains(event.target) || button.contains(event.target) || (event.target instanceof Element && event.target.closest('#game-guided-tour'))) return;
     close();
   });
   document.addEventListener('keydown', event => {
