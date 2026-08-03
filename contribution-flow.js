@@ -1,6 +1,9 @@
 (() => {
   const CONTRIBUTION_DATA = 'data/contribution.json';
   const SITE_DATA = 'data/site.json';
+  const CONTEXT_STORAGE_KEY = 'fanatio-contribution-context-v1';
+  const CONTEXT_MAX_AGE = 2 * 60 * 60 * 1000;
+  const ALLOWED_SOURCE_ROUTE = /^(?:equipment(?:\/[^?#\s]+)?|quests|quest\/[^?#\s]+|events|event\/[^?#\s]+|professions)$/;
   let dataPromise;
 
   function escapeHtml(value = '') {
@@ -45,6 +48,50 @@
     return dataPromise;
   }
 
+  function clearContext() {
+    try {
+      sessionStorage.removeItem(CONTEXT_STORAGE_KEY);
+    } catch {
+      // 無法使用 sessionStorage 時不影響通用投稿流程。
+    }
+  }
+
+  function loadContext(config) {
+    try {
+      const raw = sessionStorage.getItem(CONTEXT_STORAGE_KEY);
+      if (!raw) return null;
+      const value = JSON.parse(raw);
+      const savedAt = Number(value.savedAt);
+      const category = String(value.category || '').trim();
+      const contextLabel = String(value.contextLabel || '').trim();
+      const sourceRoute = String(value.sourceRoute || '').trim();
+      const item = String(value.item || '').trim();
+      const itemKind = String(value.itemKind || '').trim();
+
+      const valid = value.version === 1
+        && Number.isFinite(savedAt)
+        && Date.now() - savedAt >= 0
+        && Date.now() - savedAt <= CONTEXT_MAX_AGE
+        && Array.isArray(config.categories)
+        && config.categories.includes(category)
+        && contextLabel.length > 0
+        && contextLabel.length <= 40
+        && ALLOWED_SOURCE_ROUTE.test(sourceRoute)
+        && item.length <= 120
+        && (!itemKind || ['query-code', 'name'].includes(itemKind));
+
+      if (!valid) {
+        clearContext();
+        return null;
+      }
+
+      return { category, contextLabel, sourceRoute, item, itemKind };
+    } catch {
+      clearContext();
+      return null;
+    }
+  }
+
   function workflowMarkup(items) {
     return items.map((item, index) => `
       <li class="contribution-step">
@@ -58,14 +105,67 @@
     return items.map(item => `<li class="${className}">${escapeHtml(item)}</li>`).join('');
   }
 
+  function buildFormActionUrl(candidateUrl, config, context) {
+    const prefill = config.formPrefill || {};
+    const fieldPattern = /^entry\.\d+$/;
+    const categoryEntry = String(prefill.categoryEntryId || '');
+    const nameEntry = String(prefill.nameEntryId || '');
+    const categoryValue = prefill.categoryValues?.[context?.category];
+
+    if (!context
+      || prefill.enabled !== true
+      || prefill.verified !== true
+      || !fieldPattern.test(categoryEntry)
+      || !categoryValue) {
+      return { url: candidateUrl, applied: false };
+    }
+
+    try {
+      const url = new URL(candidateUrl);
+      url.searchParams.set('usp', 'pp_url');
+      url.searchParams.set(categoryEntry, categoryValue);
+      if (context.itemKind === 'name' && context.item && fieldPattern.test(nameEntry)) {
+        url.searchParams.set(nameEntry, context.item);
+      }
+      return { url: url.toString(), applied: true };
+    } catch {
+      return { url: candidateUrl, applied: false };
+    }
+  }
+
+  function contextMarkup(context) {
+    if (!context) return '';
+    const itemLine = context.item
+      ? `<p><strong>${context.itemKind === 'query-code' ? '查詢代碼' : '項目'}：</strong>${escapeHtml(context.item)}</p>`
+      : '<p>本次由分類總覽進入，可在表單中補充正式名稱。</p>';
+
+    return `
+      <section class="contribution-context" data-contribution-context-summary aria-labelledby="contribution-context-title">
+        <div class="contribution-context__copy">
+          <p class="eyebrow">本次投稿來源</p>
+          <h2 id="contribution-context-title">正在補充：${escapeHtml(context.contextLabel)}</h2>
+          <span class="contribution-context__category">${escapeHtml(context.category)}</span>
+          ${itemLine}
+          <small>只保存這個公開頁面的分類與查詢資訊；不會保存姓名、帳號、聯絡方式或表單回覆。</small>
+        </div>
+        <div class="contribution-context__actions">
+          <a class="secondary-button" href="#/${escapeHtml(context.sourceRoute)}">返回原頁</a>
+          <button class="secondary-button" type="button" data-clear-contribution-context>改為一般投稿</button>
+        </div>
+      </section>
+    `;
+  }
+
   function render(config, site) {
     const workspace = document.querySelector('#workspace');
     if (!workspace || currentRoute() !== 'contribute') return;
 
+    const context = loadContext(config);
     const candidateUrl = String(config.formUrl || site.submissionFormUrl || '').trim();
     const formReady = config.formStatus === 'open' && isPublicFormUrl(candidateUrl);
+    const formTarget = formReady ? buildFormActionUrl(candidateUrl, config, context) : { url: '', applied: false };
     const formAction = formReady
-      ? `<a class="primary-button contribution-submit" href="${escapeHtml(candidateUrl)}" target="_blank" rel="noopener noreferrer">開啟情報投稿表單</a>`
+      ? `<a class="primary-button contribution-submit" href="${escapeHtml(formTarget.url)}" target="_blank" rel="noopener noreferrer" data-form-prefill="${formTarget.applied ? 'on' : 'off'}">開啟情報投稿表單</a>`
       : `<button class="primary-button contribution-submit" type="button" disabled aria-disabled="true">${escapeHtml(config.formStatusLabel)}</button>`;
 
     workspace.innerHTML = `
@@ -78,6 +178,8 @@
           </div>
           <div class="page-meta">${escapeHtml(config.formStatusLabel)}</div>
         </header>
+
+        ${contextMarkup(context)}
 
         <section class="contribution-status" aria-labelledby="contribution-status-title">
           <div>
@@ -136,6 +238,11 @@
         </section>
       </div>
     `;
+
+    workspace.querySelector('[data-clear-contribution-context]')?.addEventListener('click', () => {
+      clearContext();
+      render(config, site);
+    });
   }
 
   async function enhanceContributionRoute() {
@@ -154,7 +261,11 @@
     queueMicrotask(enhanceContributionRoute);
   }
 
-  window.addEventListener('hashchange', scheduleEnhancement);
+  window.addEventListener('hashchange', () => {
+    if (currentRoute() !== 'contribute') clearContext();
+    scheduleEnhancement();
+  });
+
   document.addEventListener('DOMContentLoaded', () => {
     const workspace = document.querySelector('#workspace');
     if (workspace) {
