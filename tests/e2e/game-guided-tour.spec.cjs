@@ -17,7 +17,7 @@ async function waitForTour(page) {
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 1／6');
 }
 
-async function advanceToCompletion(page) {
+async function advanceToContributionStep(page) {
   const next = page.locator(`${TOUR} [data-tour-action="next"]`);
   await next.click();
   await expect(page.locator(`${TOUR} [data-tour-action="next"]`)).toBeVisible();
@@ -27,6 +27,11 @@ async function advanceToCompletion(page) {
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 4／6');
   await next.click();
   await expect(page.locator('.contribution-submit, #submission-button')).toBeVisible();
+  return next;
+}
+
+async function advanceToCompletion(page) {
+  const next = await advanceToContributionStep(page);
   await next.click();
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 6／6');
   return next;
@@ -63,6 +68,61 @@ async function pointerActivate(page, locator) {
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
   return box;
+}
+
+async function observeTourTransition(page) {
+  await page.evaluate(() => {
+    const shell = document.querySelector('#game-guided-tour');
+    const fallback = shell.querySelector('.game-guided-tour__fallback');
+    const card = shell.querySelector('.game-guided-tour__card');
+    const spotlight = shell.querySelector('.game-guided-tour__spotlight');
+    const snapshots = [];
+    const capture = mutation => snapshots.push({
+      mutation: mutation ? {
+        type: mutation.type,
+        attribute: mutation.attributeName || '',
+        target: mutation.target === shell ? 'shell' : mutation.target === fallback ? 'fallback' : mutation.target === card ? 'card' : '',
+        oldValue: mutation.oldValue
+      } : null,
+      progress: shell.querySelector('#game-guided-tour-progress').textContent,
+      isFallback: shell.classList.contains('is-fallback'),
+      fallbackHidden: fallback.hidden,
+      visibleCardText: card.innerText,
+      cardX: card.style.getPropertyValue('--tour-card-x'),
+      cardY: card.style.getPropertyValue('--tour-card-y'),
+      spotlightHidden: spotlight.hidden
+    });
+    capture();
+    const observer = new MutationObserver(records => records.forEach(capture));
+    observer.observe(shell, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+      attributeOldValue: true
+    });
+    window.__tourTransitionObserver = {observer, snapshots};
+  });
+}
+
+async function readTourTransition(page) {
+  return page.evaluate(() => {
+    const state = window.__tourTransitionObserver;
+    state.observer.disconnect();
+    delete window.__tourTransitionObserver;
+    return state.snapshots;
+  });
+}
+
+function expectTransitionWithoutFallback(records, fromProgress, toProgress, {expectCardCoordinates = false} = {}) {
+  expect(records.length).toBeGreaterThan(0);
+  const fallbackStates = records.filter(record => record.isFallback || !record.fallbackHidden);
+  expect(fallbackStates).toHaveLength(0);
+  expect(records.some(record => record.mutation?.target === 'shell' && record.mutation.attribute === 'class' && record.mutation.oldValue?.includes('is-fallback'))).toBe(false);
+  expect(records.some(record => record.visibleCardText.includes('目前頁面的目標暫時無法定位') || record.visibleCardText.includes('可按下一步繼續導覽'))).toBe(false);
+  if (expectCardCoordinates) expect(records.every(record => record.cardX && record.cardY)).toBe(true);
+  const progress = [...new Set([fromProgress, ...records.map(record => record.progress)])];
+  expect(progress).toEqual([fromProgress, toProgress]);
 }
 
 test('全新訪客會自動開始，完成後不再自動顯示且搜尋目標可操作', async ({ page }) => {
@@ -145,6 +205,58 @@ test('導覽卡下一步的真實 pointer 序列只前進一次且不經 fallbac
   await page.mouse.up();
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 2／6');
   await expect(page.locator('.game-guided-tour__fallback')).toBeHidden();
+});
+
+test('步驟切換 guard 不會在所有 lifecycle transition 中閃現 fallback', async ({ page }, testInfo) => {
+  await freshVisitor(page);
+  await page.goto('/#/home');
+  await waitForTour(page);
+  const next = page.locator(`${TOUR} [data-tour-action="next"]`);
+
+  await observeTourTransition(page);
+  await pointerActivate(page, next);
+  await page.mouse.up();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 2／6');
+  await expect(page.locator('.nav-link[data-route="life"]')).toBeVisible();
+  if (testInfo.project.name === 'mobile-chrome') {
+    await expect(page.locator('body')).toHaveClass(/drawer-open/);
+    await expect(page.locator('#sidebar')).toHaveAttribute('aria-hidden', 'false');
+    expect(await page.locator('#sidebar').evaluate(element => element.inert)).toBe(false);
+  }
+  const expectCardCoordinates = testInfo.project.name !== 'mobile-chrome';
+  expectTransitionWithoutFallback(await readTourTransition(page), '導覽任務 1／6', '導覽任務 2／6', {expectCardCoordinates});
+
+  await observeTourTransition(page);
+  await next.click();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 3／6');
+  await expect(page.locator('[data-life-group="採集"]')).toBeVisible();
+  expectTransitionWithoutFallback(await readTourTransition(page), '導覽任務 2／6', '導覽任務 3／6', {expectCardCoordinates});
+
+  await observeTourTransition(page);
+  await page.locator('[data-life-group="採集"]').click();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 4／6');
+  await expect(page.locator('[data-life-skill="daily-gathering"]')).toBeVisible();
+  expectTransitionWithoutFallback(await readTourTransition(page), '導覽任務 3／6', '導覽任務 4／6', {expectCardCoordinates});
+
+  await observeTourTransition(page);
+  await next.click();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 5／6');
+  await expect(page.locator('.contribution-submit, #submission-button')).toBeVisible();
+  expectTransitionWithoutFallback(await readTourTransition(page), '導覽任務 4／6', '導覽任務 5／6', {expectCardCoordinates});
+
+  await observeTourTransition(page);
+  await next.click();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 6／6');
+  await expect(page.locator(TOUR)).toHaveClass(/is-complete/);
+  await expect(page.locator('.game-guided-tour__spotlight')).toBeHidden();
+  expectTransitionWithoutFallback(await readTourTransition(page), '導覽任務 5／6', '導覽任務 6／6');
+
+  await observeTourTransition(page);
+  await page.locator(`${TOUR} [data-tour-action="previous"]`).click();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 5／6');
+  await expect(page.locator('.contribution-submit, #submission-button')).toBeVisible();
+  await expect(page.locator('.game-guided-tour__spotlight')).toBeVisible();
+  expectTransitionWithoutFallback(await readTourTransition(page), '導覽任務 6／6', '導覽任務 5／6');
 });
 
 test('導覽卡上一步與 Enter／Space 控制會維持正確步驟與目標操作', async ({ page }) => {

@@ -17,6 +17,9 @@
   let target = null;
   let returnFocus = null;
   let guardPaused = false;
+  let transitioning = false;
+  let transitionGeneration = 0;
+  let transitionPositionAttempts = 0;
   let sessionGeneration = 0;
   let automaticStartTimer = 0;
   let startRetryTimer = 0;
@@ -127,6 +130,9 @@
     hashPositionTimer = 0;
     if (cancelAutomatic) automaticStartTimer = 0;
     guardPaused = false;
+    transitioning = false;
+    transitionGeneration += 1;
+    transitionPositionAttempts = 0;
     viewportScrollPending = false;
     return sessionGeneration;
   }
@@ -252,12 +258,13 @@
   }
 
   function showMissingFallback(generation = sessionGeneration) {
-    if (!active || generation !== sessionGeneration || target) return;
+    if (!active || transitioning || generation !== sessionGeneration || target) return;
     fallback.hidden = false;
     shell.classList.add('is-fallback');
   }
 
   function scheduleMissingFallback(delay, generation = sessionGeneration) {
+    if (transitioning) return;
     clearTimeout(missingTimer);
     missingTimer = setTimeout(() => showMissingFallback(generation), delay);
   }
@@ -295,7 +302,7 @@
   }
 
   function requestViewportTarget(candidate, generation = sessionGeneration) {
-    if (viewportScrollPending || viewportAttempts >= 2) return false;
+    if (transitioning || viewportScrollPending || viewportAttempts >= 2) return false;
     viewportAttempts += 1;
     viewportScrollPending = true;
     try {
@@ -317,16 +324,28 @@
     return true;
   }
 
-  function positionCard() {
+  function positionCard({transitionId = null} = {}) {
+    if (transitioning && transitionId !== transitionGeneration) return;
     const generation = sessionGeneration;
     cancelAnimationFrame(positionFrame);
     positionFrame = requestAnimationFrame(() => {
-      if (!active || generation !== sessionGeneration) return;
+      if (!active || generation !== sessionGeneration || (transitioning && transitionId !== transitionGeneration)) return;
       if (steps[currentIndex]?.complete) {
         showCompletionState();
+        if (transitioning) transitionPositionAttempts = 0;
+        transitioning = false;
         return;
       }
       target = resolveTarget();
+      if (transitioning) {
+        if (!target && transitionPositionAttempts < 3) {
+          transitionPositionAttempts += 1;
+          positionFrame = requestAnimationFrame(() => positionCard({transitionId}));
+          return;
+        }
+        transitionPositionAttempts = 0;
+        transitioning = false;
+      }
       fallback.hidden = Boolean(target);
       shell.classList.toggle('is-fallback', !target);
 
@@ -339,12 +358,14 @@
       }
 
       if (!isInViewport(target)) {
+        const viewportTarget = target;
+        if (viewportScrollPending) return;
         target = null;
         hideIndicators();
         card.style.removeProperty('--tour-card-x');
         card.style.removeProperty('--tour-card-y');
         clearTimeout(missingTimer);
-        if (requestViewportTarget(resolveTarget(), generation)) return;
+        if (requestViewportTarget(viewportTarget, generation)) return;
         scheduleMissingFallback(0, generation);
         return;
       }
@@ -406,17 +427,29 @@
   function goTo(index) {
     if (!active) return;
     const generation = sessionGeneration;
-    steps[currentIndex]?.leave?.();
+    const currentTransition = ++transitionGeneration;
+    transitioning = true;
+    clearTimeout(missingTimer);
     clearTimeout(viewportTimer);
+    cancelAnimationFrame(positionFrame);
+    missingTimer = 0;
+    viewportTimer = 0;
     viewportScrollPending = false;
+    transitionPositionAttempts = 0;
+    steps[currentIndex]?.leave?.();
     viewportAttempts = 0;
     currentIndex = Math.max(0, Math.min(index, totalSteps - 1));
     steps[currentIndex]?.prepare?.();
     renderStep();
     cancelAnimationFrame(stepFrame);
     stepFrame = requestAnimationFrame(() => {
-      if (!active || generation !== sessionGeneration) return;
-      if (!steps[currentIndex]?.complete) positionCard();
+      if (!active || generation !== sessionGeneration || currentTransition !== transitionGeneration) return;
+      if (steps[currentIndex]?.complete) {
+        transitionPositionAttempts = 0;
+        transitioning = false;
+      } else {
+        positionCard({transitionId: currentTransition});
+      }
       focusCardControl();
     });
   }
