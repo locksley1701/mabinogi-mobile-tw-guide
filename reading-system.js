@@ -10,8 +10,16 @@ const ReadingSystem = (() => {
   const sizeIds = new Set(sizes.map(item => item.id));
   let mountedPanel = null;
 
+  function storageGet(key) {
+    try { return localStorage.getItem(key); } catch { return null; }
+  }
+
+  function storageSet(key, value) {
+    try { localStorage.setItem(key, value); } catch { /* Keep the current-visit choice only. */ }
+  }
+
   function read() {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = storageGet(STORAGE_KEY);
     return sizeIds.has(saved) ? saved : 'comfortable';
   }
 
@@ -47,7 +55,7 @@ const ReadingSystem = (() => {
   function apply(size = read(), {persist = true} = {}) {
     const safeSize = sizeIds.has(size) ? size : 'comfortable';
     document.documentElement.dataset.readingSize = safeSize;
-    if (persist) localStorage.setItem(STORAGE_KEY, safeSize);
+    if (persist) storageSet(STORAGE_KEY, safeSize);
     syncPanel();
     document.dispatchEvent(new CustomEvent('fanatio:readingsizechange', {
       detail: {size: safeSize, label: labelFor(safeSize)}

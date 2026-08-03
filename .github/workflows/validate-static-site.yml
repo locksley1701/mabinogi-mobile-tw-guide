@@ -35,6 +35,7 @@ jobs:
           node --check theme-copy-polish.js
           node --check theme-integration.js
           node --check a11y-enhancements.js
+          node --check game-guided-tour.js
           node --check scripts/validate-data-contract.mjs
           node --check scripts/validate-name-normalization.mjs
           node --check scripts/validate-reading-system.mjs
@@ -47,6 +48,7 @@ jobs:
           node --check tests/e2e/accessibility.spec.cjs
           node --check tests/e2e/reading-system.spec.cjs
           node --check tests/e2e/icon-pilot.spec.cjs
+          node --check tests/e2e/game-guided-tour.spec.cjs
           node --check playwright.config.cjs
 
       - name: Validate JSON and content contracts
@@ -171,6 +173,7 @@ jobs:
           test -f forest-palette.css
           test -f theme-integration.css
           test -f a11y.css
+          test -f game-guided-tour.css
           test -f reading-system.css
           test -f theme-boot.js
           test -f search-normalization.js
@@ -182,6 +185,7 @@ jobs:
           test -f theme-copy-polish.js
           test -f theme-integration.js
           test -f a11y-enhancements.js
+          test -f game-guided-tour.js
           test -f ICON_ASSET_CONTRACT.md
           test -f DATA_UI_STATE_CONTRACT.md
           test -f NAME_NORMALIZATION_CONTRACT.md
@@ -204,6 +208,8 @@ jobs:
           test -f tests/e2e/accessibility.spec.cjs
           test -f tests/e2e/reading-system.spec.cjs
           test -f tests/e2e/icon-pilot.spec.cjs
+          test -f tests/e2e/game-guided-tour.spec.cjs
+          test -f docs/issue-46-game-guided-tour.md
           grep -q '#/profession/greatsword-warrior' index.html
           grep -q '#/profession/archer' index.html
           grep -q 'theme-boot.js' index.html
@@ -220,7 +226,9 @@ jobs:
           grep -q 'icon-pilot.css' index.html
           grep -q 'reading-system.css' index.html
           grep -q 'a11y.css' index.html
+          grep -q 'game-guided-tour.css' index.html
           grep -q 'final-polish.js' index.html
+          grep -q 'game-guided-tour.js' index.html
 
   browser-regression:
     needs: validate

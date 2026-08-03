@@ -128,6 +128,12 @@ function closeDrawer() {
   document.querySelector('#menu-button').setAttribute('aria-expanded', 'false');
 }
 
+function openDrawer() {
+  document.body.classList.add('drawer-open');
+  document.querySelector('#drawer-backdrop').hidden = false;
+  document.querySelector('#menu-button').setAttribute('aria-expanded', 'true');
+}
+
 function navigate(route) {
   if (location.hash === `#/${route}`) renderRoute();
   else location.hash = `#/${route}`;
@@ -440,6 +446,7 @@ function renderRoute() {
   }
   workspace.focus({preventScroll: true});
   window.scrollTo({top: 0, behavior: 'auto'});
+  document.dispatchEvent(new CustomEvent('fanatio:route-rendered', {detail: {route}}));
 }
 
 function showToast(message) {
@@ -451,53 +458,32 @@ function showToast(message) {
 }
 
 function applySavedTheme() {
-  const saved = localStorage.getItem('fanatio-theme');
+  let saved = null;
+  try { saved = localStorage.getItem('fanatio-theme'); } catch { /* Private browsing or disabled storage. */ }
   document.documentElement.dataset.theme = saved === 'light' || saved === 'dark' ? saved : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 }
 
 function toggleTheme() {
   const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
   document.documentElement.dataset.theme = next;
-  localStorage.setItem('fanatio-theme', next);
+  try { localStorage.setItem('fanatio-theme', next); } catch { /* Theme still changes for this visit. */ }
 }
-
-const tourSteps = [
-  ['用側邊欄切換章節', '桌面版側邊欄會常駐；平板版收成圖示列；手機版則從左上角選單開啟。'],
-  ['首頁只負責帶路', '總覽頁只保留常用入口與最近增補，不再把所有攻略從上到下堆在一起。'],
-  ['每個章節有自己的工具', '生活技能使用分類與明細，料理使用等級切換，職業則有獨立技能頁。'],
-  ['資料來源會留下名字', '由法那提歐提供或實測的資料會直接署名；其他玩家投稿通過核對後也能顯示 ID。']
-];
-let tourIndex = 0;
-
-function renderTour() {
-  document.querySelector('#tour-step').textContent = `${tourIndex + 1} / ${tourSteps.length}`;
-  document.querySelector('#tour-title').textContent = tourSteps[tourIndex][0];
-  document.querySelector('#tour-copy').textContent = tourSteps[tourIndex][1];
-  document.querySelector('#tour-prev').hidden = tourIndex === 0;
-  document.querySelector('#tour-next').textContent = tourIndex === tourSteps.length - 1 ? '開始探索' : '下一步';
-}
-function openTour() { tourIndex = 0; document.querySelector('#tour').hidden = false; document.body.style.overflow = 'hidden'; renderTour(); }
-function closeTour() { document.querySelector('#tour').hidden = true; document.body.style.overflow = ''; localStorage.setItem('fanatio-tour-v2', 'done'); }
 
 function setupInteractions() {
   window.addEventListener('hashchange', renderRoute);
   document.querySelector('#menu-button').addEventListener('click', () => {
     const opening = !document.body.classList.contains('drawer-open');
-    document.body.classList.toggle('drawer-open', opening);
-    document.querySelector('#drawer-backdrop').hidden = !opening;
-    document.querySelector('#menu-button').setAttribute('aria-expanded', String(opening));
+    if (opening) openDrawer(); else closeDrawer();
   });
   document.querySelector('#drawer-backdrop').addEventListener('click', closeDrawer);
   document.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', closeDrawer));
   document.querySelector('#theme-toggle').addEventListener('click', toggleTheme);
   document.querySelector('#top-theme-toggle').addEventListener('click', toggleTheme);
   document.querySelector('#top-search-button').addEventListener('click', () => navigate('search'));
-  document.querySelector('#tour-button').addEventListener('click', openTour);
-  document.querySelector('#tour-next').addEventListener('click', () => { if (tourIndex >= tourSteps.length - 1) return closeTour(); tourIndex += 1; renderTour(); });
-  document.querySelector('#tour-prev').addEventListener('click', () => { if (tourIndex <= 0) return; tourIndex -= 1; renderTour(); });
-  document.querySelector('#tour-skip').addEventListener('click', closeTour);
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') { closeDrawer(); if (!document.querySelector('#tour').hidden) closeTour(); } });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeDrawer(); });
 }
+
+window.FanatioNavigation = {closeDrawer, openDrawer, navigate};
 
 async function loadData() {
   const entries = await Promise.all(Object.entries(DATA_FILES).map(async ([key, path]) => {
@@ -514,7 +500,6 @@ async function init() {
   try {
     await loadData();
     renderRoute();
-    if (!localStorage.getItem('fanatio-tour-v2')) setTimeout(openTour, 500);
   } catch (error) {
     console.error(error);
     workspace.innerHTML = `<div class="empty-state"><strong>資料載入失敗</strong><p>請稍後重新整理頁面。</p></div>`;

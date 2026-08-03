@@ -21,16 +21,24 @@ const ThemeSystem = (() => {
   let lastTrigger = null;
   let mediaBound = false;
 
+  function storageGet(key) {
+    try { return localStorage.getItem(key); } catch { return null; }
+  }
+
+  function storageSet(key, value) {
+    try { localStorage.setItem(key, value); } catch { /* Keep the current-visit preference only. */ }
+  }
+
   function readAppearance() {
-    const saved = localStorage.getItem(APPEARANCE_KEY);
+    const saved = storageGet(APPEARANCE_KEY);
     if (appearanceIds.has(saved)) return saved;
-    const legacy = localStorage.getItem(LEGACY_THEME_KEY);
+    const legacy = storageGet(LEGACY_THEME_KEY);
     if (legacy === 'light' || legacy === 'dark') return legacy;
     return 'system';
   }
 
   function readPalette() {
-    const saved = localStorage.getItem(PALETTE_KEY);
+    const saved = storageGet(PALETTE_KEY);
     return paletteIds.has(saved) ? saved : 'forest';
   }
 
@@ -104,9 +112,9 @@ const ThemeSystem = (() => {
     root.dataset.palette = safePalette;
 
     if (persist) {
-      localStorage.setItem(APPEARANCE_KEY, safeAppearance);
-      localStorage.setItem(PALETTE_KEY, safePalette);
-      localStorage.setItem(LEGACY_THEME_KEY, resolved);
+      storageSet(APPEARANCE_KEY, safeAppearance);
+      storageSet(PALETTE_KEY, safePalette);
+      storageSet(LEGACY_THEME_KEY, resolved);
     }
 
     updateThemeColor(safePalette, resolved);

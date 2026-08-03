@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="theme-integration.css">
   <link rel="stylesheet" href="a11y.css">
   <link rel="stylesheet" href="reading-system.css">
+  <link rel="stylesheet" href="game-guided-tour.css">
 </head>
 <body>
   <a class="skip-link" href="#workspace">跳到主要內容</a>
@@ -71,7 +72,7 @@
 
       <div class="sidebar__footer">
         <button class="sidebar-action" id="theme-toggle" type="button"><span aria-hidden="true">◐</span><b>外觀與配色</b></button>
-        <button class="sidebar-action" id="tour-button" type="button"><span aria-hidden="true">?</span><b>功能導覽</b></button>
+        <button class="sidebar-action" id="tour-button" type="button"><span aria-hidden="true">?</span><b>重新觀看功能導覽</b></button>
         <small>手札編纂者：法那提歐</small>
       </div>
     </aside>
@@ -89,6 +90,7 @@
         </div>
         <div class="topbar__actions">
           <button class="icon-button" id="top-search-button" type="button" aria-label="快速查詢">⌕</button>
+          <button class="icon-button" id="top-tour-button" type="button" aria-label="重新觀看功能導覽">?</button>
           <button class="icon-button" id="top-theme-toggle" type="button" aria-label="開啟外觀、配色與閱讀尺寸設定">◐</button>
         </div>
       </header>
@@ -99,23 +101,6 @@
         <p><strong>法那提歐的愛爾琳手札</strong>・玩家自發建立的非官方攻略網站，與遊戲開發商及營運商無關。</p>
       </footer>
     </div>
-  </div>
-
-  <div class="tour" id="tour" hidden>
-    <div class="tour__backdrop"></div>
-    <section class="tour__card" role="dialog" aria-modal="true" aria-labelledby="tour-title" aria-describedby="tour-copy">
-      <div class="tour__step" id="tour-step">1 / 4</div>
-      <p class="eyebrow">新旅人的手札導覽</p>
-      <h2 id="tour-title">用側邊欄切換章節</h2>
-      <p id="tour-copy">桌面版側邊欄會常駐；手機版則從左上角選單開啟，不必再一路往下捲。</p>
-      <div class="tour__actions">
-        <button class="text-button" id="tour-skip" type="button">跳過</button>
-        <div>
-          <button class="secondary-button" id="tour-prev" type="button">上一步</button>
-          <button class="primary-button" id="tour-next" type="button">下一步</button>
-        </div>
-      </div>
-    </section>
   </div>
 
   <div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
@@ -136,5 +121,6 @@
   <script src="theme-integration.js" defer></script>
   <script src="a11y-enhancements.js" defer></script>
   <script src="contribution-guidance.js" defer></script>
+  <script src="game-guided-tour.js" defer></script>
 </body>
 </html>
