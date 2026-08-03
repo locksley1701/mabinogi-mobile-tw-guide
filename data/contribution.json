@@ -6,11 +6,21 @@
   "formStatusLabel": "投稿表單已開放",
   "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLSe7N39rzuXWOParDuLuWF2tEFhbBoFx_JxfZjVqVEftFfq89g/viewform",
   "formPrefill": {
-    "enabled": false,
-    "verified": false,
-    "categoryEntryId": "",
-    "nameEntryId": "",
-    "categoryValues": {}
+    "enabled": true,
+    "verified": true,
+    "categoryEntryId": "entry.1463634779",
+    "nameEntryId": "entry.486577760",
+    "categoryValues": {
+      "職業／技能": "職業／技能",
+      "生活技能": "生活技能",
+      "料理": "料理",
+      "裝備": "裝備",
+      "地圖": "地圖",
+      "任務": "任務",
+      "活動": "活動",
+      "名稱更正": "名稱更正",
+      "其他": "其他"
+    }
   },
   "reviewer": "法那提歐",
   "categories": [
