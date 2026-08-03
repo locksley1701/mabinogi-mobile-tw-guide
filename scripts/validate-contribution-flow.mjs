@@ -57,6 +57,43 @@ if (!Array.isArray(contribution.privacyRules) || contribution.privacyRules.lengt
 const allowedStatuses = new Set(['preparing', 'open', 'paused']);
 if (!allowedStatuses.has(contribution.formStatus)) fail('formStatus 不合法');
 
+const prefill = contribution.formPrefill;
+const entryPattern = /^entry\.\d+$/;
+if (!prefill || typeof prefill !== 'object' || Array.isArray(prefill)) {
+  fail('formPrefill 必須為物件');
+} else {
+  if (typeof prefill.enabled !== 'boolean') fail('formPrefill.enabled 必須為布林值');
+  if (typeof prefill.verified !== 'boolean') fail('formPrefill.verified 必須為布林值');
+
+  for (const key of ['categoryEntryId', 'nameEntryId']) {
+    const value = String(prefill[key] || '');
+    if (value && !entryPattern.test(value)) fail(`formPrefill.${key} 必須為空字串或 entry.數字`);
+  }
+
+  if (!prefill.categoryValues || typeof prefill.categoryValues !== 'object' || Array.isArray(prefill.categoryValues)) {
+    fail('formPrefill.categoryValues 必須為物件');
+  } else {
+    for (const [category, value] of Object.entries(prefill.categoryValues)) {
+      if (!expectedCategories.includes(category)) fail(`formPrefill.categoryValues 含未知分類：${category}`);
+      if (typeof value !== 'string' || !value.trim()) fail(`formPrefill.categoryValues.${category} 必須為非空字串`);
+    }
+  }
+
+  if (prefill.enabled === true) {
+    if (prefill.verified !== true) fail('啟用表單預填前 verified 必須為 true');
+    if (!entryPattern.test(String(prefill.categoryEntryId || ''))) {
+      fail('啟用表單預填前必須提供有效 categoryEntryId');
+    }
+    if (!prefill.categoryValues || Object.keys(prefill.categoryValues).length === 0) {
+      fail('啟用表單預填前必須提供 categoryValues');
+    }
+  }
+
+  if (prefill.verified !== true && prefill.enabled === true) {
+    fail('未驗證的表單欄位不得啟用預填');
+  }
+}
+
 function isPublicFormUrl(value) {
   if (!value) return true;
   try {

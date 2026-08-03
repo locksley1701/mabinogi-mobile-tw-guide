@@ -7,6 +7,7 @@
   margin-bottom: 0;
 }
 
+.contribution-context,
 .contribution-status,
 .contribution-privacy {
   display: grid;
@@ -23,12 +24,21 @@
   box-shadow: var(--shadow, 0 12px 30px rgba(33, 45, 35, .08));
 }
 
+.contribution-context {
+  border-color: color-mix(in srgb, var(--accent, #52774f) 42%, var(--line, transparent));
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--accent, #52774f) 12%, transparent), transparent 48%),
+    var(--surface, rgba(255, 255, 255, .72));
+}
+
+.contribution-context h2,
 .contribution-status h2,
 .contribution-card h2,
 .contribution-privacy h2 {
   margin: 4px 0 10px;
 }
 
+.contribution-context p,
 .contribution-status p,
 .contribution-card p,
 .contribution-privacy p,
@@ -37,11 +47,35 @@
   line-height: 1.75;
 }
 
+.contribution-context small {
+  display: block;
+  margin-top: 12px;
+  color: var(--ink-600, inherit);
+  line-height: 1.65;
+}
+
+.contribution-context__category {
+  display: inline-flex;
+  max-width: 100%;
+  margin: 0 0 12px;
+  padding: 7px 11px;
+  border: 1px solid color-mix(in srgb, var(--accent, #52774f) 42%, var(--line, transparent));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent, #52774f) 12%, var(--surface-muted, transparent));
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.contribution-context__actions,
 .contribution-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.contribution-context__actions button {
+  font: inherit;
 }
 
 .contribution-submit[disabled] {
@@ -187,11 +221,13 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .contribution-context,
   .contribution-status,
   .contribution-privacy {
     grid-template-columns: 1fr;
   }
 
+  .contribution-context__actions,
   .contribution-actions {
     justify-content: flex-start;
   }
@@ -207,6 +243,7 @@
     grid-template-columns: 1fr;
   }
 
+  .contribution-context,
   .contribution-status,
   .contribution-card,
   .contribution-privacy,
@@ -214,11 +251,13 @@
     border-radius: 15px;
   }
 
+  .contribution-context__actions,
   .contribution-actions {
     display: grid;
     grid-template-columns: 1fr;
   }
 
+  .contribution-context__actions > *,
   .contribution-actions > * {
     width: 100%;
     justify-content: center;
