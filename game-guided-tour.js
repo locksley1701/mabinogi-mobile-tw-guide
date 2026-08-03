@@ -267,6 +267,33 @@
     arrow.hidden = true;
   }
 
+  function clearTargetPositioning() {
+    target = null;
+    clearTimeout(missingTimer);
+    clearTimeout(viewportTimer);
+    missingTimer = 0;
+    viewportTimer = 0;
+    viewportScrollPending = false;
+    viewportAttempts = 0;
+    hideIndicators();
+    card.style.removeProperty('--tour-card-x');
+    card.style.removeProperty('--tour-card-y');
+    spotlight.style.removeProperty('--tour-target-x');
+    spotlight.style.removeProperty('--tour-target-y');
+    spotlight.style.removeProperty('--tour-target-width');
+    spotlight.style.removeProperty('--tour-target-height');
+    arrow.style.removeProperty('--tour-arrow-x');
+    arrow.style.removeProperty('--tour-arrow-y');
+    delete arrow.dataset.side;
+  }
+
+  function showCompletionState() {
+    clearTargetPositioning();
+    fallback.hidden = true;
+    shell.classList.remove('is-fallback', 'has-target');
+    shell.classList.add('is-complete');
+  }
+
   function requestViewportTarget(candidate, generation = sessionGeneration) {
     if (viewportScrollPending || viewportAttempts >= 2) return false;
     viewportAttempts += 1;
@@ -295,6 +322,10 @@
     cancelAnimationFrame(positionFrame);
     positionFrame = requestAnimationFrame(() => {
       if (!active || generation !== sessionGeneration) return;
+      if (steps[currentIndex]?.complete) {
+        showCompletionState();
+        return;
+      }
       target = resolveTarget();
       fallback.hidden = Boolean(target);
       shell.classList.toggle('is-fallback', !target);
@@ -364,7 +395,11 @@
     nextButton.textContent = step.complete ? '完成' : '下一步';
     shell.classList.toggle('is-complete', Boolean(step.complete));
     shell.classList.toggle('has-target', !step.complete);
-    if (step.complete) emitToast('導覽任務完成，開始翻閱愛爾琳手札吧。');
+    if (step.complete) {
+      showCompletionState();
+      emitToast('導覽任務完成，開始翻閱愛爾琳手札吧。');
+      return;
+    }
     positionCard();
   }
 
@@ -381,7 +416,7 @@
     cancelAnimationFrame(stepFrame);
     stepFrame = requestAnimationFrame(() => {
       if (!active || generation !== sessionGeneration) return;
-      positionCard();
+      if (!steps[currentIndex]?.complete) positionCard();
       focusCardControl();
     });
   }
@@ -393,7 +428,9 @@
     closeTourDrawer();
     setCompletionStatus(status);
     active = false;
-    target = null;
+    clearTargetPositioning();
+    fallback.hidden = true;
+    shell.classList.remove('is-complete', 'is-fallback', 'has-target');
     const closingGeneration = cancelPendingSessionWork({cancelAutomatic: true});
     shell.hidden = true;
     document.documentElement.classList.remove('game-guided-tour-open');

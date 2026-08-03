@@ -17,7 +17,7 @@ async function waitForTour(page) {
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 1／6');
 }
 
-async function completeTour(page) {
+async function advanceToCompletion(page) {
   const next = page.locator(`${TOUR} [data-tour-action="next"]`);
   await next.click();
   await expect(page.locator(`${TOUR} [data-tour-action="next"]`)).toBeVisible();
@@ -29,6 +29,12 @@ async function completeTour(page) {
   await expect(page.locator('.contribution-submit, #submission-button')).toBeVisible();
   await next.click();
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 6／6');
+  return next;
+}
+
+async function completeTour(page) {
+  const next = await advanceToCompletion(page);
+  await next.focus();
   await next.press('Enter');
   await expect(page.locator(TOUR)).toBeHidden();
   await expect(page.locator('body')).not.toHaveClass(/quick-search-open|drawer-open|game-guided-tour-open/);
@@ -150,12 +156,80 @@ test('導覽卡上一步與 Enter／Space 控制會維持正確步驟與目標�
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 2／6');
   await page.locator(`${TOUR} [data-tour-action="previous"]`).click();
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 1／6');
+  await next.focus();
   await next.press('Space');
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 2／6');
   await page.locator(`${TOUR} [data-tour-action="previous"]`).click();
   await expect(page.locator('#quick-search-input')).toBeVisible();
   await page.locator('#quick-search-input').fill('日常採集');
   await expect(page.locator('#quick-search-input')).toHaveValue('日常採集');
+});
+
+test('完成步驟使用乾淨的獨立狀態，往返後仍可完整結束', async ({ page }) => {
+  await freshVisitor(page);
+  await page.goto('/#/home');
+  await waitForTour(page);
+  const next = await advanceToCompletion(page);
+  const shell = page.locator(TOUR);
+  const card = page.locator(`${TOUR} .game-guided-tour__card`);
+  const fallback = page.locator(`${TOUR} .game-guided-tour__fallback`);
+  const spotlight = page.locator(`${TOUR} .game-guided-tour__spotlight`);
+  const arrow = page.locator(`${TOUR} .game-guided-tour__arrow`);
+
+  await expect(shell).toHaveClass(/is-complete/);
+  await expect(shell).not.toHaveClass(/is-fallback/);
+  await expect(fallback).toBeHidden();
+  await expect(spotlight).toBeHidden();
+  await expect(arrow).toBeHidden();
+  await expect(next).toHaveText('完成');
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 6／6');
+  await expect(page.locator('#game-guided-tour-title')).toHaveText('導覽任務完成');
+  expect(await card.innerText()).not.toContain('目前頁面的目標暫時無法定位');
+  expect(await card.innerText()).not.toContain('可按下一步繼續導覽');
+
+  await page.locator(`${TOUR} [data-tour-action="previous"]`).click();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 5／6');
+  await expect(shell).not.toHaveClass(/is-complete/);
+  await expect(page.locator('.contribution-submit, #submission-button')).toBeVisible();
+  await expect(fallback).toBeHidden();
+  await expect(spotlight).toBeVisible();
+  await expect(arrow).toBeVisible();
+
+  await next.click();
+  await expect(shell).toHaveClass(/is-complete/);
+  await expect(shell).not.toHaveClass(/is-fallback/);
+  await expect(fallback).toBeHidden();
+  await expect(spotlight).toBeHidden();
+  await expect(arrow).toBeHidden();
+  await next.click();
+  await expectTourClosedForAtLeast500ms(page);
+  await expect(shell).not.toHaveClass(/is-complete|is-fallback|has-target/);
+  await expect(spotlight).toBeHidden();
+  await expect(arrow).toBeHidden();
+  expect(await shell.evaluate(element => {
+    const cardNode = element.querySelector('.game-guided-tour__card');
+    const spotlightNode = element.querySelector('.game-guided-tour__spotlight');
+    const arrowNode = element.querySelector('.game-guided-tour__arrow');
+    return [
+      cardNode.style.getPropertyValue('--tour-card-x'),
+      cardNode.style.getPropertyValue('--tour-card-y'),
+      spotlightNode.style.getPropertyValue('--tour-target-x'),
+      spotlightNode.style.getPropertyValue('--tour-target-y'),
+      arrowNode.style.getPropertyValue('--tour-arrow-x'),
+      arrowNode.style.getPropertyValue('--tour-arrow-y'),
+      arrowNode.dataset.side || ''
+    ];
+  })).toEqual(['', '', '', '', '', '', '']);
+});
+
+test('完成按鈕可由 Space 完整結束導覽', async ({ page }) => {
+  await freshVisitor(page);
+  await page.goto('/#/home');
+  await waitForTour(page);
+  const next = await advanceToCompletion(page);
+  await next.focus();
+  await next.press('Space');
+  await expectTourClosedForAtLeast500ms(page);
 });
 
 test('投稿頁側欄重播不會建立第二個 session', async ({ page }, testInfo) => {
