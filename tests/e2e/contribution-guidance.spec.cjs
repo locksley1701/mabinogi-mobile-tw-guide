@@ -1,6 +1,8 @@
 const { test, expect } = require('@playwright/test');
 
 const PUBLIC_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSe7N39rzuXWOParDuLuWF2tEFhbBoFx_JxfZjVqVEftFfq89g/viewform';
+const CATEGORY_ENTRY_ID = 'entry.1463634779';
+const NAME_ENTRY_ID = 'entry.486577760';
 const CONTEXT_STORAGE_KEY = 'fanatio-contribution-context-v1';
 
 async function prepare(page) {
@@ -33,6 +35,12 @@ async function waitForContributionFlow(page) {
   const flow = page.locator('[data-contribution-flow]');
   await expect(flow).toBeVisible();
   return flow;
+}
+
+async function readFormUrl(link) {
+  const href = await link.getAttribute('href');
+  expect(href).toBeTruthy();
+  return new URL(href);
 }
 
 test.beforeEach(async ({ page }) => {
@@ -94,16 +102,23 @@ test('待補詳情保存公開來源情境，重新整理仍保留並可清除',
   expect(stored.itemKind).toBe('query-code');
 
   const formLink = page.locator('.contribution-submit');
-  await expect(formLink).toHaveAttribute('data-form-prefill', 'off');
-  await expect(formLink).toHaveAttribute('href', PUBLIC_FORM_URL);
+  await expect(formLink).toHaveAttribute('data-form-prefill', 'on');
+  const formUrl = await readFormUrl(formLink);
+  expect(`${formUrl.origin}${formUrl.pathname}`).toBe(PUBLIC_FORM_URL);
+  expect(formUrl.searchParams.get('usp')).toBe('pp_url');
+  expect(formUrl.searchParams.get(CATEGORY_ENTRY_ID)).toBe('裝備');
+  expect(formUrl.searchParams.has(NAME_ENTRY_ID)).toBe(false);
 
   await page.reload();
   await waitForContributionFlow(page);
   await expect(page.locator('[data-contribution-context-summary]')).toContainText('test-sword');
+  await expect(page.locator('.contribution-submit')).toHaveAttribute('data-form-prefill', 'on');
 
   await page.locator('[data-clear-contribution-context]').click();
   await expect(page.locator('[data-contribution-context-summary]')).toHaveCount(0);
   await expect.poll(() => page.evaluate(key => sessionStorage.getItem(key), CONTEXT_STORAGE_KEY)).toBeNull();
+  await expect(page.locator('.contribution-submit')).toHaveAttribute('href', PUBLIC_FORM_URL);
+  await expect(page.locator('.contribution-submit')).toHaveAttribute('data-form-prefill', 'off');
   await expectNoHorizontalOverflow(page, '裝備投稿來源情境');
 });
 
@@ -145,9 +160,16 @@ test('未編纂職業卡片保存職業名稱並接到投稿頁', async ({ page 
   await expect(summary).toContainText('職業／技能');
   await expect(summary).toContainText(`項目：${professionName}`);
   await expect(summary.locator('a')).toHaveAttribute('href', '#/professions');
+
+  const formLink = page.locator('.contribution-submit');
+  await expect(formLink).toHaveAttribute('data-form-prefill', 'on');
+  const formUrl = await readFormUrl(formLink);
+  expect(formUrl.searchParams.get('usp')).toBe('pp_url');
+  expect(formUrl.searchParams.get(CATEGORY_ENTRY_ID)).toBe('職業／技能');
+  expect(formUrl.searchParams.get(NAME_ENTRY_ID)).toBe(professionName);
 });
 
-test('直接開啟投稿頁維持通用流程且不猜測表單預填參數', async ({ page }) => {
+test('直接開啟投稿頁維持通用流程且不套用來源預填參數', async ({ page }) => {
   await page.goto('/#/contribute');
   await waitForContributionFlow(page);
 
