@@ -17,6 +17,11 @@
   let guardPaused = false;
   let missingTimer = 0;
   let positionFrame = 0;
+  let viewportTimer = 0;
+  let viewportScrollPending = false;
+  let viewportAttempts = 0;
+  let tourOpenedQuickSearch = false;
+  let tourOpenedDrawer = false;
 
   const shell = document.createElement('section');
   shell.id = 'game-guided-tour';
@@ -62,10 +67,20 @@
   }
 
   function isVisible(element) {
-    if (!(element instanceof HTMLElement) || element.hidden || element.inert) return false;
-    const style = getComputedStyle(element);
+    if (!(element instanceof HTMLElement)) return false;
+    for (let current = element; current instanceof HTMLElement; current = current.parentElement) {
+      if (current.hidden || current.inert || current.getAttribute('aria-hidden') === 'true') return false;
+      const style = getComputedStyle(current);
+      if (style.display === 'none' || style.visibility === 'hidden') return false;
+    }
     const rect = element.getBoundingClientRect();
-    return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+    return element.getClientRects().length > 0 && rect.width > 0 && rect.height > 0;
+  }
+
+  function isInViewport(element) {
+    if (!isVisible(element)) return false;
+    const rect = element.getBoundingClientRect();
+    return rect.top >= 4 && rect.left >= 4 && rect.bottom <= window.innerHeight - 4 && rect.right <= window.innerWidth - 4;
   }
 
   function currentRoute() {
@@ -77,14 +92,32 @@
     try { callback(); } finally { requestAnimationFrame(() => { guardPaused = false; }); }
   }
 
-  function closeQuickSearch() {
+  function closeQuickSearch({force = false} = {}) {
     const panel = document.querySelector('#quick-search-panel');
-    if (panel && !panel.hidden) withoutGuard(() => panel.querySelector('.quick-search-close')?.click());
+    if (panel && !panel.hidden && (force || tourOpenedQuickSearch)) {
+      withoutGuard(() => panel.querySelector('.quick-search-close')?.click());
+    }
+    tourOpenedQuickSearch = false;
   }
 
   function openQuickSearch() {
     const panel = document.querySelector('#quick-search-panel');
-    if (panel?.hidden) withoutGuard(() => document.querySelector('#top-search-button')?.click());
+    if (panel?.hidden) {
+      tourOpenedQuickSearch = true;
+      withoutGuard(() => document.querySelector('#top-search-button')?.click());
+    }
+  }
+
+  function closeTourDrawer() {
+    if (!tourOpenedDrawer) return;
+    withoutGuard(() => window.FanatioNavigation?.closeDrawer());
+    tourOpenedDrawer = false;
+  }
+
+  function openTourDrawer() {
+    if (!mobileQuery.matches || document.body.classList.contains('drawer-open')) return;
+    tourOpenedDrawer = true;
+    withoutGuard(() => window.FanatioNavigation?.openDrawer());
   }
 
   function navigate(route) {
@@ -100,7 +133,7 @@
       title: '先從全站搜尋開始',
       copy: '可搜尋正式名稱、隱藏別名、技能、地圖或材料。直接在這裡輸入，或按下一步繼續。',
       target: () => document.querySelector('#quick-search-input'),
-      prepare() { closeQuickSearch(); openQuickSearch(); },
+      prepare() { closeQuickSearch({force: true}); openQuickSearch(); },
       leave() { closeQuickSearch(); }
     },
     {
@@ -109,15 +142,16 @@
       target: () => document.querySelector('.nav-link[data-route="life"]'),
       prepare() {
         closeQuickSearch();
-        if (mobileQuery.matches) withoutGuard(() => window.FanatioNavigation?.openDrawer());
-      }
+        openTourDrawer();
+      },
+      leave() { closeTourDrawer(); }
     },
     {
       title: '用分類留下需要的資料',
       copy: '切換一次生活技能分類，只留下目前適合查閱的內容；完成切換會自動往下，也可手動下一步。',
       target: () => document.querySelector('[data-life-group="採集"]'),
       prepare() {
-        withoutGuard(() => window.FanatioNavigation?.closeDrawer());
+        closeTourDrawer();
         navigate('life');
       },
       advanceOnAction: '[data-life-group="採集"]'
@@ -179,6 +213,33 @@
     shell.classList.add('is-fallback');
   }
 
+  function hideIndicators() {
+    spotlight.hidden = true;
+    arrow.hidden = true;
+  }
+
+  function requestViewportTarget(candidate) {
+    if (viewportScrollPending || viewportAttempts >= 2) return false;
+    viewportAttempts += 1;
+    viewportScrollPending = true;
+    try {
+      candidate.scrollIntoView({
+        behavior: reducedMotionQuery.matches ? 'auto' : 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      });
+    } catch {
+      viewportScrollPending = false;
+      return false;
+    }
+    clearTimeout(viewportTimer);
+    viewportTimer = setTimeout(() => {
+      viewportScrollPending = false;
+      positionCard();
+    }, reducedMotionQuery.matches ? 0 : 360);
+    return true;
+  }
+
   function positionCard() {
     cancelAnimationFrame(positionFrame);
     positionFrame = requestAnimationFrame(() => {
@@ -188,12 +249,22 @@
       shell.classList.toggle('is-fallback', !target);
 
       if (!target) {
-        spotlight.hidden = true;
-        arrow.hidden = true;
+        hideIndicators();
         card.style.removeProperty('--tour-card-x');
         card.style.removeProperty('--tour-card-y');
         clearTimeout(missingTimer);
         missingTimer = setTimeout(showMissingFallback, 500);
+        return;
+      }
+
+      if (!isInViewport(target)) {
+        target = null;
+        hideIndicators();
+        card.style.removeProperty('--tour-card-x');
+        card.style.removeProperty('--tour-card-y');
+        clearTimeout(missingTimer);
+        if (requestViewportTarget(resolveTarget())) return;
+        missingTimer = setTimeout(showMissingFallback, 0);
         return;
       }
 
@@ -250,6 +321,9 @@
   function goTo(index) {
     if (!active) return;
     steps[currentIndex]?.leave?.();
+    clearTimeout(viewportTimer);
+    viewportScrollPending = false;
+    viewportAttempts = 0;
     currentIndex = Math.max(0, Math.min(index, totalSteps - 1));
     steps[currentIndex]?.prepare?.();
     renderStep();
@@ -261,16 +335,24 @@
 
   function finish(status) {
     if (!active) return;
+    steps[currentIndex]?.leave?.();
+    closeQuickSearch();
+    closeTourDrawer();
     setCompletionStatus(status);
     active = false;
     target = null;
     clearTimeout(missingTimer);
+    clearTimeout(viewportTimer);
+    viewportScrollPending = false;
     shell.hidden = true;
     document.documentElement.classList.remove('game-guided-tour-open');
-    const focusTarget = returnFocus instanceof HTMLElement && returnFocus.isConnected && isVisible(returnFocus)
+    const focusTarget = returnFocus instanceof HTMLElement && returnFocus.isConnected && isInViewport(returnFocus)
       ? returnFocus
-      : document.querySelector('#top-tour-button, #tour-button');
-    requestAnimationFrame(() => focusTarget?.focus({preventScroll: true}));
+      : document.querySelector('#top-tour-button') || document.querySelector('#tour-button');
+    requestAnimationFrame(() => {
+      const fallback = isInViewport(focusTarget) ? focusTarget : document.querySelector('#menu-button');
+      fallback?.focus({preventScroll: true});
+    });
   }
 
   function start({automatic = false} = {}) {
@@ -285,6 +367,8 @@
       if (completed || legacyCompleted) return;
     }
     returnFocus = document.activeElement;
+    tourOpenedQuickSearch = false;
+    tourOpenedDrawer = false;
     active = true;
     shell.hidden = false;
     document.documentElement.classList.add('game-guided-tour-open');
@@ -293,7 +377,8 @@
 
   function blockBackgroundPointer(event) {
     if (!active || guardPaused || steps[currentIndex].complete) return;
-    if (card.contains(event.target) || allowedTarget(event.target)) return;
+    const advanceTarget = steps[currentIndex]?.advanceOnAction;
+    if (card.contains(event.target) || allowedTarget(event.target) || (advanceTarget && event.target instanceof Element && event.target.closest(advanceTarget))) return;
     event.preventDefault();
     event.stopImmediatePropagation();
   }
@@ -339,6 +424,7 @@
     if (action === 'next') steps[currentIndex].complete ? finish('completed') : goTo(currentIndex + 1);
   });
   document.addEventListener('pointerdown', blockBackgroundPointer, true);
+  document.addEventListener('click', blockBackgroundPointer, true);
   document.addEventListener('click', actionAdvance, true);
   document.addEventListener('focusin', keepFocusInTour, true);
   document.addEventListener('keydown', handleKeyboard, true);

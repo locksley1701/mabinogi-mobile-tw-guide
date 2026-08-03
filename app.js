@@ -122,16 +122,32 @@ function getRoute() {
   return location.hash.replace(/^#\/?/, '') || 'home';
 }
 
+function syncDrawerAccessibility() {
+  const sidebar = document.querySelector('#sidebar');
+  if (!sidebar) return;
+  const mobile = matchMedia('(max-width: 959px)').matches;
+  const open = document.body.classList.contains('drawer-open');
+  if (mobile) {
+    sidebar.inert = !open;
+    sidebar.setAttribute('aria-hidden', String(!open));
+    return;
+  }
+  sidebar.inert = false;
+  sidebar.removeAttribute('aria-hidden');
+}
+
 function closeDrawer() {
   document.body.classList.remove('drawer-open');
   document.querySelector('#drawer-backdrop').hidden = true;
   document.querySelector('#menu-button').setAttribute('aria-expanded', 'false');
+  syncDrawerAccessibility();
 }
 
 function openDrawer() {
   document.body.classList.add('drawer-open');
   document.querySelector('#drawer-backdrop').hidden = false;
   document.querySelector('#menu-button').setAttribute('aria-expanded', 'true');
+  syncDrawerAccessibility();
 }
 
 function navigate(route) {

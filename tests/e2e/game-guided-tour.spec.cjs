@@ -31,6 +31,7 @@ async function completeTour(page) {
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 6／6');
   await next.click();
   await expect(page.locator(TOUR)).toBeHidden();
+  await expect(page.locator('body')).not.toHaveClass(/quick-search-open|drawer-open|game-guided-tour-open/);
 }
 
 test('全新訪客會自動開始，完成後不再自動顯示且搜尋目標可操作', async ({ page }) => {
@@ -51,11 +52,25 @@ test('略過會保存，公開入口可重新觀看', async ({ page }) => {
   await waitForTour(page);
   await page.locator(`${TOUR} [data-tour-action="skip"]`).click();
   await expect(page.locator(TOUR)).toBeHidden();
+  await expect(page.locator('#quick-search-panel')).toBeHidden();
+  await expect(page.locator('#top-search-button')).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('body')).not.toHaveClass(/quick-search-open|game-guided-tour-open/);
   await page.reload();
   await expect(page.locator(TOUR)).toBeHidden();
   await page.locator('#top-tour-button').click();
   await waitForTour(page);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('fanatio-guide-tour-status'))).toBe('skipped');
+});
+
+test('非目標背景 click 不會觸發 route，搜尋目標仍可操作', async ({ page }) => {
+  await freshVisitor(page);
+  await page.goto('/#/home');
+  await waitForTour(page);
+  await page.locator('[data-nav="professions"]').click({force: true});
+  await expect(page).toHaveURL(/#\/home$/);
+  await expect(page.locator('#quick-search-panel')).toBeVisible();
+  await page.locator('#quick-search-input').fill('日常採集');
+  await expect(page.locator('#quick-search-input')).toHaveValue('日常採集');
 });
 
 test('分類操作會互動前進，並在 hash route 間延續', async ({ page }) => {
@@ -98,7 +113,37 @@ test('Escape、Tab、Shift+Tab 與焦點恢復可安全操作', async ({ page })
   await expect(page.locator(`${TOUR} [data-tour-action="next"]`)).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(page.locator(TOUR)).toBeHidden();
+  await expect(page.locator('#quick-search-panel')).toBeHidden();
+  await expect(page.locator('#top-search-button')).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('body')).not.toHaveClass(/quick-search-open|game-guided-tour-open/);
   await expect(trigger).toBeFocused();
+});
+
+test('窄手機會將畫面外目標帶入 viewport，無法帶入時安全 fallback', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-chrome', '只在窄手機 viewport 驗證導覽定位');
+  await page.setViewportSize({width: 320, height: 568});
+  await page.addInitScript(() => {
+    localStorage.setItem('fanatio-guide-tour-version', '1');
+    localStorage.setItem('fanatio-guide-tour-status', 'completed');
+  });
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.goto('/#/home');
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await page.evaluate(() => window.FanatioGuidedTour.start());
+  await waitForTour(page);
+  await expect.poll(() => page.locator('#quick-search-input').evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    return rect.top >= 4 && rect.left >= 4 && rect.bottom <= innerHeight - 4 && rect.right <= innerWidth - 4;
+  })).toBe(true);
+  await expect(page.locator('.game-guided-tour__spotlight')).toBeVisible();
+  await page.evaluate(() => {
+    const input = document.querySelector('#quick-search-input');
+    input.style.position = 'fixed';
+    input.style.top = '-1200px';
+  });
+  await expect(page.locator('.game-guided-tour__fallback')).toBeVisible();
+  await expect(page.locator('.game-guided-tour__spotlight')).toBeHidden();
+  await expect(page.locator('.game-guided-tour__arrow')).toBeHidden();
 });
 
 test('減少動態效果時使用靜態聚光且不產生水平溢位', async ({ page }) => {
@@ -142,4 +187,44 @@ test('手機版安全開啟抽屜並聚焦真實生活技能入口', async ({ pa
   expect(await page.locator('#sidebar').evaluate(element => element.inert)).toBe(false);
   await expect(page.locator('.nav-link[data-route="life"]')).toBeVisible();
   await expect(page.locator('.game-guided-tour__spotlight')).toBeVisible();
+});
+
+test('抽屜目標回到 inert 祖先時改用安全 fallback', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-chrome', '只在手機 viewport 驗證 inert 祖先');
+  await freshVisitor(page);
+  await page.goto('/#/home');
+  await waitForTour(page);
+  await page.locator(`${TOUR} [data-tour-action="next"]`).click();
+  await expect(page.locator('.nav-link[data-route="life"]')).toBeVisible();
+  await page.evaluate(() => window.FanatioNavigation.closeDrawer());
+  await expect(page.locator('#sidebar')).toHaveAttribute('aria-hidden', 'true');
+  expect(await page.locator('#sidebar').evaluate(element => element.inert)).toBe(true);
+  await expect(page.locator('.game-guided-tour__fallback')).toBeVisible();
+  await expect(page.locator('.game-guided-tour__spotlight')).toBeHidden();
+});
+
+test('手機第二階段略過與 Escape 都會關閉抽屜並恢復安全狀態', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-chrome', '只在手機 viewport 驗證抽屜 cleanup');
+  await freshVisitor(page);
+  await page.goto('/#/home');
+  await waitForTour(page);
+  await page.locator(`${TOUR} [data-tour-action="next"]`).click();
+  await expect(page.locator('body')).toHaveClass(/drawer-open/);
+  await page.locator(`${TOUR} [data-tour-action="skip"]`).click();
+  await expect(page.locator('body')).not.toHaveClass(/drawer-open|game-guided-tour-open/);
+  await expect(page.locator('#menu-button')).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('#sidebar')).toHaveAttribute('aria-hidden', 'true');
+  expect(await page.locator('#sidebar').evaluate(element => element.inert)).toBe(true);
+  await expect(page.locator('#top-tour-button')).toBeFocused();
+
+  await page.locator('#top-tour-button').click();
+  await waitForTour(page);
+  await page.locator(`${TOUR} [data-tour-action="next"]`).click();
+  await expect(page.locator('body')).toHaveClass(/drawer-open/);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('body')).not.toHaveClass(/drawer-open|game-guided-tour-open/);
+  await expect(page.locator('#menu-button')).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('#sidebar')).toHaveAttribute('aria-hidden', 'true');
+  expect(await page.locator('#sidebar').evaluate(element => element.inert)).toBe(true);
+  await expect(page.locator('#top-tour-button')).toBeFocused();
 });
