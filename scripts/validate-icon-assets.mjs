@@ -45,6 +45,9 @@ if (!existsSync(contractPath)) fail('缺少 ICON_ASSET_CONTRACT.md');
 const manifestSource = readFileSync(manifestPath, 'utf8');
 const manifestSourceLower = manifestSource.toLowerCase();
 if (manifestSourceLower.includes('axekick')) fail('公開圖標 manifest 含禁止的內部別名');
+for (const alias of ['mountingshock', 'gustingvolt', 'slipthrough', 'spreadingvolt']) {
+  if (manifestSourceLower.includes(alias)) fail(`公開圖標 manifest 含禁止的內部別名：${alias}`);
+}
 if (/[a-z]:[\\/]/i.test(manifestSource)) fail('公開圖標 manifest 含 Windows 絕對路徑');
 for (const fragment of ['blob', 'segment', 'bundle', 'officialiconlibrary', 'appdata']) {
   if (manifestSourceLower.includes(fragment)) fail(`公開圖標 manifest 含私人來源片段：${fragment}`);
@@ -55,8 +58,8 @@ const lifeCategories = JSON.parse(readFileSync(lifeCategoriesPath, 'utf8'));
 const categories = manifest.categories || {};
 const expectedCounts = {
   lifeSkills: 20,
-  professions: 7,
-  professionSkills: 21,
+  professions: 9,
+  professionSkills: 31,
   cooking: 4
 };
 
@@ -67,7 +70,7 @@ for (const [category, count] of Object.entries(expectedCounts)) {
   if (items.length !== count) fail(`${category} 數量為 ${items.length}，預期 ${count}`);
   all.push(...items.map(item => ({ ...item, category })));
 }
-if (all.length !== 52) fail(`總數為 ${all.length}，預期 52`);
+if (all.length !== 64) fail(`總數為 ${all.length}，預期 64`);
 
 const lifeCategoryIds = new Set(lifeCategories.map(item => item.id));
 if (lifeCategoryIds.size !== 20) fail(`生活技能分類穩定 ID 數量為 ${lifeCategoryIds.size}，預期 20`);
@@ -82,7 +85,7 @@ for (const id of lifeIconIds) {
 
 const expectedProfessionIds = new Set([
   'swordsman', 'warrior', 'greatsword-warrior', 'archer',
-  'thief', 'fighter', 'dual-blades'
+  'thief', 'fighter', 'dual-blades', 'longbowman', 'crossbowman'
 ]);
 const professionIds = new Set(categories.professions.map(item => item.id));
 if (professionIds.size !== expectedProfessionIds.size) fail(`職業圖標穩定 ID 數量為 ${professionIds.size}，預期 ${expectedProfessionIds.size}`);
@@ -110,15 +113,27 @@ const issue9SkillBindings = new Map([
   ['dual-blades-hurricane-dance', { professionId: 'dual-blades', name: '旋轉突襲' }],
   ['dual-blades-outer-slash', { professionId: 'dual-blades', name: '分裂斬' }]
 ]);
+const issue10SkillBindings = new Map([
+  ['longbowman-crash-shot', { professionId: 'longbowman', name: '震盪射擊' }],
+  ['longbowman-flame-barrage', { professionId: 'longbowman', name: '烈焰箭' }],
+  ['longbowman-heart-seeker', { professionId: 'longbowman', name: '尋心者' }],
+  ['longbowman-shell-breaker', { professionId: 'longbowman', name: '破殼者' }],
+  ['longbowman-wing-skewer', { professionId: 'longbowman', name: '翼之穿刺' }],
+  ['crossbowman-buster-shot', { professionId: 'crossbowman', name: '爆裂射擊' }],
+  ['crossbowman-gusting-bolt', { professionId: 'crossbowman', name: '狂風弩箭' }],
+  ['crossbowman-shock-explosion', { professionId: 'crossbowman', name: '震撼爆裂' }],
+  ['crossbowman-sliding-step', { professionId: 'crossbowman', name: '滑步' }],
+  ['crossbowman-spreading-bolt', { professionId: 'crossbowman', name: '擴散弩箭' }]
+]);
 const professionSkillById = new Map(categories.professionSkills.map(item => [item.id, item]));
-for (const [id, binding] of issue9SkillBindings) {
+for (const [id, binding] of [...issue9SkillBindings, ...issue10SkillBindings]) {
   const item = professionSkillById.get(id);
-  if (!item) fail(`Issue #9 技能缺少正式圖標：${id}`);
+  if (!item) fail(`職業技能缺少正式圖標：${id}`);
   if (item.professionId !== binding.professionId) fail(`${id} professionId 應為 ${binding.professionId}`);
   if (item.name !== binding.name) fail(`${id} 正式名稱應為 ${binding.name}`);
   if (item.width !== 256 || item.height !== 256) fail(`${id} 必須宣告為 256x256`);
 }
-for (const id of ['thief', 'fighter', 'dual-blades']) {
+for (const id of ['thief', 'fighter', 'dual-blades', 'longbowman', 'crossbowman']) {
   const item = categories.professions.find(entry => entry.id === id);
   if (item.width !== 256 || item.height !== 256) fail(`${id} 職業圖標必須宣告為 256x256`);
 }

@@ -1,9 +1,12 @@
 param(
-    [string]$ProjectPath = 'D:\workbench\mabinogi-mobile-tw-guide',
+    [string]$ProjectPath,
     [string]$Repository = 'locksley1701/mabinogi-mobile-tw-guide'
 )
 
 $ErrorActionPreference = 'Stop'
+if (-not $ProjectPath) {
+    $ProjectPath = $PSScriptRoot
+}
 Set-Location -LiteralPath $ProjectPath
 
 function Assert-Command {

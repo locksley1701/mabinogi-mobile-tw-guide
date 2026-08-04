@@ -1,7 +1,7 @@
 {
-  "version": 4,
-  "issue": 9,
-  "updatedAt": "2026-08-04",
+  "version": 5,
+  "issue": 10,
+  "updatedAt": "2026-08-05",
   "categories": {
     "lifeSkills": [
       {
@@ -275,6 +275,26 @@
         "sha256": "6b16b17fed600ae08a6f9a049604cd4ebbc7f82b6aebd79d2542a16f7bf94684",
         "sourceClass": "台版客戶端職業圖標核准輸出",
         "approved": true
+      },
+      {
+        "id": "longbowman",
+        "name": "長弓兵",
+        "icon": "assets/icons/professions/longbowman.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "8ecd82658928ec55adf28838ac6d85c60977da07cb6424c4a8e2687e459f69f9",
+        "sourceClass": "台版客戶端職業圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "crossbowman",
+        "name": "弩手",
+        "icon": "assets/icons/professions/crossbowman.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "f8dd75e466291e464ae5a2b43b184a3263584857d0c682d7d3a3250f5702c62a",
+        "sourceClass": "台版客戶端職業圖標核准輸出",
+        "approved": true
       }
     ],
     "professionSkills": [
@@ -506,6 +526,116 @@
         "width": 256,
         "height": 256,
         "sha256": "c4e02f521de41e992943f8cc3f8d25e6e443874a432fb4add10690bbe4773e59",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "longbowman-crash-shot",
+        "professionId": "longbowman",
+        "name": "震盪射擊",
+        "icon": "assets/icons/profession-skills/longbowman-crash-shot.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "3199bcafb34b6b674e8f1e9d9f9663beafce33769844db78062ee8c5d205d989",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "longbowman-flame-barrage",
+        "professionId": "longbowman",
+        "name": "烈焰箭",
+        "icon": "assets/icons/profession-skills/longbowman-flame-barrage.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "9f9ef04c4fed565ece1817364ea98129ce877b1b6810313c7dc2d5eb33e11d26",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "longbowman-heart-seeker",
+        "professionId": "longbowman",
+        "name": "尋心者",
+        "icon": "assets/icons/profession-skills/longbowman-heart-seeker.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "daca91d5e8ccc7594cb3e7f8145f3fd9c51bc8fba0c6b431824b39761b1e015a",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "longbowman-shell-breaker",
+        "professionId": "longbowman",
+        "name": "破殼者",
+        "icon": "assets/icons/profession-skills/longbowman-shell-breaker.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "fad03239b5a4c7b70bcedb29f6ae65093614d28d1a7dfb25459d9ac71675361a",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "longbowman-wing-skewer",
+        "professionId": "longbowman",
+        "name": "翼之穿刺",
+        "icon": "assets/icons/profession-skills/longbowman-wing-skewer.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "54e3a7da3d54d72a2e89a3d5d640f68c854d723ec03a064d1611c9510524e47b",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "crossbowman-buster-shot",
+        "professionId": "crossbowman",
+        "name": "爆裂射擊",
+        "icon": "assets/icons/profession-skills/crossbowman-buster-shot.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "7274011b11339a63f74092d7934352273ae3ae8e9abf8adaa3bace3249713b42",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "crossbowman-gusting-bolt",
+        "professionId": "crossbowman",
+        "name": "狂風弩箭",
+        "icon": "assets/icons/profession-skills/crossbowman-gusting-bolt.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "cc5559f29ee995181fb24bb92c8c8900c1f5ce286dbc2420f89b6afd9e4240c2",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "crossbowman-shock-explosion",
+        "professionId": "crossbowman",
+        "name": "震撼爆裂",
+        "icon": "assets/icons/profession-skills/crossbowman-shock-explosion.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "9482b2b1ec20756898fc5ed76d122d92078c6e86368ca0ee2b84af3d3667d550",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "crossbowman-sliding-step",
+        "professionId": "crossbowman",
+        "name": "滑步",
+        "icon": "assets/icons/profession-skills/crossbowman-sliding-step.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "301cdb98b9417f133a81ab3f9831ea0d7e7ac4d3688406da47496f7100ea4e9d",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "crossbowman-spreading-bolt",
+        "professionId": "crossbowman",
+        "name": "擴散弩箭",
+        "icon": "assets/icons/profession-skills/crossbowman-spreading-bolt.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "7a5c95ed256951021bce41589632eb79519474d9b6c3dd66d8d11ee1e49be6dc",
         "sourceClass": "台版客戶端職業技能圖標核准輸出",
         "approved": true
       }

@@ -305,6 +305,18 @@ function validateProfessionData(professions, professionSkills) {
     fighter: ['後退步', '爆裂拳：第1擊', '蓄力拳', '空翻踢：第1擊', '重踏踢'],
     'dual-blades': ['雙重新月', '滑行狂怒', '怒號疾風', '旋轉突襲', '分裂斬']
   };
+  const issue10Definitions = {
+    longbowman: {
+      names: ['震盪射擊', '烈焰箭', '尋心者', '破殼者', '翼之穿刺'],
+      clientSkillIds: ['CrashShot', 'FlameBarrage', 'HeartSeeker', 'ShellBreaker', 'WingSkewer'],
+      stats: [[], [['攻擊已破防敵人時傷害增加', '50%'], ['重複打擊時傷害比例', '25%']], [['各階段蓄力時間', '0.75 秒']], [], [['攻擊次數', '5 次'], ['破防傷害', '1 格'], ['迎擊時破防傷害', '2 格']]]
+    },
+    crossbowman: {
+      names: ['爆裂射擊', '狂風弩箭', '震撼爆裂', '滑步', '擴散弩箭'],
+      clientSkillIds: ['BusterShot', 'GustingBolt', 'ShockExplosion', 'SlidingStep', 'SpreadingBolt'],
+      stats: [[['最大層數', '2'], ['範圍', '6 m'], ['強化弩箭裝填', '1 個彈匣']], [['攻擊次數', '10 次'], ['強化弩箭暴擊機率衰減', '每次發射降低為前次的 0.75 倍'], ['強化弩箭消耗', '1 個彈匣']], [['破防傷害', '1 格'], ['強化弩箭裝填', '1 個彈匣']], [['攻擊次數', '2 次'], ['強化弩箭裝填', '1 個彈匣']], [['強化弩箭消耗', '1 個彈匣']]]
+    }
+  };
   const allowedClientDataStatuses = new Set([
     'verified_client_text',
     'verified_combo_part',
@@ -377,6 +389,41 @@ function validateProfessionData(professions, professionSkills) {
   if (stompKick && ('internalAlias' in stompKick || 'publicAliasPolicy' in stompKick)) {
     fail('profession-skills.json.fighter.重踏踢', '公開技能資料不得保留內部別名或公開別名政策欄位');
   }
+
+  for (const [id, definition] of Object.entries(issue10Definitions)) {
+    const profession = professionSkills[id];
+    const overview = professions.find(item => item.id === id);
+    const location = `profession-skills.json.${id}`;
+    if (!profession || !overview) {
+      fail(location, 'Issue #10 職業或總覽項目缺漏');
+      continue;
+    }
+    if (!overview.documented || overview.routeSlug !== id || profession.routeSlug !== id) {
+      fail(location, 'Issue #10 職業必須開放正確的正式 route');
+    }
+    if (profession.summaryBasis !== 'derived_from_verified_skills') fail(`${location}.summaryBasis`, '職業摘要必須標示為依已確認技能內容整理');
+    if (profession.preferredEquipment !== null || profession.preferredEquipmentStatus !== 'pending_verified_source') {
+      fail(`${location}.preferredEquipment`, '偏好裝備資料不足時必須保持 null 與待核實狀態');
+    }
+    if (profession.status !== 'tw-confirmed' || profession.active.length !== 5 || profession.passive.length !== 0) {
+      fail(location, 'Issue #10 每個職業應收錄 5 筆已確認主動技能且不得補寫被動技能');
+      continue;
+    }
+    const names = profession.active.map(skill => skill.name);
+    if (JSON.stringify(names) !== JSON.stringify(definition.names)) fail(`${location}.active`, '技能名稱或順序不符');
+    profession.active.forEach((skill, index) => {
+      const skillLocation = `${location}.active[${index}]`;
+      if (skill.order !== index + 1 || skill.clientSkillId !== definition.clientSkillIds[index]) fail(skillLocation, '技能 order 或公開 clientSkillId 不符');
+      if (skill.status !== 'tw-confirmed' || skill.numericValuesStatus !== 'pending_resolution') fail(skillLocation, '技能資料或數值狀態不符');
+      if (!allowedClientDataStatuses.has(skill.dataStatus)) fail(`${skillLocation}.dataStatus`, '不允許的客戶端文字確認狀態');
+      if (typeof skill.publicNumericPolicy !== 'string' || !skill.publicNumericPolicy.includes('不得')) fail(`${skillLocation}.publicNumericPolicy`, '缺少未解析數值公開限制');
+      const actualStats = (skill.stats || []).map(stat => [stat.label, stat.value]);
+      if (JSON.stringify(actualStats) !== JSON.stringify(definition.stats[index])) fail(`${skillLocation}.stats`, '已確認常數不符或包含未核實數值');
+      for (const key of ['name', 'description', 'publicNumericPolicy']) {
+        if (forbiddenExternalText.test(String(skill[key] || ''))) fail(`${skillLocation}.${key}`, '公開內容不得包含 Drive、Windows 路徑或韓文參照式');
+      }
+    });
+  }
 }
 
 const jsonFiles = fs.readdirSync(dataDir).filter(name => name.endsWith('.json')).sort();
@@ -384,8 +431,12 @@ for (const fileName of jsonFiles) {
   const filePath = path.join(dataDir, fileName);
   const data = readJson(filePath);
   if (data === null) continue;
-  if (JSON.stringify(data).includes('AxeKick')) {
+  const rawPublicData = JSON.stringify(data);
+  if (rawPublicData.includes('AxeKick')) {
     fail(fileName, '公開 data JSON 不得包含 AxeKick');
+  }
+  for (const alias of ['MountingShock', 'GustingVolt', 'SlipThrough', 'SpreadingVolt']) {
+    if (rawPublicData.includes(alias)) fail(fileName, `公開 data JSON 不得包含內部別名：${alias}`);
   }
   walk(data, fileName);
   if (fileName === 'names.json') validateAliases(data, fileName);

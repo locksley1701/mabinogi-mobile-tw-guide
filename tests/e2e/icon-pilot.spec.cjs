@@ -5,6 +5,8 @@ const professionSidebarEntries = [
   ['greatsword-warrior', '大劍戰士', '◆'],
   ['warrior', '戰士', '⬡'],
   ['archer', '弓手', '⌁'],
+  ['longbowman', '長弓兵', '⌁'],
+  ['crossbowman', '弩手', '⌁'],
   ['thief', '盜賊', '◈'],
   ['fighter', '格鬥家', '✊'],
   ['dual-blades', '雙刀客', '⚔']
@@ -303,14 +305,14 @@ test('生活技能20枚在列表與明細顯示核准圖標', async ({ page }) =
   }
 });
 
-test('職業7枚在總覽與職業頁 hero 顯示', async ({ page }) => {
+test('職業9枚在總覽與職業頁 hero 顯示', async ({ page }) => {
   await page.goto('/#/professions');
   await waitForGuide(page);
   const selector = '.profession-card img[data-official-icon]';
-  await waitForIcons(page, selector, 7);
+  await waitForIcons(page, selector, 9);
   await expectAccessibleDecorativeImages(page, selector);
 
-  for (const id of ['swordsman', 'warrior', 'greatsword-warrior', 'archer', 'thief', 'fighter', 'dual-blades']) {
+  for (const id of ['swordsman', 'warrior', 'greatsword-warrior', 'archer', 'longbowman', 'crossbowman', 'thief', 'fighter', 'dual-blades']) {
     await page.goto(`/#/profession/${id}`);
     await waitForGuide(page);
     const hero = page.locator(`.profession-hero [data-official-icon-detail="${id}"] img[data-official-icon="${id}"]`);
@@ -319,7 +321,7 @@ test('職業7枚在總覽與職業頁 hero 顯示', async ({ page }) => {
   }
 });
 
-test('桌面側邊欄七職業使用 manifest 官方圖標且接線保持冪等', async ({ page }, testInfo) => {
+test('桌面側邊欄九職業使用 manifest 官方圖標且接線保持冪等', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案驗證側邊欄版面');
   expect(normalizeDomRectPixels(28.0000019)).toBe(28);
   expect(normalizeDomRectPixels(29)).toBe(29);
@@ -328,7 +330,7 @@ test('桌面側邊欄七職業使用 manifest 官方圖標且接線保持冪等'
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#/home');
   await waitForGuide(page);
-  await waitForIcons(page, professionSidebarImageSelector, 7);
+  await waitForIcons(page, professionSidebarImageSelector, 9);
   await expectAccessibleDecorativeImages(page, professionSidebarImageSelector);
 
   for (const [id, name] of professionSidebarEntries) {
@@ -349,7 +351,7 @@ test('桌面側邊欄七職業使用 manifest 官方圖標且接線保持冪等'
     window.FanatioIconPilot.patch();
     window.FanatioThemeSystem.apply({ appearance: 'dark', palette: 'contrast', persist: false });
   });
-  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(7);
+  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(9);
   for (const [id] of professionSidebarEntries) {
     await expect(page.locator(`.sidebar .nav-link[data-route="profession/${id}"] img[data-official-icon]`)).toHaveCount(1);
   }
@@ -357,7 +359,7 @@ test('桌面側邊欄七職業使用 manifest 官方圖標且接線保持冪等'
   await expectNoHorizontalOverflow(page, '桌面側邊欄職業圖標');
 });
 
-test('918px 抽屜維持七職業圖標、導航與重新開啟不重複', async ({ page }, testInfo) => {
+test('918px 抽屜維持九職業圖標、導航與重新開啟不重複', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案模擬 918px 抽屜');
   await page.setViewportSize({ width: 918, height: 900 });
   await page.goto('/#/home');
@@ -365,7 +367,7 @@ test('918px 抽屜維持七職業圖標、導航與重新開啟不重複', async
   await page.locator('#menu-button').click();
   await expect(page.locator('#sidebar')).toHaveAttribute('aria-hidden', 'false');
   await waitForSidebarLayoutStable(page);
-  await waitForIcons(page, professionSidebarImageSelector, 7);
+  await waitForIcons(page, professionSidebarImageSelector, 9);
 
   for (const [id, name] of professionSidebarEntries) {
     const link = page.locator(`.sidebar .nav-link[data-route="profession/${id}"]`);
@@ -382,7 +384,7 @@ test('918px 抽屜維持七職業圖標、導航與重新開啟不重複', async
   await page.locator('#menu-button').click();
   await waitForSidebarLayoutStable(page);
   await expect(page.locator('.sidebar .nav-link[data-route="profession/thief"]')).toHaveClass(/is-active/);
-  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(7);
+  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(9);
   for (const [id] of professionSidebarEntries) {
     await expect(page.locator(`.sidebar .nav-link[data-route="profession/${id}"] img[data-official-icon]`)).toHaveCount(1);
   }
@@ -401,7 +403,7 @@ test('390x844 手機側欄可捲到底且職業圖標不壓縮文字', async ({ 
   await waitForGuide(page);
   await page.locator('#menu-button').click();
   await waitForSidebarLayoutStable(page);
-  await waitForIcons(page, professionSidebarImageSelector, 7);
+  await waitForIcons(page, professionSidebarImageSelector, 9);
 
   for (const [id, name] of professionSidebarEntries) {
     const link = page.locator(`.sidebar .nav-link[data-route="profession/${id}"]`);
@@ -439,7 +441,7 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   });
   await page.goto('/#/home');
   await waitForGuide(page);
-  await waitForIcons(page, professionSidebarImageSelector, 7);
+  await waitForIcons(page, professionSidebarImageSelector, 9);
   const before = await readProfessionSidebarMetrics(page);
 
   const link = page.locator('.sidebar .nav-link[data-route="profession/thief"]');
@@ -449,7 +451,7 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   });
   await expect(host.locator('img')).toHaveCount(0);
   await expect(host).toHaveText('◈');
-  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(6);
+  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(8);
   const after = await readProfessionSidebarMetrics(page);
   const beforeThief = before.find(item => item.id === 'thief');
   const afterThief = after.find(item => item.id === 'thief');
@@ -469,12 +471,14 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   expect(runtimeErrors).toEqual([]);
 });
 
-test('21枚職業技能在七個職業頁取代編號底盤', async ({ page }) => {
+test('31枚職業技能在九個職業頁取代編號底盤', async ({ page }) => {
   const matrix = [
     ['swordsman', ['swordmaster-steel-wedge', 'swordmaster-detection']],
     ['warrior', ['expert-warrior-battle-cry', 'expert-warrior-blade-smash']],
     ['greatsword-warrior', ['greatsword-warrior-blockade-front']],
     ['archer', ['expert-archer-magnum-shot']],
+    ['longbowman', ['longbowman-crash-shot', 'longbowman-flame-barrage', 'longbowman-heart-seeker', 'longbowman-shell-breaker', 'longbowman-wing-skewer']],
+    ['crossbowman', ['crossbowman-buster-shot', 'crossbowman-gusting-bolt', 'crossbowman-shock-explosion', 'crossbowman-sliding-step', 'crossbowman-spreading-bolt']],
     ['thief', ['thief-back-stab', 'thief-hide', 'thief-poison-trap', 'thief-screw-dagger', 'thief-throwing-bomb']],
     ['fighter', ['fighter-back-step', 'fighter-burst-punch-1', 'fighter-charging-fist', 'fighter-somersault-1', 'fighter-stomp-kick']],
     ['dual-blades', ['dual-blades-double-crescent', 'dual-blades-gliding-fury', 'dual-blades-howling-gale', 'dual-blades-hurricane-dance', 'dual-blades-outer-slash']]

@@ -50,6 +50,7 @@ jobs:
           node --check tests/e2e/reading-system.spec.cjs
           node --check tests/e2e/icon-pilot.spec.cjs
           node --check tests/e2e/game-guided-tour.spec.cjs
+          node --check tests/e2e/issue-10-ranged-jobs.spec.cjs
           node --check tests/e2e/issue-9-thief-jobs.spec.cjs
           node --check tests/e2e/static-server-safety.spec.cjs
           node --check playwright.config.cjs
@@ -86,9 +87,11 @@ jobs:
           const documented = professions.filter(item => item.documented).map(item => item.id).sort();
           const expectedDocumented = [
             'archer',
+            'crossbowman',
             'dual-blades',
             'fighter',
             'greatsword-warrior',
+            'longbowman',
             'swordsman',
             'thief',
             'warrior'
@@ -100,7 +103,9 @@ jobs:
             archer: {active: 6, passive: 5},
             thief: {active: 5, passive: 0},
             fighter: {active: 5, passive: 0},
-            'dual-blades': {active: 5, passive: 0}
+            'dual-blades': {active: 5, passive: 0},
+            longbowman: {active: 5, passive: 0},
+            crossbowman: {active: 5, passive: 0}
           };
           if (JSON.stringify(documented) !== JSON.stringify(expectedDocumented)) {
             throw new Error(`Unexpected documented professions: ${documented.join(', ')}`);
@@ -125,12 +130,12 @@ jobs:
           }
 
           const iconCount = Object.values(icons.categories || {}).flat().length;
-          if (iconCount !== 52) throw new Error(`Expected 52 approved icon records, got ${iconCount}`);
+          if (iconCount !== 64) throw new Error(`Expected 64 approved icon records, got ${iconCount}`);
 
           const lifeIconCount = icons.categories?.lifeSkills?.length || 0;
           if (lifeIconCount !== 20) throw new Error(`Expected 20 approved life-skill icon records, got ${lifeIconCount}`);
 
-          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 7 professions, ${aliases.length} alias definitions, and ${iconCount} icon records (${lifeIconCount}/20 life-skill categories covered).`);
+          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 9 professions, ${aliases.length} alias definitions, and ${iconCount} icon records (${lifeIconCount}/20 life-skill categories covered).`);
           NODE
 
       - name: Validate public data and UI state contract
@@ -237,6 +242,7 @@ jobs:
           test -f tests/e2e/icon-pilot.spec.cjs
           test -f tests/e2e/game-guided-tour.spec.cjs
           test -f tests/e2e/issue-9-thief-jobs.spec.cjs
+          test -f tests/e2e/issue-10-ranged-jobs.spec.cjs
           test -f tests/e2e/static-server-safety.spec.cjs
           test -f docs/issue-46-game-guided-tour.md
           grep -q '#/profession/greatsword-warrior' index.html

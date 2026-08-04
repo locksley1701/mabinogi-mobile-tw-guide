@@ -34,7 +34,7 @@
 不要直接雙擊 `index.html`，瀏覽器會阻擋 JSON 載入。
 
 ```powershell
-Set-Location -LiteralPath 'D:\workbench\mabinogi-mobile-tw-guide'
+Set-Location -LiteralPath '<repository-directory>'
 py -m http.server 8000
 ```
 
