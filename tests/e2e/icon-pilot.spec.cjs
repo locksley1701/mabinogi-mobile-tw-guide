@@ -76,14 +76,14 @@ test('生活技能20枚在列表與明細顯示核准圖標', async ({ page }) =
   }
 });
 
-test('職業4枚在總覽與職業頁 hero 顯示', async ({ page }) => {
+test('職業7枚在總覽與職業頁 hero 顯示', async ({ page }) => {
   await page.goto('/#/professions');
   await waitForGuide(page);
   const selector = '.profession-card img[data-official-icon]';
-  await waitForIcons(page, selector, 4);
+  await waitForIcons(page, selector, 7);
   await expectAccessibleDecorativeImages(page, selector);
 
-  for (const id of ['swordsman', 'warrior', 'greatsword-warrior', 'archer']) {
+  for (const id of ['swordsman', 'warrior', 'greatsword-warrior', 'archer', 'thief', 'fighter', 'dual-blades']) {
     await page.goto(`/#/profession/${id}`);
     await waitForGuide(page);
     const hero = page.locator(`.profession-hero [data-official-icon-detail="${id}"] img[data-official-icon="${id}"]`);
@@ -92,12 +92,15 @@ test('職業4枚在總覽與職業頁 hero 顯示', async ({ page }) => {
   }
 });
 
-test('6枚職業技能在四個職業頁取代編號底盤', async ({ page }) => {
+test('21枚職業技能在七個職業頁取代編號底盤', async ({ page }) => {
   const matrix = [
     ['swordsman', ['swordmaster-steel-wedge', 'swordmaster-detection']],
     ['warrior', ['expert-warrior-battle-cry', 'expert-warrior-blade-smash']],
     ['greatsword-warrior', ['greatsword-warrior-blockade-front']],
-    ['archer', ['expert-archer-magnum-shot']]
+    ['archer', ['expert-archer-magnum-shot']],
+    ['thief', ['thief-back-stab', 'thief-hide', 'thief-poison-trap', 'thief-screw-dagger', 'thief-throwing-bomb']],
+    ['fighter', ['fighter-back-step', 'fighter-burst-punch-1', 'fighter-charging-fist', 'fighter-somersault-1', 'fighter-stomp-kick']],
+    ['dual-blades', ['dual-blades-double-crescent', 'dual-blades-gliding-fury', 'dual-blades-howling-gale', 'dual-blades-hurricane-dance', 'dual-blades-outer-slash']]
   ];
 
   for (const [professionId, iconIds] of matrix) {
@@ -127,7 +130,7 @@ test('料理4枚接入正式卡片並更新試點說明', async ({ page }) => {
 
 test('亮暗與五套配色在代表頁面保持可見且無水平溢位', async ({ page }) => {
   const palettes = ['forest', 'moonlight', 'hearth', 'amethyst', 'contrast'];
-  const routes = ['life', 'professions', 'profession/swordsman', 'cooking'];
+  const routes = ['life', 'professions', 'profession/swordsman', 'profession/fighter', 'cooking'];
 
   for (const appearance of ['light', 'dark']) {
     for (const palette of palettes) {

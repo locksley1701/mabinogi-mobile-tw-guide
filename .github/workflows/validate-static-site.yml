@@ -125,7 +125,7 @@ jobs:
           }
 
           const iconCount = Object.values(icons.categories || {}).flat().length;
-          if (iconCount !== 34) throw new Error(`Expected 34 approved icon records, got ${iconCount}`);
+          if (iconCount !== 52) throw new Error(`Expected 52 approved icon records, got ${iconCount}`);
 
           const lifeIconCount = icons.categories?.lifeSkills?.length || 0;
           if (lifeIconCount !== 20) throw new Error(`Expected 20 approved life-skill icon records, got ${lifeIconCount}`);

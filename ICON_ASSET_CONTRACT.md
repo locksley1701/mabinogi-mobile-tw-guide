@@ -180,15 +180,46 @@ JSON 以穩定英文 ID 綁定圖標：
 - `roasted-potato`：烤整顆馬鈴薯
 - `apple-juice`：蘋果汁
 
-## 12. 自動驗證最低要求
+## 12. Issue #9 盜賊系完整圖標清單
+
+### 職業
+
+- `thief`：盜賊
+- `fighter`：格鬥家
+- `dual-blades`：雙刀客
+
+### 職業技能
+
+- `thief-back-stab`：奇襲
+- `thief-hide`：隱身
+- `thief-poison-trap`：毒陷阱
+- `thief-screw-dagger`：螺旋匕首
+- `thief-throwing-bomb`：投擲炸彈
+- `fighter-back-step`：後退步
+- `fighter-burst-punch-1`：爆裂拳第 1 擊
+- `fighter-charging-fist`：蓄力拳
+- `fighter-somersault-1`：空翻踢第 1 擊
+- `fighter-stomp-kick`：重踏踢
+- `dual-blades-double-crescent`：雙重新月
+- `dual-blades-gliding-fury`：滑行狂怒
+- `dual-blades-howling-gale`：怒號疾風
+- `dual-blades-hurricane-dance`：旋轉突襲
+- `dual-blades-outer-slash`：分裂斬
+
+本批 18 枚圖標均使用既有本機核准的台版客戶端 PNG 輸出，不下載、不重新抽取，也不在公開 manifest 記錄私人素材路徑或內部別名。
+
+## 13. 自動驗證最低要求
 
 - JSON 內每個非空 `icon` 路徑都必須存在。
 - 試點 PNG 必須可讀取且具有透明通道。
 - 不允許提交 `.blob`、`.bundle`、原始完整截圖或私人資料夾內容。
 - 不允許兩個不同穩定 ID 意外綁定同一檔案，除非資料契約明確宣告共用。
+- 公開圖標 manifest 固定為生活技能 20、職業 7、職業技能 21、料理 4，共 52 枚唯一 SHA256 資產。
+- Issue #9 三職業與 15 技能必須維持正式 ID、正式名稱與 `professionId` 一對一綁定。
+- 公開圖標 manifest 不得包含內部別名、Windows 絕對路徑或私人素材庫識別字。
 - changelog 必須記錄試點導入。
 
-## 13. 完成定義
+## 14. 完成定義
 
 Issue #7 僅在下列條件全部成立時完成：
 

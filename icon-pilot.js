@@ -158,12 +158,16 @@
   function patchSearch(iconMaps) {
     document.querySelectorAll('.result-row').forEach(row => {
       const title = normalize(row.querySelector('strong')?.textContent).split('｜')[0];
-      const item = iconMaps.cookingByName.get(title)
+      const routeMatch = row.querySelector('a')?.getAttribute('href')?.match(/^#\/profession\/([^/?#]+)/);
+      const professionId = routeMatch?.[1] || '';
+      const item = (professionId ? iconMaps.skillByKey.get(`${professionId}:${title}`) : null)
+        || iconMaps.cookingByName.get(title)
         || [...iconMaps.lifeById.values()].find(entry => entry.name === title)
         || [...iconMaps.professionById.values()].find(entry => entry.name === title);
       if (!item || row.querySelector(`[data-official-icon-host="${item.id}"]`)) return;
       const kind = item.icon.includes('/cooking/') ? 'cooking'
         : item.icon.includes('/professions/') ? 'profession'
+        : item.icon.includes('/profession-skills/') ? 'profession-skill'
         : 'life';
       row.prepend(makeHost(item, kind, 'search'));
     });
