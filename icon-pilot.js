@@ -99,6 +99,47 @@
     return match?.[1] || '';
   }
 
+  function replaceSidebarHost(host, item) {
+    if (!host
+      || host.dataset.officialIconHost === item.id
+      || host.dataset.officialIconFailed === item.id) return;
+
+    if (host.dataset.officialIconFailed && host.dataset.officialIconFailed !== item.id) {
+      delete host.dataset.officialIconFailed;
+    }
+    if (!host.dataset.officialIconFallback) {
+      host.dataset.officialIconFallback = normalize(host.textContent);
+    }
+
+    const fallback = host.dataset.officialIconFallback || '';
+    host.dataset.officialIconHost = item.id;
+    host.classList.add('official-icon-source--profession-sidebar');
+    host.textContent = fallback;
+
+    const wrapper = document.createElement('span');
+    wrapper.className = 'official-icon--sidebar';
+    wrapper.dataset.officialIconSidebar = item.id;
+    wrapper.setAttribute('aria-hidden', 'true');
+    const image = createImage(item, 'sidebar');
+    image.addEventListener('error', () => {
+      host.dataset.officialIconFailed = item.id;
+      host.classList.remove('official-icon-source--profession-sidebar');
+      host.textContent = fallback;
+      delete host.dataset.officialIconHost;
+    }, { once: true });
+    wrapper.append(image);
+    host.append(wrapper);
+  }
+
+  function patchProfessionSidebar(iconMaps) {
+    document.querySelectorAll('.sidebar .nav-link[data-route^="profession/"] > span[aria-hidden="true"]').forEach(host => {
+      const route = host.parentElement?.dataset.route || '';
+      const match = route.match(/^profession\/([^/?#]+)$/);
+      const item = match ? iconMaps.professionById.get(match[1]) : null;
+      if (item) replaceSidebarHost(host, item);
+    });
+  }
+
   function patchProfessions(iconMaps) {
     document.querySelectorAll('.profession-card').forEach(card => {
       const id = professionIdFromCard(card);
@@ -178,6 +219,7 @@
     if (!data) return;
     const iconMaps = maps();
     patchLife(iconMaps);
+    patchProfessionSidebar(iconMaps);
     patchProfessions(iconMaps);
     patchProfessionSkills(iconMaps);
     patchCooking(iconMaps);

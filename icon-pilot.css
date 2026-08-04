@@ -61,6 +61,40 @@
   margin-block-end: 4px;
 }
 
+.sidebar .nav-link > .official-icon-source--profession-sidebar {
+  position: relative;
+  visibility: hidden;
+}
+
+.sidebar .nav-link > .official-icon-source--profession-sidebar > .official-icon--sidebar {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  display: inline-grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  flex: 0 0 28px;
+  margin: 0;
+  padding: 2px;
+  overflow: hidden;
+  visibility: visible;
+  vertical-align: middle;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: translate(-50%, -50%);
+}
+
+.sidebar .nav-link > .official-icon-source--profession-sidebar > .official-icon--sidebar > .official-icon__image {
+  inline-size: 24px;
+  block-size: 24px;
+  max-inline-size: 24px;
+  max-block-size: 24px;
+  object-fit: contain;
+  object-position: center;
+}
+
 .profession-hero .official-icon--hero {
   --official-icon-size: 88px;
   --official-icon-padding: 9px;
