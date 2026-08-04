@@ -11,9 +11,9 @@
   {"id":"healer","name":"治癒師","icon":"✚","documented":false},
   {"id":"priest","name":"祭司","icon":"✦","documented":false},
   {"id":"monk","name":"修道士","icon":"◉","documented":false},
-  {"id":"thief","name":"盜賊","icon":"◈","documented":false},
-  {"id":"dual-blade","name":"雙刀客","icon":"⚔","documented":false},
-  {"id":"fighter","name":"格鬥家","icon":"✊","documented":false},
+  {"id":"thief","name":"盜賊","icon":"◈","documented":true,"routeSlug":"thief"},
+  {"id":"dual-blades","name":"雙刀客","icon":"⚔","documented":true,"routeSlug":"dual-blades"},
+  {"id":"fighter","name":"格鬥家","icon":"✊","documented":true,"routeSlug":"fighter"},
   {"id":"bard","name":"吟遊詩人","icon":"♫","documented":false},
   {"id":"musician","name":"樂師","icon":"♪","documented":false},
   {"id":"dancer","name":"舞者","icon":"✺","documented":false}

@@ -218,12 +218,23 @@ html[data-theme="dark"] .status-badge.status-unknown {
   color: var(--ink-500);
   font-size: .82rem;
 }
+.profession-summary-basis {
+  max-width: 760px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--gold-500);
+  border-radius: 0 10px 10px 0;
+  background: var(--surface-muted);
+  font-size: .82rem;
+}
 .profession-skill-sections {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   margin-top: 20px;
   align-items: start;
+}
+.profession-skill-sections.is-single-column {
+  grid-template-columns: minmax(0, 1fr);
 }
 .profession-skill-section {
   padding: 20px;
@@ -325,6 +336,22 @@ html[data-theme="dark"] .unlock-condition {
   color: var(--ink-700);
   font-size: .87rem;
   white-space: pre-line;
+}
+.profession-skill__combo,
+.profession-skill__numeric-note {
+  margin: 11px 0 0;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: var(--surface-muted);
+  color: var(--ink-700);
+  font-size: .78rem;
+  overflow-wrap: anywhere;
+}
+.profession-skill__combo {
+  border-left: 3px solid var(--gold-500);
+}
+.profession-skill__numeric-note {
+  border: 1px dashed var(--line);
 }
 .profession-skill__stats {
   display: grid;

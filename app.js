@@ -229,7 +229,7 @@ function buildSearchItems() {
       .map(skill => ({
         type: 'combatSkill', title: skill.name, description: `${profession.name}・${skill.kind}${skill.unlock ? `・${skill.unlock}` : ''}`,
         route: `profession/${profession.id}`, keywords: `${profession.name} ${skill.name} ${skill.kind} ${skill.unlock || ''}`,
-        status: 'tw-confirmed', statusLabel: '台版已確認'
+        status: skill.status || profession.status || 'tw-confirmed', statusLabel: '台版已確認'
       }))
   );
   const aliases = state.aliases.flatMap(alias => {
@@ -423,7 +423,7 @@ function renderProfession(id) {
   workspace.innerHTML = `
     <section class="profession-hero">
       <div><p class="eyebrow">台版職業手札</p><h1>${escapeHtml(profession.name)}</h1><p>${escapeHtml(profession.description)}</p>${attribution({contributor:'法那提歐'})}</div>
-      <aside class="profession-summary"><span>偏好裝備</span><strong>${escapeHtml(profession.preferredArmor)}</strong><span>技能收錄</span><strong>${active.length + passive.length} 個</strong><span>資料狀態</span>${badge({status:'tw-confirmed',statusLabel:'台版已確認'})}</aside>
+      <aside class="profession-summary"><span>偏好裝備</span><strong>${escapeHtml(profession.preferredEquipment || profession.preferredArmor || '資料待補')}</strong><span>技能收錄</span><strong>${active.length + passive.length} 個</strong><span>資料狀態</span>${badge({status:profession.status || 'tw-confirmed',statusLabel:'台版已確認'})}</aside>
     </section>
     <section class="skill-columns">${renderCombatSkillColumn('主動技能', active, '主動')}${renderCombatSkillColumn('被動技能', passive, '被動')}</section>
   `;

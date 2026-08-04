@@ -143,11 +143,14 @@ test('未編纂職業卡片保存職業名稱並接到投稿頁', async ({ page 
   await expect(guidance).toContainText('台版職業技能情報');
 
   const pending = page.locator('.profession-card.is-contribution-entry');
-  await expect(pending).toHaveCount(14);
+  await expect(pending).toHaveCount(11);
   await expect(pending.first()).toHaveAttribute('href', '#/contribute');
   await expect(pending.first()).not.toHaveAttribute('aria-disabled', 'true');
   await expect(pending.first()).toHaveAttribute('aria-label', /提供.+台版職業技能情報/);
   await expect(page.locator('.profession-card[href="#/profession/swordsman"]')).toBeVisible();
+  for (const id of ['thief', 'fighter', 'dual-blades']) {
+    await expect(page.locator(`.profession-card[href="#/profession/${id}"]`)).toBeVisible();
+  }
   await expectNoHorizontalOverflow(page, '職業投稿導引');
 
   const professionName = (await pending.first().locator('strong').textContent()).trim();
