@@ -42,13 +42,21 @@ if (!existsSync(manifestPath)) fail('缺少 data/icon-pilot.json');
 if (!existsSync(lifeCategoriesPath)) fail('缺少 data/life-skill-categories.json');
 if (!existsSync(contractPath)) fail('缺少 ICON_ASSET_CONTRACT.md');
 
-const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+const manifestSource = readFileSync(manifestPath, 'utf8');
+const manifestSourceLower = manifestSource.toLowerCase();
+if (manifestSourceLower.includes('axekick')) fail('公開圖標 manifest 含禁止的內部別名');
+if (/[a-z]:[\\/]/i.test(manifestSource)) fail('公開圖標 manifest 含 Windows 絕對路徑');
+for (const fragment of ['blob', 'segment', 'bundle', 'officialiconlibrary', 'appdata']) {
+  if (manifestSourceLower.includes(fragment)) fail(`公開圖標 manifest 含私人來源片段：${fragment}`);
+}
+
+const manifest = JSON.parse(manifestSource);
 const lifeCategories = JSON.parse(readFileSync(lifeCategoriesPath, 'utf8'));
 const categories = manifest.categories || {};
 const expectedCounts = {
   lifeSkills: 20,
-  professions: 4,
-  professionSkills: 6,
+  professions: 7,
+  professionSkills: 21,
   cooking: 4
 };
 
@@ -59,7 +67,7 @@ for (const [category, count] of Object.entries(expectedCounts)) {
   if (items.length !== count) fail(`${category} 數量為 ${items.length}，預期 ${count}`);
   all.push(...items.map(item => ({ ...item, category })));
 }
-if (all.length !== 34) fail(`總數為 ${all.length}，預期 34`);
+if (all.length !== 52) fail(`總數為 ${all.length}，預期 52`);
 
 const lifeCategoryIds = new Set(lifeCategories.map(item => item.id));
 if (lifeCategoryIds.size !== 20) fail(`生活技能分類穩定 ID 數量為 ${lifeCategoryIds.size}，預期 20`);
@@ -70,6 +78,49 @@ for (const id of lifeCategoryIds) {
 }
 for (const id of lifeIconIds) {
   if (!lifeCategoryIds.has(id)) fail(`生活技能圖標未對應正式分類：${id}`);
+}
+
+const expectedProfessionIds = new Set([
+  'swordsman', 'warrior', 'greatsword-warrior', 'archer',
+  'thief', 'fighter', 'dual-blades'
+]);
+const professionIds = new Set(categories.professions.map(item => item.id));
+if (professionIds.size !== expectedProfessionIds.size) fail(`職業圖標穩定 ID 數量為 ${professionIds.size}，預期 ${expectedProfessionIds.size}`);
+for (const id of expectedProfessionIds) {
+  if (!professionIds.has(id)) fail(`職業缺少正式圖標：${id}`);
+}
+for (const id of professionIds) {
+  if (!expectedProfessionIds.has(id)) fail(`職業圖標未對應正式職業：${id}`);
+}
+
+const issue9SkillBindings = new Map([
+  ['thief-back-stab', { professionId: 'thief', name: '奇襲' }],
+  ['thief-hide', { professionId: 'thief', name: '隱身' }],
+  ['thief-poison-trap', { professionId: 'thief', name: '毒陷阱' }],
+  ['thief-screw-dagger', { professionId: 'thief', name: '螺旋匕首' }],
+  ['thief-throwing-bomb', { professionId: 'thief', name: '投擲炸彈' }],
+  ['fighter-back-step', { professionId: 'fighter', name: '後退步' }],
+  ['fighter-burst-punch-1', { professionId: 'fighter', name: '爆裂拳：第1擊' }],
+  ['fighter-charging-fist', { professionId: 'fighter', name: '蓄力拳' }],
+  ['fighter-somersault-1', { professionId: 'fighter', name: '空翻踢：第1擊' }],
+  ['fighter-stomp-kick', { professionId: 'fighter', name: '重踏踢' }],
+  ['dual-blades-double-crescent', { professionId: 'dual-blades', name: '雙重新月' }],
+  ['dual-blades-gliding-fury', { professionId: 'dual-blades', name: '滑行狂怒' }],
+  ['dual-blades-howling-gale', { professionId: 'dual-blades', name: '怒號疾風' }],
+  ['dual-blades-hurricane-dance', { professionId: 'dual-blades', name: '旋轉突襲' }],
+  ['dual-blades-outer-slash', { professionId: 'dual-blades', name: '分裂斬' }]
+]);
+const professionSkillById = new Map(categories.professionSkills.map(item => [item.id, item]));
+for (const [id, binding] of issue9SkillBindings) {
+  const item = professionSkillById.get(id);
+  if (!item) fail(`Issue #9 技能缺少正式圖標：${id}`);
+  if (item.professionId !== binding.professionId) fail(`${id} professionId 應為 ${binding.professionId}`);
+  if (item.name !== binding.name) fail(`${id} 正式名稱應為 ${binding.name}`);
+  if (item.width !== 256 || item.height !== 256) fail(`${id} 必須宣告為 256x256`);
+}
+for (const id of ['thief', 'fighter', 'dual-blades']) {
+  const item = categories.professions.find(entry => entry.id === id);
+  if (item.width !== 256 || item.height !== 256) fail(`${id} 職業圖標必須宣告為 256x256`);
 }
 
 const ids = new Set();

@@ -11,6 +11,9 @@ const routes = [
   ['profession/greatsword-warrior', '大劍戰士'],
   ['profession/warrior', '戰士'],
   ['profession/archer', '弓手'],
+  ['profession/thief', '盜賊'],
+  ['profession/fighter', '格鬥家'],
+  ['profession/dual-blades', '雙刀客'],
   ['updates', '手札增補紀錄'],
   ['contribute', '愛爾琳情報櫃台']
 ];

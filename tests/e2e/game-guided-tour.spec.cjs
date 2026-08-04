@@ -70,6 +70,75 @@ async function pointerActivate(page, locator) {
   return box;
 }
 
+async function waitForAnimationFrames(page, count = 2) {
+  await page.evaluate(async frameCount => {
+    for (let frame = 0; frame < frameCount; frame += 1) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+  }, count);
+}
+
+async function waitForBoundingBoxStable(locator, {epsilon = 0.5, stableFrames = 3, maxFrames = 90} = {}) {
+  await expect(locator).toBeVisible();
+  return locator.evaluate(async (element, options) => {
+    const nextFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
+    const readBox = () => {
+      const rect = element.getBoundingClientRect();
+      return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
+    };
+    const isClose = (first, second) => ['x', 'y', 'width', 'height']
+      .every(key => Math.abs(first[key] - second[key]) <= options.epsilon);
+    const history = [];
+    let previous = readBox();
+    let stableSamples = 1;
+    history.push(previous);
+    for (let frame = 0; frame < options.maxFrames; frame += 1) {
+      await nextFrame();
+      const current = readBox();
+      history.push(current);
+      if (history.length > 6) history.shift();
+      stableSamples = isClose(previous, current) ? stableSamples + 1 : 1;
+      if (stableSamples >= options.stableFrames) return current;
+      previous = current;
+    }
+    throw new Error(`元素 bounding box 未在 ${options.maxFrames} frames 內穩定：${JSON.stringify(history)}`);
+  }, {epsilon, stableFrames, maxFrames});
+}
+
+function expectBoundingBoxesClose(actual, expected, epsilon, label) {
+  expect(actual, `${label} bounding box 必須存在`).not.toBeNull();
+  for (const key of ['x', 'y', 'width', 'height']) {
+    expect(Math.abs(actual[key] - expected[key]), `${label} ${key}`).toBeLessThanOrEqual(epsilon);
+  }
+}
+
+async function waitForTourFocusReady(page) {
+  const tour = page.locator(TOUR);
+  const panel = page.locator('#quick-search-panel');
+  const input = page.locator('#quick-search-input');
+  const next = page.locator(`${TOUR} [data-tour-action="next"]`);
+  const card = page.locator(`${TOUR} .game-guided-tour__card`);
+  await expect(tour).toBeVisible();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 1／6');
+  await expect(panel).toBeVisible();
+  await expect(input).toBeVisible();
+  await expect(input).toBeEnabled();
+  await expect.poll(() => input.evaluate(element => {
+    for (let current = element; current; current = current.parentElement) {
+      const style = getComputedStyle(current);
+      if (current.inert || current.hidden || current.getAttribute('aria-hidden') === 'true') return false;
+      if (style.display === 'none' || style.visibility === 'hidden') return false;
+    }
+    return true;
+  }), {message: '快速搜尋輸入框不得位於 inert 或 hidden 祖先內'}).toBe(true);
+  await expect(next).toBeVisible();
+  await expect(next).toBeEnabled();
+  await expect(next).toBeFocused();
+  const cardBox = await waitForBoundingBoxStable(card);
+  await expect(next).toBeFocused();
+  return {input, next, cardBox};
+}
+
 async function observeTourTransition(page) {
   await page.evaluate(() => {
     const shell = document.querySelector('#game-guided-tour');
@@ -205,13 +274,20 @@ test('導覽卡 pointerdown 不會關閉搜尋或讓略過按鈕在 click 前移
   await waitForTour(page);
   const skip = page.locator(`${TOUR} [data-tour-action="skip"]`);
   const card = page.locator(`${TOUR} .game-guided-tour__card`);
-  const before = await card.boundingBox();
-  await pointerActivate(page, skip);
   await expect(page.locator('#quick-search-panel')).toBeVisible();
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 1／6');
   await expect(page.locator('.game-guided-tour__fallback')).toBeHidden();
-  expect(await card.boundingBox()).toEqual(before);
-  await page.mouse.up();
+  const stableBefore = await waitForBoundingBoxStable(card);
+  await pointerActivate(page, skip);
+  try {
+    await waitForAnimationFrames(page, 2);
+    await expect(page.locator('#quick-search-panel')).toBeVisible();
+    await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 1／6');
+    await expect(page.locator('.game-guided-tour__fallback')).toBeHidden();
+    expectBoundingBoxesClose(await card.boundingBox(), stableBefore, 0.5, 'pointerdown 後導覽卡');
+  } finally {
+    await page.mouse.up();
+  }
   await expectTourClosedForAtLeast500ms(page);
   await expect(page.locator('#quick-search-panel')).toBeHidden();
 });
@@ -536,10 +612,11 @@ test('Escape、Tab、Shift+Tab 與焦點恢復可安全操作', async ({ page })
   await trigger.focus();
   await page.keyboard.press('Enter');
   await waitForTour(page);
+  const {input, next} = await waitForTourFocusReady(page);
   await page.keyboard.press('Tab');
-  await expect(page.locator('#quick-search-input')).toBeFocused();
+  await expect(input).toBeFocused();
   await page.keyboard.press('Shift+Tab');
-  await expect(page.locator(`${TOUR} [data-tour-action="next"]`)).toBeFocused();
+  await expect(next).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(page.locator(TOUR)).toBeHidden();
   await expect(page.locator('#quick-search-panel')).toBeHidden();

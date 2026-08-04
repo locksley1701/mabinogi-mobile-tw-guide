@@ -39,6 +39,12 @@ function renderProfessionSkill(skill, index, type) {
   const number = String(index + 1).padStart(2, '0');
   const metadata = [skill.rarity, skill.enhancement, ...(skill.tags || [])].filter(Boolean);
   const unlock = skill.unlock ? `<span class="unlock-condition">解鎖條件：${escapeHtml(skill.unlock)}</span>` : '';
+  const comboRelation = skill.presentationMode === 'combo_part'
+    ? `<p class="profession-skill__combo">組合技關係：${escapeHtml(skill.groupName)}第 ${escapeHtml(skill.comboPart)}／${escapeHtml(skill.comboTotal)} 擊（已確認的基礎技能列）</p>`
+    : '';
+  const numericNote = skill.numericValuesStatus === 'pending_resolution'
+    ? '<p class="profession-skill__numeric-note">技能數值待補；未解析內容不公開。</p>'
+    : '';
   const header = `
     <span class="profession-skill__number" aria-hidden="true">${number}</span>
     <span class="profession-skill__identity">
@@ -65,11 +71,13 @@ function renderProfessionSkill(skill, index, type) {
       </summary>
       <div class="profession-skill__body">
         ${skill.description ? `<p class="profession-skill__description">${escapeHtml(skill.description)}</p>` : ''}
+        ${comboRelation}
         ${skill.stats?.length ? `
           <dl class="profession-skill__stats">
             ${skill.stats.map(stat => `<dt>${escapeHtml(stat.label)}</dt><dd>${escapeHtml(stat.value)}</dd>`).join('')}
           </dl>
         ` : ''}
+        ${numericNote}
         <span class="attribution">✦ 資料整理：法那提歐</span>
       </div>
     </details>
@@ -99,7 +107,15 @@ renderProfession = function renderProfessionWithDetails(id) {
 
   const active = profession.active;
   const passive = profession.passive;
-  const detailedCount = [...active, ...passive].filter(skill => skill.description || skill.stats?.length).length;
+  const descriptionCount = [...active, ...passive].filter(skill =>
+    typeof skill.description === 'string' && skill.description.trim()
+  ).length;
+  const preferredEquipment = profession.preferredEquipment || profession.preferredArmor;
+  const preferredEquipmentLabel = preferredEquipment || '資料待補（尚無已核實來源）';
+  const skillSections = [
+    active.length ? renderProfessionSkillSection('主動技能', active, '主動') : '',
+    passive.length ? renderProfessionSkillSection('被動技能', passive, '被動') : ''
+  ].filter(Boolean);
   setTopbar(`profession/${id}`, profession.name);
   workspace.innerHTML = `
     <section class="profession-hero">
@@ -107,19 +123,19 @@ renderProfession = function renderProfessionWithDetails(id) {
         <p class="eyebrow">台版職業手札</p>
         <h1>${escapeHtml(profession.name)}</h1>
         <p>${escapeHtml(profession.description)}</p>
+        ${profession.summaryBasis === 'derived_from_verified_skills' ? '<p class="profession-summary-basis">此職業摘要依已確認技能內容整理，並非官方職業介紹。</p>' : ''}
         <span class="attribution">✦ 資料整理：法那提歐</span>
       </div>
       <aside class="profession-summary">
-        <span>偏好裝備</span><strong>${escapeHtml(profession.preferredArmor)}</strong>
+        <span>偏好裝備</span><strong>${escapeHtml(preferredEquipmentLabel)}</strong>
         <span>技能收錄</span><strong>${active.length + passive.length} 個</strong>
-        <span>完整效果</span><strong>${detailedCount} 個</strong>
-        <span>資料狀態</span>${badge({status:'tw-confirmed', statusLabel:'台版遊戲資料'})}
+        <span>技能說明</span><strong>${descriptionCount} 個</strong>
+        <span>資料狀態</span>${badge({status:profession.status || 'tw-confirmed', statusLabel:'台版遊戲資料'})}
       </aside>
     </section>
     <p class="profession-detail-note">點選技能列即可展開遊戲內說明與數值；尚未補齊詳情的技能會保留正常可閱讀樣式，不會被誤標為失效。</p>
-    <section class="profession-skill-sections">
-      ${renderProfessionSkillSection('主動技能', active, '主動')}
-      ${renderProfessionSkillSection('被動技能', passive, '被動')}
+    <section class="profession-skill-sections ${skillSections.length === 1 ? 'is-single-column' : ''}">
+      ${skillSections.join('')}
     </section>
   `;
 };

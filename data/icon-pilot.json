@@ -1,7 +1,7 @@
 {
-  "version": 3,
-  "issue": 34,
-  "updatedAt": "2026-08-01",
+  "version": 4,
+  "issue": 9,
+  "updatedAt": "2026-08-04",
   "categories": {
     "lifeSkills": [
       {
@@ -245,6 +245,36 @@
         "sha256": "194baa326295e962afe0ae424706b43b56c014f747359a95f672dbbf8b822e7e",
         "sourceClass": "台版客戶端職業圖標核准輸出",
         "approved": true
+      },
+      {
+        "id": "thief",
+        "name": "盜賊",
+        "icon": "assets/icons/professions/thief.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "2525b12d2fc4a32264d8f2c8fa04d7e5a3dbc0f6e5e474386499d3149afa9ef3",
+        "sourceClass": "台版客戶端職業圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "fighter",
+        "name": "格鬥家",
+        "icon": "assets/icons/professions/fighter.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "8274110e21b505327f159bcd68319eedd1998a73a3a9ec41f04d548616e86d28",
+        "sourceClass": "台版客戶端職業圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "dual-blades",
+        "name": "雙刀客",
+        "icon": "assets/icons/professions/dual-blades.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "6b16b17fed600ae08a6f9a049604cd4ebbc7f82b6aebd79d2542a16f7bf94684",
+        "sourceClass": "台版客戶端職業圖標核准輸出",
+        "approved": true
       }
     ],
     "professionSkills": [
@@ -312,6 +342,171 @@
         "height": 256,
         "sha256": "11c1263e451419ffe9adff696ab833bcf9ebecfeb54bbb8873ea1af1a20432d0",
         "sourceClass": "台版客戶端基礎職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "thief-back-stab",
+        "professionId": "thief",
+        "name": "奇襲",
+        "icon": "assets/icons/profession-skills/thief-back-stab.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "f82d9350963f007ed743be25d42794f39af385be2ad7d89921b8f3cfc33ac4fa",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "thief-hide",
+        "professionId": "thief",
+        "name": "隱身",
+        "icon": "assets/icons/profession-skills/thief-hide.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "64f51519fc065c35bca200933e3a73a03893234bd07ae2e43939708ddd24f06e",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "thief-poison-trap",
+        "professionId": "thief",
+        "name": "毒陷阱",
+        "icon": "assets/icons/profession-skills/thief-poison-trap.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "965d248b9ac5cb988e7add958d40d8fcbfd603fa32f4b3d76523d7b5bd6c8e3c",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "thief-screw-dagger",
+        "professionId": "thief",
+        "name": "螺旋匕首",
+        "icon": "assets/icons/profession-skills/thief-screw-dagger.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "fcc5150388552dcd81f8edfa25268490b78c45dcf2ddcacb65fb71387f62ea47",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "thief-throwing-bomb",
+        "professionId": "thief",
+        "name": "投擲炸彈",
+        "icon": "assets/icons/profession-skills/thief-throwing-bomb.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "74816667ff2b550847a3270f0fe3ec90e1dd56e4347624edf76fac933a2f5646",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "fighter-back-step",
+        "professionId": "fighter",
+        "name": "後退步",
+        "icon": "assets/icons/profession-skills/fighter-back-step.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "018b8afc27d402f8936b6a60520e61f303dce086582e22b32a9152ae04f9f15b",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "fighter-burst-punch-1",
+        "professionId": "fighter",
+        "name": "爆裂拳：第1擊",
+        "icon": "assets/icons/profession-skills/fighter-burst-punch-1.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "78eec53dcc02da7c555596201bce9f8b707cf5f1a978bd5c1dd85c8ed5411b8f",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "fighter-charging-fist",
+        "professionId": "fighter",
+        "name": "蓄力拳",
+        "icon": "assets/icons/profession-skills/fighter-charging-fist.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "0ead5fb7557755eb3af6fbce04d2ec8aafe92816dcb7297908d765a4498830a1",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "fighter-somersault-1",
+        "professionId": "fighter",
+        "name": "空翻踢：第1擊",
+        "icon": "assets/icons/profession-skills/fighter-somersault-1.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "45eeaacb6f4cf3d7031db90f377010205032daccc71080221a3d8ec9a158578a",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "fighter-stomp-kick",
+        "professionId": "fighter",
+        "name": "重踏踢",
+        "icon": "assets/icons/profession-skills/fighter-stomp-kick.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "cefd5afcc861dc51056e837c75130e2842c9e8b9e91400e3afc1f8dd5ed542ff",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "dual-blades-double-crescent",
+        "professionId": "dual-blades",
+        "name": "雙重新月",
+        "icon": "assets/icons/profession-skills/dual-blades-double-crescent.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "77cdf3191025573381d4c7ab960d811babd10a37debb5d147973aee19974e0c4",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "dual-blades-gliding-fury",
+        "professionId": "dual-blades",
+        "name": "滑行狂怒",
+        "icon": "assets/icons/profession-skills/dual-blades-gliding-fury.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "0e550c1e480b48ece33daaf474ae6ae7e5806feb9a70b63a1ff4000a3835c746",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "dual-blades-howling-gale",
+        "professionId": "dual-blades",
+        "name": "怒號疾風",
+        "icon": "assets/icons/profession-skills/dual-blades-howling-gale.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "6cd2d1a5405efea7138442eaa485d965978fee41de17af412d40df93ecc15020",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "dual-blades-hurricane-dance",
+        "professionId": "dual-blades",
+        "name": "旋轉突襲",
+        "icon": "assets/icons/profession-skills/dual-blades-hurricane-dance.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "fb27954632cb176e2c50ab8bbe7b89c3eab9e268e130034a95d811d089838ddd",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
+        "approved": true
+      },
+      {
+        "id": "dual-blades-outer-slash",
+        "professionId": "dual-blades",
+        "name": "分裂斬",
+        "icon": "assets/icons/profession-skills/dual-blades-outer-slash.png",
+        "width": 256,
+        "height": 256,
+        "sha256": "c4e02f521de41e992943f8cc3f8d25e6e443874a432fb4add10690bbe4773e59",
+        "sourceClass": "台版客戶端職業技能圖標核准輸出",
         "approved": true
       }
     ],

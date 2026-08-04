@@ -36,6 +36,7 @@ jobs:
           node --check theme-integration.js
           node --check a11y-enhancements.js
           node --check game-guided-tour.js
+          node --check scripts/serve-static.mjs
           node --check scripts/validate-data-contract.mjs
           node --check scripts/validate-name-normalization.mjs
           node --check scripts/validate-reading-system.mjs
@@ -49,6 +50,8 @@ jobs:
           node --check tests/e2e/reading-system.spec.cjs
           node --check tests/e2e/icon-pilot.spec.cjs
           node --check tests/e2e/game-guided-tour.spec.cjs
+          node --check tests/e2e/issue-9-thief-jobs.spec.cjs
+          node --check tests/e2e/static-server-safety.spec.cjs
           node --check playwright.config.cjs
 
       - name: Validate JSON and content contracts
@@ -81,7 +84,24 @@ jobs:
           }
 
           const documented = professions.filter(item => item.documented).map(item => item.id).sort();
-          const expectedDocumented = ['archer', 'greatsword-warrior', 'swordsman', 'warrior'];
+          const expectedDocumented = [
+            'archer',
+            'dual-blades',
+            'fighter',
+            'greatsword-warrior',
+            'swordsman',
+            'thief',
+            'warrior'
+          ];
+          const expectedSkillCounts = {
+            warrior: {active: 6, passive: 5},
+            'greatsword-warrior': {active: 6, passive: 5},
+            swordsman: {active: 6, passive: 5},
+            archer: {active: 6, passive: 5},
+            thief: {active: 5, passive: 0},
+            fighter: {active: 5, passive: 0},
+            'dual-blades': {active: 5, passive: 0}
+          };
           if (JSON.stringify(documented) !== JSON.stringify(expectedDocumented)) {
             throw new Error(`Unexpected documented professions: ${documented.join(', ')}`);
           }
@@ -89,9 +109,15 @@ jobs:
           for (const id of expectedDocumented) {
             const profession = skills[id];
             if (!profession) throw new Error(`Missing profession skill data: ${id}`);
-            const total = profession.active.length + profession.passive.length;
-            if (profession.active.length !== 6 || profession.passive.length !== 5 || total !== 11) {
-              throw new Error(`${id}: expected 6 active + 5 passive, got ${profession.active.length} + ${profession.passive.length}`);
+            const expected = expectedSkillCounts[id];
+            const expectedTotal = expected.active + expected.passive;
+            const actualTotal = profession.active.length + profession.passive.length;
+            if (
+              profession.active.length !== expected.active ||
+              profession.passive.length !== expected.passive ||
+              actualTotal !== expectedTotal
+            ) {
+              throw new Error(`${id}: expected ${expected.active} active + ${expected.passive} passive, got ${profession.active.length} + ${profession.passive.length}`);
             }
             for (const skill of [...profession.active, ...profession.passive]) {
               if (!skill.name || !skill.description) throw new Error(`${id}: incomplete skill record`);
@@ -99,12 +125,12 @@ jobs:
           }
 
           const iconCount = Object.values(icons.categories || {}).flat().length;
-          if (iconCount !== 34) throw new Error(`Expected 34 approved icon records, got ${iconCount}`);
+          if (iconCount !== 52) throw new Error(`Expected 52 approved icon records, got ${iconCount}`);
 
           const lifeIconCount = icons.categories?.lifeSkills?.length || 0;
           if (lifeIconCount !== 20) throw new Error(`Expected 20 approved life-skill icon records, got ${lifeIconCount}`);
 
-          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 4 professions, ${aliases.length} alias definitions, and ${iconCount} icon records (${lifeIconCount}/20 life-skill categories covered).`);
+          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 7 professions, ${aliases.length} alias definitions, and ${iconCount} icon records (${lifeIconCount}/20 life-skill categories covered).`);
           NODE
 
       - name: Validate public data and UI state contract
@@ -194,6 +220,7 @@ jobs:
           test -f READING_SYSTEM_CONTRACT.md
           test -f FOREST_PALETTE_CONTRACT.md
           test -f data/icon-pilot.json
+          test -f scripts/serve-static.mjs
           test -f scripts/validate-icon-assets.mjs
           test -f docs/icon-pilot-validation.md
           test -f docs/data-contract-examples.json
@@ -209,6 +236,8 @@ jobs:
           test -f tests/e2e/reading-system.spec.cjs
           test -f tests/e2e/icon-pilot.spec.cjs
           test -f tests/e2e/game-guided-tour.spec.cjs
+          test -f tests/e2e/issue-9-thief-jobs.spec.cjs
+          test -f tests/e2e/static-server-safety.spec.cjs
           test -f docs/issue-46-game-guided-tour.md
           grep -q '#/profession/greatsword-warrior' index.html
           grep -q '#/profession/archer' index.html
