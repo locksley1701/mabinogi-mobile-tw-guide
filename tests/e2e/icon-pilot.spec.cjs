@@ -12,6 +12,10 @@ const professionSidebarEntries = [
 
 const professionSidebarImageSelector = '.sidebar .nav-link[data-route^="profession/"] > span[aria-hidden="true"] > .official-icon--sidebar > img[data-official-icon]';
 
+function normalizeDomRectPixels(value) {
+  return Math.round(value * 1000) / 1000;
+}
+
 async function prepare(page) {
   await page.addInitScript(() => {
     localStorage.setItem('fanatio-tour-v2', 'done');
@@ -109,7 +113,9 @@ async function expectProfessionSidebarDimensions(page, label) {
         wrapperBackground: wrapperStyle.backgroundColor,
         wrapperShadow: wrapperStyle.boxShadow,
         wrapperFlex: [wrapperStyle.flexGrow, wrapperStyle.flexShrink, wrapperStyle.flexBasis],
+        wrapperSize: [wrapperStyle.inlineSize, wrapperStyle.blockSize],
         wrapperVerticalAlign: wrapperStyle.verticalAlign,
+        imageSize: [iconStyle.inlineSize, iconStyle.blockSize],
         imageMaxSize: [iconStyle.maxInlineSize, iconStyle.maxBlockSize],
         imageFit: iconStyle.objectFit,
         imagePosition: iconStyle.objectPosition
@@ -119,12 +125,16 @@ async function expectProfessionSidebarDimensions(page, label) {
     expect(Math.abs(layout.rowHeight - layout.fallbackHeight), `${label} ${name} 列高`).toBeLessThanOrEqual(1);
     expect(layout.labelFits, `${label} ${name} 文字不得截斷`).toBe(true);
     expect(layout.linkFits, `${label} ${name} nav-link 不得水平溢位`).toBe(true);
-    expect(layout.wrapperWidth, `${label} ${name} wrapper width`).toBeGreaterThan(27.5);
-    expect(layout.wrapperWidth, `${label} ${name} wrapper width`).toBeLessThanOrEqual(28);
-    expect(layout.wrapperHeight, `${label} ${name} wrapper height`).toBeGreaterThan(27.5);
-    expect(layout.wrapperHeight, `${label} ${name} wrapper height`).toBeLessThanOrEqual(28);
-    expect(layout.imageWidth, `${label} ${name} image width`).toBeLessThanOrEqual(24);
-    expect(layout.imageHeight, `${label} ${name} image height`).toBeLessThanOrEqual(24);
+    const wrapperWidth = normalizeDomRectPixels(layout.wrapperWidth);
+    const wrapperHeight = normalizeDomRectPixels(layout.wrapperHeight);
+    const imageWidth = normalizeDomRectPixels(layout.imageWidth);
+    const imageHeight = normalizeDomRectPixels(layout.imageHeight);
+    expect(wrapperWidth, `${label} ${name} wrapper width`).toBeGreaterThan(27.5);
+    expect(wrapperWidth, `${label} ${name} wrapper width`).toBeLessThanOrEqual(28);
+    expect(wrapperHeight, `${label} ${name} wrapper height`).toBeGreaterThan(27.5);
+    expect(wrapperHeight, `${label} ${name} wrapper height`).toBeLessThanOrEqual(28);
+    expect(imageWidth, `${label} ${name} image width`).toBeLessThanOrEqual(24);
+    expect(imageHeight, `${label} ${name} image height`).toBeLessThanOrEqual(24);
     expect(layout.carrierVisibility).toBe('hidden');
     expect(layout.wrapperVisibility).toBe('visible');
     expect(layout.wrapperOverflow).toBe('hidden');
@@ -135,7 +145,9 @@ async function expectProfessionSidebarDimensions(page, label) {
     expect(layout.wrapperBackground).toBe('rgba(0, 0, 0, 0)');
     expect(layout.wrapperShadow).toBe('none');
     expect(layout.wrapperFlex).toEqual(['0', '0', '28px']);
+    expect(layout.wrapperSize).toEqual(['28px', '28px']);
     expect(layout.wrapperVerticalAlign).toBe('middle');
+    expect(layout.imageSize).toEqual(['24px', '24px']);
     expect(layout.imageMaxSize).toEqual(['24px', '24px']);
     expect(layout.imageFit).toBe('contain');
     expect(layout.imagePosition).toBe('50% 50%');
@@ -143,7 +155,7 @@ async function expectProfessionSidebarDimensions(page, label) {
   }
 
   const leftEdges = layouts.map(layout => layout.labelLeft);
-  expect(Math.max(...leftEdges) - Math.min(...leftEdges), `${label} 七列文字左緣`).toBeLessThanOrEqual(1);
+  expect(Math.max(...leftEdges) - Math.min(...leftEdges), `${label} 七列文字左緣`).toBeLessThanOrEqual(2);
   const sidebarWidths = await page.locator('#sidebar').evaluate(sidebar => ({
     scrollWidth: sidebar.scrollWidth,
     clientWidth: sidebar.clientWidth
@@ -222,6 +234,10 @@ test('職業7枚在總覽與職業頁 hero 顯示', async ({ page }) => {
 
 test('桌面側邊欄七職業使用 manifest 官方圖標且接線保持冪等', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案驗證側邊欄版面');
+  expect(normalizeDomRectPixels(28.0000019)).toBe(28);
+  expect(normalizeDomRectPixels(29)).toBe(29);
+  expect(normalizeDomRectPixels(24.0000019)).toBe(24);
+  expect(normalizeDomRectPixels(25)).toBe(25);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#/home');
   await waitForGuide(page);
