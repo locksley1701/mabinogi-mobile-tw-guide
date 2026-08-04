@@ -16,6 +16,77 @@ function normalizeDomRectPixels(value) {
   return Math.round(value * 1000) / 1000;
 }
 
+async function waitForSidebarLayoutStable(page) {
+  const result = await page.locator('#sidebar').evaluate(async sidebar => {
+    const nextFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
+    const parseTime = value => {
+      const trimmed = value.trim();
+      return trimmed.endsWith('ms')
+        ? Number.parseFloat(trimmed)
+        : Number.parseFloat(trimmed) * 1000;
+    };
+    const style = getComputedStyle(sidebar);
+    const properties = style.transitionProperty.split(',').map(value => value.trim());
+    const durations = style.transitionDuration.split(',').map(parseTime);
+    const delays = style.transitionDelay.split(',').map(parseTime);
+    const transformTransitions = properties.map((property, index) => ({
+      property,
+      duration: durations[index % durations.length] || 0,
+      delay: delays[index % delays.length] || 0
+    })).filter(item => item.property === 'transform' || item.property === 'all');
+    const transitionMs = Math.max(0, ...transformTransitions.map(item => item.duration + item.delay));
+    const waitsForTransform = style.transform !== 'none' && transitionMs > 0;
+
+    if (waitsForTransform) {
+      await new Promise(resolve => {
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(fallbackTimer);
+          sidebar.removeEventListener('transitionend', onTransitionEnd);
+          resolve();
+        };
+        const onTransitionEnd = event => {
+          if (event.target === sidebar && event.propertyName === 'transform') finish();
+        };
+        const fallbackTimer = setTimeout(finish, transitionMs + 100);
+        sidebar.addEventListener('transitionend', onTransitionEnd);
+      });
+    }
+
+    await nextFrame();
+    await nextFrame();
+    const readRect = () => {
+      const rect = sidebar.getBoundingClientRect();
+      return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
+    };
+    const isClose = (first, second) => ['x', 'y', 'width', 'height']
+      .every(key => Math.abs(first[key] - second[key]) <= 0.001);
+    let previous = readRect();
+    let stableSamples = 1;
+    for (let frame = 0; frame < 60; frame += 1) {
+      await nextFrame();
+      const current = readRect();
+      stableSamples = isClose(previous, current) ? stableSamples + 1 : 1;
+      if (stableSamples >= 2) {
+        return {
+          transform: style.transform,
+          transitionProperty: style.transitionProperty,
+          transitionDuration: style.transitionDuration,
+          transitionDelay: style.transitionDelay,
+          transitionMs,
+          rect: current
+        };
+      }
+      previous = current;
+    }
+    throw new Error(`sidebar layout 未在 60 frames 內穩定：${JSON.stringify(previous)}`);
+  });
+  expect(result.rect.width, 'sidebar 穩定後需保有寬度').toBeGreaterThan(0);
+  return result;
+}
+
 async function prepare(page) {
   await page.addInitScript(() => {
     localStorage.setItem('fanatio-tour-v2', 'done');
@@ -63,11 +134,33 @@ async function expectNoHorizontalOverflow(page, label) {
 }
 
 async function expectProfessionSidebarDimensions(page, label) {
-  const layouts = [];
-  for (const [id, name, fallback] of professionSidebarEntries) {
-    const link = page.locator(`.sidebar .nav-link[data-route="profession/${id}"]`);
-    await expect(link.locator(':scope > b')).toHaveText(name);
-    const layout = await link.evaluate((element, { professionId, fallbackText }) => {
+  await waitForSidebarLayoutStable(page);
+  const links = page.locator('.sidebar .nav-link[data-route^="profession/"]');
+  await expect(links).toHaveCount(professionSidebarEntries.length);
+  const layouts = await links.evaluateAll((elements, entries) => {
+    const entryById = new Map(entries.map(([id, name, fallback]) => [id, {name, fallback}]));
+    const references = elements.map(element => {
+      const professionId = element.dataset.route.split('/')[1];
+      const entry = entryById.get(professionId);
+      const linkRect = element.getBoundingClientRect();
+      const reference = element.cloneNode(true);
+      const referenceHost = reference.querySelector(':scope > span[aria-hidden="true"]');
+      referenceHost.classList.remove('official-icon-source--profession-sidebar');
+      referenceHost.removeAttribute('data-official-icon-host');
+      referenceHost.removeAttribute('data-official-icon-fallback');
+      referenceHost.replaceChildren(entry.fallback);
+      reference.style.position = 'fixed';
+      reference.style.inset = '0 auto auto -10000px';
+      reference.style.inlineSize = `${linkRect.width}px`;
+      reference.style.visibility = 'hidden';
+      element.closest('.sidebar').append(reference);
+      return reference;
+    });
+
+    try {
+      return elements.map((element, index) => {
+        const professionId = element.dataset.route.split('/')[1];
+        const entry = entryById.get(professionId);
       const carrier = element.querySelector(':scope > span[aria-hidden="true"]');
       const wrapper = carrier.querySelector(':scope > .official-icon--sidebar');
       const icon = wrapper.querySelector(`img[data-official-icon="${professionId}"]`);
@@ -79,24 +172,12 @@ async function expectProfessionSidebarDimensions(page, label) {
       const wrapperStyle = getComputedStyle(wrapper);
       const iconStyle = getComputedStyle(icon);
 
-      const reference = element.cloneNode(true);
-      const referenceHost = reference.querySelector(':scope > span[aria-hidden="true"]');
-      referenceHost.classList.remove('official-icon-source--profession-sidebar');
-      referenceHost.removeAttribute('data-official-icon-host');
-      referenceHost.removeAttribute('data-official-icon-fallback');
-      referenceHost.replaceChildren(fallbackText);
-      reference.style.position = 'fixed';
-      reference.style.inset = '0 auto auto -10000px';
-      reference.style.inlineSize = `${linkRect.width}px`;
-      reference.style.visibility = 'hidden';
-      element.closest('.sidebar').append(reference);
-      const fallbackHeight = reference.getBoundingClientRect().height;
-      reference.remove();
-
       return {
+        id: professionId,
+        name: entry.name,
         rowHeight: linkRect.height,
-        fallbackHeight,
-        labelLeft: labelRect.left,
+        fallbackHeight: references[index].getBoundingClientRect().height,
+        labelOffset: labelRect.left - linkRect.left,
         labelFits: labelNode.scrollWidth <= labelNode.clientWidth + 1,
         linkFits: element.scrollWidth <= element.clientWidth + 1,
         wrapperWidth: wrapperRect.width,
@@ -120,8 +201,15 @@ async function expectProfessionSidebarDimensions(page, label) {
         imageFit: iconStyle.objectFit,
         imagePosition: iconStyle.objectPosition
       };
-    }, { professionId: id, fallbackText: fallback });
+      });
+    } finally {
+      references.forEach(reference => reference.remove());
+    }
+  }, professionSidebarEntries);
 
+  expect(layouts.map(layout => layout.id)).toEqual(professionSidebarEntries.map(([id]) => id));
+  for (const layout of layouts) {
+    const name = layout.name;
     expect(Math.abs(layout.rowHeight - layout.fallbackHeight), `${label} ${name} 列高`).toBeLessThanOrEqual(1);
     expect(layout.labelFits, `${label} ${name} 文字不得截斷`).toBe(true);
     expect(layout.linkFits, `${label} ${name} nav-link 不得水平溢位`).toBe(true);
@@ -151,11 +239,10 @@ async function expectProfessionSidebarDimensions(page, label) {
     expect(layout.imageMaxSize).toEqual(['24px', '24px']);
     expect(layout.imageFit).toBe('contain');
     expect(layout.imagePosition).toBe('50% 50%');
-    layouts.push(layout);
   }
 
-  const leftEdges = layouts.map(layout => layout.labelLeft);
-  expect(Math.max(...leftEdges) - Math.min(...leftEdges), `${label} 七列文字左緣`).toBeLessThanOrEqual(2);
+  const labelOffsets = layouts.map(layout => layout.labelOffset);
+  expect(Math.max(...labelOffsets) - Math.min(...labelOffsets), `${label} 七列文字相對左緣`).toBeLessThanOrEqual(2);
   const sidebarWidths = await page.locator('#sidebar').evaluate(sidebar => ({
     scrollWidth: sidebar.scrollWidth,
     clientWidth: sidebar.clientWidth
@@ -177,7 +264,7 @@ async function readProfessionSidebarMetrics(page) {
     return {
       id,
       linkHeight: linkRect.height,
-      labelLeft: labelRect.left,
+      labelOffset: labelRect.left - linkRect.left,
       wrapperWidth: wrapperRect?.width ?? null,
       wrapperHeight: wrapperRect?.height ?? null,
       imageWidth: imageRect?.width ?? null,
@@ -277,6 +364,7 @@ test('918px 抽屜維持七職業圖標、導航與重新開啟不重複', async
   await waitForGuide(page);
   await page.locator('#menu-button').click();
   await expect(page.locator('#sidebar')).toHaveAttribute('aria-hidden', 'false');
+  await waitForSidebarLayoutStable(page);
   await waitForIcons(page, professionSidebarImageSelector, 7);
 
   for (const [id, name] of professionSidebarEntries) {
@@ -290,7 +378,9 @@ test('918px 抽屜維持七職業圖標、導航與重新開啟不重複', async
   await page.locator('.sidebar .nav-link[data-route="profession/thief"]').click();
   await expect(page).toHaveURL(/#\/profession\/thief$/);
   await expect(page.locator('body')).not.toHaveClass(/drawer-open/);
+  await waitForSidebarLayoutStable(page);
   await page.locator('#menu-button').click();
+  await waitForSidebarLayoutStable(page);
   await expect(page.locator('.sidebar .nav-link[data-route="profession/thief"]')).toHaveClass(/is-active/);
   await expect(page.locator(professionSidebarImageSelector)).toHaveCount(7);
   for (const [id] of professionSidebarEntries) {
@@ -310,6 +400,7 @@ test('390x844 手機側欄可捲到底且職業圖標不壓縮文字', async ({ 
   await page.goto('/#/home');
   await waitForGuide(page);
   await page.locator('#menu-button').click();
+  await waitForSidebarLayoutStable(page);
   await waitForIcons(page, professionSidebarImageSelector, 7);
 
   for (const [id, name] of professionSidebarEntries) {
@@ -363,7 +454,7 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   const beforeThief = before.find(item => item.id === 'thief');
   const afterThief = after.find(item => item.id === 'thief');
   expect(Math.abs(afterThief.linkHeight - beforeThief.linkHeight), 'fallback 前後列高').toBeLessThanOrEqual(1);
-  expect(Math.abs(afterThief.labelLeft - beforeThief.labelLeft), 'fallback 前後文字左緣').toBeLessThanOrEqual(1);
+  expect(Math.abs(afterThief.labelOffset - beforeThief.labelOffset), 'fallback 前後文字相對左緣').toBeLessThanOrEqual(1);
   for (const beforeItem of before.filter(item => item.id !== 'thief')) {
     expect(after.find(item => item.id === beforeItem.id), `${beforeItem.id} 不得重新縮放或重排`).toEqual(beforeItem);
   }
