@@ -1,0 +1,93 @@
+.game-guided-tour {
+  position: fixed;
+  z-index: 240;
+  inset: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.game-guided-tour__shade {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--theme-overlay) 92%, transparent);
+  opacity: .72;
+}
+
+.game-guided-tour__spotlight {
+  position: fixed;
+  left: var(--tour-target-x);
+  top: var(--tour-target-y);
+  width: var(--tour-target-width);
+  height: var(--tour-target-height);
+  border: 3px solid var(--gold-400);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--gold-200) 13%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--surface-solid) 80%, transparent), 0 0 24px color-mix(in srgb, var(--gold-400) 72%, transparent), 0 0 0 9999px color-mix(in srgb, var(--theme-overlay) 88%, transparent);
+  pointer-events: none;
+  animation: guided-tour-glow 1.8s ease-in-out infinite alternate;
+}
+
+.game-guided-tour__arrow {
+  position: fixed;
+  left: var(--tour-arrow-x);
+  top: var(--tour-arrow-y);
+  z-index: 1;
+  color: var(--gold-400);
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 10px color-mix(in srgb, var(--forest-950) 82%, transparent);
+  transform: translateX(-50%) rotate(90deg);
+  animation: guided-tour-arrow 1.5s ease-in-out infinite alternate;
+}
+
+.game-guided-tour__arrow[data-side="top"] { transform: translateX(-50%) rotate(-90deg); }
+.game-guided-tour__arrow[data-side="left"] { transform: rotate(180deg); }
+.game-guided-tour__arrow[data-side="right"] { transform: none; }
+
+.game-guided-tour__card {
+  position: fixed;
+  left: var(--tour-card-x, 50%);
+  top: var(--tour-card-y, 50%);
+  z-index: 2;
+  width: min(390px, calc(100vw - 24px));
+  padding: 20px;
+  color: var(--ink-900);
+  border: 1px solid color-mix(in srgb, var(--gold-500) 65%, var(--line));
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--parchment-50) 94%, var(--surface-solid)), var(--surface-solid));
+  box-shadow: 0 20px 54px color-mix(in srgb, var(--forest-950) 38%, transparent), inset 0 1px 0 color-mix(in srgb, var(--parchment-50) 84%, transparent);
+  pointer-events: auto;
+}
+
+html[data-theme="dark"] .game-guided-tour__card {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--surface-solid) 88%, var(--gold-500)), var(--surface-solid));
+}
+
+.game-guided-tour__card h2 { margin: 2px 0 8px; font-family: var(--font-serif); font-size: 1.24rem; }
+.game-guided-tour__card > p:not(.eyebrow):not(.game-guided-tour__progress) { margin: 0; color: var(--ink-700); line-height: 1.7; }
+.game-guided-tour__progress { margin: 0 0 8px; color: var(--gold-500); font-size: .82rem; font-weight: 800; letter-spacing: .05em; }
+.game-guided-tour__fallback { margin-top: 12px !important; padding: 9px 10px; border-left: 3px solid var(--gold-500); background: var(--surface-muted); font-size: .86rem; }
+.game-guided-tour__actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; }
+.game-guided-tour__actions > div { display: flex; gap: 8px; }
+.game-guided-tour.is-complete .game-guided-tour__shade,
+.game-guided-tour.is-complete .game-guided-tour__spotlight,
+.game-guided-tour.is-complete .game-guided-tour__arrow { display: none; }
+.game-guided-tour.is-complete .game-guided-tour__card { bottom: max(20px, env(safe-area-inset-bottom)); top: auto; left: 50%; transform: translateX(-50%); }
+
+@keyframes guided-tour-glow { from { box-shadow: 0 0 0 2px color-mix(in srgb, var(--surface-solid) 80%, transparent), 0 0 12px color-mix(in srgb, var(--gold-400) 48%, transparent), 0 0 0 9999px color-mix(in srgb, var(--theme-overlay) 88%, transparent); } to { box-shadow: 0 0 0 3px color-mix(in srgb, var(--surface-solid) 86%, transparent), 0 0 30px color-mix(in srgb, var(--gold-400) 84%, transparent), 0 0 0 9999px color-mix(in srgb, var(--theme-overlay) 88%, transparent); } }
+@keyframes guided-tour-arrow { from { margin-top: -3px; } to { margin-top: 4px; } }
+
+html[data-palette="contrast"] .game-guided-tour__spotlight { border-width: 4px; border-radius: 6px; animation: none; box-shadow: 0 0 0 2px var(--surface-solid), 0 0 0 9999px var(--theme-overlay); }
+html[data-palette="contrast"] .game-guided-tour__card { border-width: 2px; border-radius: 6px; box-shadow: none; }
+
+@media (max-width: 680px) {
+  .game-guided-tour__card { width: min(100% - 20px, 420px); padding: 17px; }
+  .game-guided-tour__actions { align-items: stretch; flex-direction: column-reverse; }
+  .game-guided-tour__actions > div { display: grid; grid-template-columns: 1fr 1fr; }
+  .game-guided-tour.is-complete .game-guided-tour__card { bottom: max(12px, env(safe-area-inset-bottom)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-guided-tour__spotlight, .game-guided-tour__arrow { animation: none; }
+}
