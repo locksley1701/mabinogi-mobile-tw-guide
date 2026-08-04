@@ -19,7 +19,9 @@
   let guardPaused = false;
   let transitioning = false;
   let transitionGeneration = 0;
-  let transitionPositionAttempts = 0;
+  let transitionReadyFrame = 0;
+  let transitionReadyCleanup = null;
+  let transitionReadyDeadline = 0;
   let sessionGeneration = 0;
   let automaticStartTimer = 0;
   let startRetryTimer = 0;
@@ -111,6 +113,110 @@
     }
   }
 
+  function setTransitioning(value) {
+    transitioning = Boolean(value);
+    if (transitioning) shell.dataset.transitioning = 'true';
+    else delete shell.dataset.transitioning;
+  }
+
+  function cancelTransitionReadiness() {
+    cancelAnimationFrame(transitionReadyFrame);
+    transitionReadyFrame = 0;
+    transitionReadyCleanup?.();
+    transitionReadyCleanup = null;
+    transitionReadyDeadline = 0;
+  }
+
+  function parseCssTime(value) {
+    const parsed = Number.parseFloat(value);
+    if (!Number.isFinite(parsed)) return 0;
+    return value.trim().endsWith('ms') ? parsed : parsed * 1000;
+  }
+
+  function sidebarTransformTransition() {
+    const sidebar = document.querySelector('#sidebar');
+    if (!sidebar) return {sidebar: null, duration: 0, usesTransform: false};
+    const style = getComputedStyle(sidebar);
+    const properties = style.transitionProperty.split(',').map(value => value.trim());
+    const durations = style.transitionDuration.split(',').map(parseCssTime);
+    const delays = style.transitionDelay.split(',').map(parseCssTime);
+    let duration = 0;
+    let usesTransform = false;
+    properties.forEach((property, index) => {
+      if (property !== 'transform' && property !== 'all') return;
+      usesTransform = true;
+      duration = Math.max(duration, (durations[index % durations.length] || 0) + (delays[index % delays.length] || 0));
+    });
+    return {sidebar, duration, usesTransform};
+  }
+
+  function transitionReadyTarget(step) {
+    const candidate = step?.target?.();
+    if (!isVisible(candidate)) return null;
+    return step?.isReady?.(candidate) === false ? null : candidate;
+  }
+
+  function beginStepReadiness(transitionId, generation) {
+    const step = steps[currentIndex];
+    const drawerTransition = step?.waitForDrawer && mobileQuery.matches ? sidebarTransformTransition() : null;
+    const waitsForDrawer = Boolean(drawerTransition?.sidebar);
+    const shouldWaitForTransition = waitsForDrawer
+      && !reducedMotionQuery.matches
+      && drawerTransition.usesTransform
+      && drawerTransition.duration > 0;
+    const startedAt = performance.now();
+    const readyAfter = startedAt + (shouldWaitForTransition ? drawerTransition.duration : 0);
+    const safetyBuffer = shouldWaitForTransition ? Math.max(120, Math.min(600, drawerTransition.duration * 0.5)) : 0;
+    transitionReadyDeadline = readyAfter + safetyBuffer + (step?.readyTimeout || 0);
+    let transitionEnded = !shouldWaitForTransition;
+
+    const isCurrent = () => active
+      && generation === sessionGeneration
+      && transitionId === transitionGeneration
+      && transitioning;
+
+    const finishReadiness = ready => {
+      if (!isCurrent()) return;
+      cancelTransitionReadiness();
+      setTransitioning(false);
+      if (!ready) {
+        target = null;
+        fallback.hidden = false;
+        shell.classList.add('is-fallback');
+        hideIndicators();
+        return;
+      }
+      positionCard();
+    };
+
+    const checkReadiness = () => {
+      if (!isCurrent()) return;
+      const ready = transitionReadyTarget(step);
+      const pollingDeadlineReached = performance.now() >= transitionReadyDeadline;
+      if (ready && (transitionEnded || !shouldWaitForTransition || pollingDeadlineReached)) {
+        finishReadiness(true);
+        return;
+      }
+      if (pollingDeadlineReached) {
+        finishReadiness(false);
+        return;
+      }
+      transitionReadyFrame = requestAnimationFrame(checkReadiness);
+    };
+
+    if (shouldWaitForTransition) {
+      const onTransitionEnd = event => {
+        if (!isCurrent() || event.target !== drawerTransition.sidebar || event.propertyName !== 'transform') return;
+        transitionEnded = true;
+        cancelAnimationFrame(transitionReadyFrame);
+        transitionReadyFrame = requestAnimationFrame(checkReadiness);
+      };
+      drawerTransition.sidebar.addEventListener('transitionend', onTransitionEnd);
+      transitionReadyCleanup = () => drawerTransition.sidebar.removeEventListener('transitionend', onTransitionEnd);
+    }
+    transitionReadyFrame = requestAnimationFrame(checkReadiness);
+  }
+
   function cancelPendingSessionWork({cancelAutomatic = false} = {}) {
     sessionGeneration += 1;
     clearTimeout(startRetryTimer);
@@ -130,9 +236,9 @@
     hashPositionTimer = 0;
     if (cancelAutomatic) automaticStartTimer = 0;
     guardPaused = false;
-    transitioning = false;
+    cancelTransitionReadiness();
+    setTransitioning(false);
     transitionGeneration += 1;
-    transitionPositionAttempts = 0;
     viewportScrollPending = false;
     return sessionGeneration;
   }
@@ -190,6 +296,15 @@
       title: '由章節地圖前往各處',
       copy: '生活技能、料理、職業、地圖與其他章節都能從這裡前往。手機會先打開安全的章節抽屜。',
       target: () => document.querySelector('.nav-link[data-route="life"]'),
+      waitForDrawer: true,
+      isReady(candidate) {
+        if (!mobileQuery.matches) return true;
+        const sidebar = document.querySelector('#sidebar');
+        return document.body.classList.contains('drawer-open')
+          && sidebar?.getAttribute('aria-hidden') === 'false'
+          && sidebar?.inert === false
+          && isInViewport(candidate);
+      },
       prepare() {
         closeQuickSearch();
         openTourDrawer();
@@ -200,6 +315,7 @@
       title: '用分類留下需要的資料',
       copy: '切換一次生活技能分類，只留下目前適合查閱的內容；完成切換會自動往下，也可手動下一步。',
       target: () => document.querySelector('[data-life-group="採集"]'),
+      readyTimeout: 600,
       prepare() {
         closeTourDrawer();
         navigate('life');
@@ -215,6 +331,7 @@
       title: '把待核對情報交給法那提歐',
       copy: '發現缺漏或名稱有誤時可從這裡投稿。內容會先由法那提歐核對，不會自動公開。',
       target: () => document.querySelector('.contribution-submit, #submission-button'),
+      readyTimeout: 600,
       prepare() { navigate('contribute'); }
     },
     {
@@ -332,20 +449,10 @@
       if (!active || generation !== sessionGeneration || (transitioning && transitionId !== transitionGeneration)) return;
       if (steps[currentIndex]?.complete) {
         showCompletionState();
-        if (transitioning) transitionPositionAttempts = 0;
-        transitioning = false;
+        if (transitioning) setTransitioning(false);
         return;
       }
       target = resolveTarget();
-      if (transitioning) {
-        if (!target && transitionPositionAttempts < 3) {
-          transitionPositionAttempts += 1;
-          positionFrame = requestAnimationFrame(() => positionCard({transitionId}));
-          return;
-        }
-        transitionPositionAttempts = 0;
-        transitioning = false;
-      }
       fallback.hidden = Boolean(target);
       shell.classList.toggle('is-fallback', !target);
 
@@ -428,14 +535,18 @@
     if (!active) return;
     const generation = sessionGeneration;
     const currentTransition = ++transitionGeneration;
-    transitioning = true;
+    cancelTransitionReadiness();
+    setTransitioning(true);
     clearTimeout(missingTimer);
     clearTimeout(viewportTimer);
     cancelAnimationFrame(positionFrame);
     missingTimer = 0;
     viewportTimer = 0;
     viewportScrollPending = false;
-    transitionPositionAttempts = 0;
+    target = null;
+    fallback.hidden = true;
+    shell.classList.remove('is-fallback');
+    hideIndicators();
     steps[currentIndex]?.leave?.();
     viewportAttempts = 0;
     currentIndex = Math.max(0, Math.min(index, totalSteps - 1));
@@ -445,10 +556,9 @@
     stepFrame = requestAnimationFrame(() => {
       if (!active || generation !== sessionGeneration || currentTransition !== transitionGeneration) return;
       if (steps[currentIndex]?.complete) {
-        transitionPositionAttempts = 0;
-        transitioning = false;
+        setTransitioning(false);
       } else {
-        positionCard({transitionId: currentTransition});
+        beginStepReadiness(currentTransition, generation);
       }
       focusCardControl();
     });

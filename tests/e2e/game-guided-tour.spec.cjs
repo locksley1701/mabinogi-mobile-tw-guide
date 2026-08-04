@@ -76,6 +76,8 @@ async function observeTourTransition(page) {
     const fallback = shell.querySelector('.game-guided-tour__fallback');
     const card = shell.querySelector('.game-guided-tour__card');
     const spotlight = shell.querySelector('.game-guided-tour__spotlight');
+    const arrow = shell.querySelector('.game-guided-tour__arrow');
+    const sidebar = document.querySelector('#sidebar');
     const snapshots = [];
     const capture = mutation => snapshots.push({
       mutation: mutation ? {
@@ -90,7 +92,9 @@ async function observeTourTransition(page) {
       visibleCardText: card.innerText,
       cardX: card.style.getPropertyValue('--tour-card-x'),
       cardY: card.style.getPropertyValue('--tour-card-y'),
-      spotlightHidden: spotlight.hidden
+      spotlightHidden: spotlight.hidden,
+      arrowHidden: arrow.hidden,
+      transitioning: shell.dataset.transitioning === 'true'
     });
     capture();
     const observer = new MutationObserver(records => records.forEach(capture));
@@ -101,7 +105,13 @@ async function observeTourTransition(page) {
       attributes: true,
       attributeOldValue: true
     });
-    window.__tourTransitionObserver = {observer, snapshots};
+    const onTransitionEnd = event => {
+      if (event.target !== sidebar || event.propertyName !== 'transform') return;
+      capture({type: 'transitionend', target: sidebar});
+      requestAnimationFrame(() => capture({type: 'transitionend-frame', target: sidebar}));
+    };
+    sidebar?.addEventListener('transitionend', onTransitionEnd);
+    window.__tourTransitionObserver = {observer, snapshots, sidebar, onTransitionEnd};
   });
 }
 
@@ -109,6 +119,7 @@ async function readTourTransition(page) {
   return page.evaluate(() => {
     const state = window.__tourTransitionObserver;
     state.observer.disconnect();
+    state.sidebar?.removeEventListener('transitionend', state.onTransitionEnd);
     delete window.__tourTransitionObserver;
     return state.snapshots;
   });
@@ -123,6 +134,21 @@ function expectTransitionWithoutFallback(records, fromProgress, toProgress, {exp
   if (expectCardCoordinates) expect(records.every(record => record.cardX && record.cardY)).toBe(true);
   const progress = [...new Set([fromProgress, ...records.map(record => record.progress)])];
   expect(progress).toEqual([fromProgress, toProgress]);
+}
+
+function expectNoTransitionFallback(records) {
+  expect(records.some(record => record.isFallback || !record.fallbackHidden)).toBe(false);
+  expect(records.some(record => record.visibleCardText.includes('目前頁面的目標暫時無法定位') || record.visibleCardText.includes('可按下一步繼續導覽'))).toBe(false);
+}
+
+async function startNarrowDrawerTour(page, {reducedMotion = 'no-preference', sidebarCss = ''} = {}) {
+  await page.setViewportSize({width: 918, height: 900});
+  await page.emulateMedia({reducedMotion});
+  await loadCompletedContribution(page);
+  if (sidebarCss) await page.addStyleTag({content: sidebarCss});
+  await page.locator('#top-tour-button').click();
+  await waitForTour(page);
+  return page.locator(`${TOUR} [data-tour-action="next"]`);
 }
 
 test('全新訪客會自動開始，完成後不再自動顯示且搜尋目標可操作', async ({ page }) => {
@@ -205,6 +231,100 @@ test('導覽卡下一步的真實 pointer 序列只前進一次且不經 fallbac
   await page.mouse.up();
   await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 2／6');
   await expect(page.locator('.game-guided-tour__fallback')).toBeHidden();
+});
+
+test('918px 窄版抽屜會等 transform transitionend 後才定位生活技能目標', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chrome', '以接近人工驗收的 918px viewport 驗證一次即可');
+  const next = await startNarrowDrawerTour(page);
+  const duration = await page.locator('#sidebar').evaluate(element => {
+    const value = getComputedStyle(element).transitionDuration.split(',')[0].trim();
+    return value.endsWith('ms') ? Number.parseFloat(value) : Number.parseFloat(value) * 1000;
+  });
+  expect(duration).toBeGreaterThan(0);
+  await observeTourTransition(page);
+  await pointerActivate(page, next);
+  await page.mouse.up();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 2／6');
+  await page.waitForTimeout(duration / 2);
+  await expect(page.locator(TOUR)).toHaveAttribute('data-transitioning', 'true');
+  await expect(page.locator('.game-guided-tour__fallback')).toBeHidden();
+  await expect(page.locator('.game-guided-tour__spotlight')).toBeHidden();
+  await expect(page.locator('.game-guided-tour__spotlight')).toBeVisible();
+
+  const records = await readTourTransition(page);
+  const transitionEndIndex = records.findIndex(record => record.mutation?.type === 'transitionend');
+  expect(transitionEndIndex).toBeGreaterThan(-1);
+  const stepTwoBeforeEnd = records.slice(0, transitionEndIndex).filter(record => record.progress === '導覽任務 2／6');
+  expect(stepTwoBeforeEnd.length).toBeGreaterThan(0);
+  expect(stepTwoBeforeEnd.every(record => record.transitioning)).toBe(true);
+  expect(stepTwoBeforeEnd.every(record => record.spotlightHidden && record.arrowHidden)).toBe(true);
+  expectNoTransitionFallback(records);
+  expect(records.filter(record => !record.spotlightHidden).length).toBeGreaterThan(0);
+  expect(records.filter((record, index) => !record.spotlightHidden && records[index - 1]?.spotlightHidden).length).toBe(1);
+  expect(records.filter(record => record.progress === '導覽任務 2／6').every(record => record.cardX && record.cardY)).toBe(true);
+  const aligned = await page.evaluate(() => {
+    const target = document.querySelector('.nav-link[data-route="life"]');
+    const spotlight = document.querySelector('.game-guided-tour__spotlight');
+    const targetRect = target.getBoundingClientRect();
+    return Math.abs(Number.parseFloat(spotlight.style.getPropertyValue('--tour-target-x')) - Math.max(4, targetRect.left - 8)) < 1;
+  });
+  expect(aligned).toBe(true);
+});
+
+test('窄版抽屜以計算後的 transition duration 等待慢動畫而非固定 frame', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chrome', '以 918px slow transition 驗證一次即可');
+  const next = await startNarrowDrawerTour(page, {sidebarCss: '#sidebar { transition-duration: 500ms !important; }'});
+  await observeTourTransition(page);
+  await pointerActivate(page, next);
+  await page.mouse.up();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 2／6');
+  await page.waitForTimeout(250);
+  await expect(page.locator(TOUR)).toHaveAttribute('data-transitioning', 'true');
+  await expect(page.locator('.game-guided-tour__fallback')).toBeHidden();
+  await expect(page.locator('.game-guided-tour__spotlight')).toBeVisible();
+  const records = await readTourTransition(page);
+  expect(records.some(record => record.mutation?.type === 'transitionend')).toBe(true);
+  expectNoTransitionFallback(records);
+});
+
+test('窄版 reduced motion 直接於下一個穩定 frame 定位，不等待抽屜 transition', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chrome', '以 918px reduced-motion 驗證一次即可');
+  const next = await startNarrowDrawerTour(page, {reducedMotion: 'reduce'});
+  await observeTourTransition(page);
+  await pointerActivate(page, next);
+  await page.mouse.up();
+  await expect(page.locator('#game-guided-tour-progress')).toHaveText('導覽任務 2／6');
+  await expect(page.locator('.game-guided-tour__spotlight')).toBeVisible();
+  await expect(page.locator(TOUR)).not.toHaveAttribute('data-transitioning', 'true');
+  expectNoTransitionFallback(await readTourTransition(page));
+});
+
+test('窄版抽屜遺失 transitionend 時以 polling 收尾，目標永遠不可用才於上限 fallback', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chrome', '以 918px polling safety net 驗證一次即可');
+  let next = await startNarrowDrawerTour(page);
+  await page.evaluate(() => {
+    window.__blockTourSidebarTransitionEnd = event => {
+      if (event.target.id === 'sidebar' && event.propertyName === 'transform') event.stopImmediatePropagation();
+    };
+    window.addEventListener('transitionend', window.__blockTourSidebarTransitionEnd, true);
+  });
+  await observeTourTransition(page);
+  await pointerActivate(page, next);
+  await page.mouse.up();
+  await expect(page.locator('.game-guided-tour__spotlight')).toBeVisible();
+  const recovered = await readTourTransition(page);
+  expect(recovered.some(record => record.mutation?.type === 'transitionend')).toBe(false);
+  expectNoTransitionFallback(recovered);
+
+  await page.reload();
+  next = await startNarrowDrawerTour(page, {sidebarCss: '#sidebar .nav-link[data-route="life"] { visibility: hidden !important; }'});
+  const duration = await page.locator('#sidebar').evaluate(element => Number.parseFloat(getComputedStyle(element).transitionDuration) * 1000);
+  await pointerActivate(page, next);
+  await page.mouse.up();
+  await page.waitForTimeout(duration / 2);
+  await expect(page.locator('.game-guided-tour__fallback')).toBeHidden();
+  await expect(page.locator('.game-guided-tour__fallback')).toBeVisible({timeout: duration * 4});
+  await expect(page.locator('.game-guided-tour__spotlight')).toBeHidden();
 });
 
 test('步驟切換 guard 不會在所有 lifecycle transition 中閃現 fallback', async ({ page }, testInfo) => {
