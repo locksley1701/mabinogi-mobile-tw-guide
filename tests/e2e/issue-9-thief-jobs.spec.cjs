@@ -224,8 +224,8 @@ test('公開 JSON 保持三職業、15 技能、route 與 changelog 契約', asy
   expect(data.iconManifestRaw).not.toContain('AxeKick');
   expect(data.iconManifestRaw).not.toMatch(/[A-Za-z]:[\\/]/);
   expect(data.iconManifestRaw).not.toMatch(/Blob|Segment|Bundle|OfficialIconLibrary|appdata/i);
-  expect(data.iconManifest.categories.professions).toHaveLength(7);
-  expect(data.iconManifest.categories.professionSkills).toHaveLength(21);
+  expect(data.iconManifest.categories.professions).toHaveLength(9);
+  expect(data.iconManifest.categories.professionSkills).toHaveLength(31);
   const stompKick = data.professionSkills.fighter.active.find(skill => skill.name === '重踏踢');
   expect(stompKick).toMatchObject({ clientSkillId: 'StompKick', presentationMode: 'corrected_alias' });
   expect(stompKick).not.toHaveProperty('internalAlias');
@@ -252,6 +252,9 @@ test('918px 抽屜可抵達三個新職業且頁面無水平溢位', async ({ pa
 
   for (const job of jobs) {
     await page.locator('#menu-button').click();
+    const thiefGroup = page.locator('[data-profession-nav-group="thief"]');
+    if (!(await thiefGroup.evaluate(element => element.open))) await thiefGroup.locator('summary').click();
+    await expect(thiefGroup).toHaveAttribute('open', '');
     const link = page.locator(`.nav-link[data-route="profession/${job.id}"]`);
     await expect(link).toBeVisible();
     await link.click();

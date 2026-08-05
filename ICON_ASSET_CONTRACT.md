@@ -15,7 +15,7 @@
 2. 官方核心圖形優先使用台版客戶端中可驗證的原始資源。
 3. 台版實機截圖用於名稱、實裝狀態、外框、鎖定、強化與畫面呈現核對。
 4. 不以 AI 重畫、補畫或生成近似官方圖形。
-5. 公開 repository 不得包含原始 Blob、Bundle、完整遊戲截圖、私人工作日誌、投稿者帳號資料或全量解析中間檔。
+5. 公開 repository 不得包含原始遊戲封裝、完整遊戲截圖、私人工作日誌、投稿者帳號資料或全量解析中間檔。
 6. 客戶端資源存在不等於台版現行實裝；資料狀態仍依網站既有契約標示。
 
 ## 2. 資產層級
@@ -43,6 +43,7 @@
 assets/
   icons/
     life-skills/
+    profession-series/
     professions/
     profession-skills/
     cooking/
@@ -62,6 +63,7 @@ assets/
 
 ```text
 assets/icons/life-skills/daily-gathering.png
+assets/icons/profession-series/warrior.png
 assets/icons/professions/swordsman.png
 assets/icons/profession-skills/swordmaster-steel-wedge.png
 assets/icons/cooking/fried-egg.png
@@ -146,7 +148,7 @@ JSON 以穩定英文 ID 綁定圖標：
 - Master SHA256
 - 驗收狀態
 
-原始 Blob、Segment、Bundle 與完整解析工作表保留於私人工作線，不提交公開 repository。
+原始解析索引與完整工作表保留於私人工作線，不提交公開 repository。
 
 ## 11. Issue #7 試點清單
 
@@ -208,18 +210,48 @@ JSON 以穩定英文 ID 綁定圖標：
 
 本批 18 枚圖標均使用既有本機核准的台版客戶端 PNG 輸出，不下載、不重新抽取，也不在公開 manifest 記錄私人素材路徑或內部別名。
 
-## 13. 自動驗證最低要求
+## 13. Issue #10 長弓兵與弩手完整圖標清單
+
+### 職業
+
+- `longbowman`：長弓兵
+- `crossbowman`：弩手
+
+### 職業技能
+
+- `longbowman-crash-shot`：震盪射擊
+- `longbowman-flame-barrage`：烈焰箭
+- `longbowman-heart-seeker`：尋心者
+- `longbowman-shell-breaker`：破殼者
+- `longbowman-wing-skewer`：翼之穿刺
+- `crossbowman-buster-shot`：爆裂射擊
+- `crossbowman-gusting-bolt`：狂風弩箭
+- `crossbowman-shock-explosion`：震撼爆裂
+- `crossbowman-sliding-step`：滑步
+- `crossbowman-spreading-bolt`：擴散弩箭
+
+本批 12 枚圖標均使用既有本機核准的台版客戶端 PNG 輸出，不下載、不重新抽取，也不在公開 manifest 記錄私人素材路徑或內部別名。
+
+### 見習職業系列
+
+- `series-warrior`：見習戰士系
+- `series-archer`：見習弓手系
+- `series-thief`：見習盜賊系
+
+三枚系列圖標為側邊欄收合 summary 的獨立資產，不計入 documented professions，也不與一般職業圖標共用 SHA256。公開 manifest 僅保留穩定 ID、台版系列名稱、公開路徑、SHA256 與核准來源分類。
+
+## 14. 自動驗證最低要求
 
 - JSON 內每個非空 `icon` 路徑都必須存在。
 - 試點 PNG 必須可讀取且具有透明通道。
-- 不允許提交 `.blob`、`.bundle`、原始完整截圖或私人資料夾內容。
+- 不允許提交原始封裝格式、完整截圖或私人資料夾內容。
 - 不允許兩個不同穩定 ID 意外綁定同一檔案，除非資料契約明確宣告共用。
-- 公開圖標 manifest 固定為生活技能 20、職業 7、職業技能 21、料理 4，共 52 枚唯一 SHA256 資產。
-- Issue #9 三職業與 15 技能必須維持正式 ID、正式名稱與 `professionId` 一對一綁定。
+- 公開圖標 manifest 固定為生活技能 20、見習職業系列 3、職業 9、職業技能 31、料理 4，共 67 枚唯一 SHA256 資產。
+- Issue #9 與 Issue #10 職業及技能必須維持正式 ID、正式名稱與 `professionId` 一對一綁定。
 - 公開圖標 manifest 不得包含內部別名、Windows 絕對路徑或私人素材庫識別字。
 - changelog 必須記錄試點導入。
 
-## 14. 完成定義
+## 15. 完成定義
 
 Issue #7 僅在下列條件全部成立時完成：
 

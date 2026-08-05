@@ -834,5 +834,194 @@
       }
     ],
     "passive": []
+  },
+  "longbowman": {
+    "id": "longbowman",
+    "name": "長弓兵",
+    "clientJobId": "LongBowMan",
+    "series": "弓手",
+    "routeSlug": "longbowman",
+    "description": "擅長以長弓從遠距離壓制敵人，透過蓄力射擊、範圍攻擊與弱化效果掌控戰場。能以精準狙擊集中攻擊單一目標，也能利用爆炸箭矢與支援投擲牽制多名敵人。",
+    "summaryBasis": "derived_from_verified_skills",
+    "preferredEquipment": null,
+    "preferredEquipmentStatus": "pending_verified_source",
+    "status": "tw-confirmed",
+    "source": "台版遊戲內容",
+    "contributor": "法那提歐",
+    "active": [
+      {
+        "order": 1,
+        "clientSkillId": "CrashShot",
+        "name": "震盪射擊",
+        "tags": ["強擊", "干擾"],
+        "description": "以特殊箭矢暫時使多名敵人失去戰鬥力的戰術射擊。發射製造衝擊波的特殊箭矢，對目標造成傷害後，也會對周圍敵人造成範圍傷害並擊退。此外，會在中招敵人身上留下弱化效果「衰弱」，使其在一定時間內行動變慢。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
+      },
+      {
+        "order": 2,
+        "clientSkillId": "FlameBarrage",
+        "name": "烈焰箭",
+        "tags": ["元素", "強擊"],
+        "description": "以大量爆炸箭矢制壓多名敵人的無差別射擊。發射爆炸箭矢，在目標周圍不同位置造成大範圍傷害。攻擊已破防的敵人時會造成額外傷害。烈焰箭重複命中時傷害量會減少。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": [
+          {"label": "攻擊已破防敵人時傷害增加", "value": "50%"},
+          {"label": "重複打擊時傷害比例", "value": "25%"}
+        ]
+      },
+      {
+        "order": 3,
+        "clientSkillId": "HeartSeeker",
+        "name": "尋心者",
+        "tags": ["強擊", "干擾"],
+        "description": "射出蓄滿魔力的箭矢，慎重地進行狙擊。精準瞄準目標後，發射強力的蓄力箭矢造成傷害並擊退。蓄力階段越高，傷害量與擊退距離也會隨之增加。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": [
+          {"label": "各階段蓄力時間", "value": "0.75 秒"}
+        ]
+      },
+      {
+        "order": 4,
+        "clientSkillId": "ShellBreaker",
+        "name": "破殼者",
+        "tags": ["連擊", "干擾", "輔助"],
+        "description": "以嫻熟速射瓦解敵方防禦的多重射擊。連射瞄準目標弱點的破壞性箭矢造成傷害。最後一發投射物會帶來追加打擊，並使目標在一定時間內受到傷害提高。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
+      },
+      {
+        "order": 5,
+        "clientSkillId": "WingSkewer",
+        "name": "翼之穿刺",
+        "tags": ["連擊", "干擾"],
+        "description": "配合約定信號制壓多名敵人的友軍掩護投擲。朝前方射出裝有信號彈的特殊箭矢，請求投擲支援。一段時間後，多支標槍會投向目標地點周圍的敵人，造成範圍傷害並使其倒地。對正在準備技能的敵人會造成額外的破防傷害。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": [
+          {"label": "攻擊次數", "value": "5 次"},
+          {"label": "破防傷害", "value": "1 格"},
+          {"label": "迎擊時破防傷害", "value": "2 格"}
+        ]
+      }
+    ],
+    "passive": []
+  },
+  "crossbowman": {
+    "id": "crossbowman",
+    "name": "弩手",
+    "clientJobId": "Arbalist",
+    "series": "弓手",
+    "routeSlug": "crossbowman",
+    "description": "以強化弩箭彈匣為核心，透過裝填、消耗與額外行動銜接範圍射擊及機動技能。可運用震擊弩箭制壓敵人，並藉由滑步、連射與擴散射擊維持戰鬥節奏。",
+    "summaryBasis": "derived_from_verified_skills",
+    "preferredEquipment": null,
+    "preferredEquipmentStatus": "pending_verified_source",
+    "status": "tw-confirmed",
+    "source": "台版遊戲內容",
+    "contributor": "法那提歐",
+    "active": [
+      {
+        "order": 1,
+        "clientSkillId": "BusterShot",
+        "name": "爆裂射擊",
+        "tags": ["強擊", "移動"],
+        "description": "以強力衝擊波制壓敵人的範圍射擊。發射引發衝擊波的震擊弩箭，對前方敵人造成範圍傷害。使用技能後，會裝填強化弩箭彈匣，並在一定時間內提升移動速度。觸發額外行動時，會追加發射震擊弩箭。",
+        "presentationMode": "corrected_alias",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_corrected_name",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": [
+          {"label": "最大層數", "value": "2"},
+          {"label": "範圍", "value": "6 m"},
+          {"label": "強化弩箭裝填", "value": "1 個彈匣"}
+        ]
+      },
+      {
+        "order": 2,
+        "clientSkillId": "GustingBolt",
+        "name": "狂風弩箭",
+        "tags": ["連擊", "元素"],
+        "description": "不停猛攻強化弩箭的無差別射擊。對目標亂射強化弩箭，造成大量傷害。每次射擊瞄準點都會偏移，從第二發強化弩箭開始，暴擊機率會逐漸降低。使用技能後，會消耗強化弩箭彈匣。觸發驅動力時，威力最多可被強化 2 次。",
+        "presentationMode": "corrected_alias",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_corrected_name",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": [
+          {"label": "攻擊次數", "value": "10 次"},
+          {"label": "強化弩箭暴擊機率衰減", "value": "每次發射降低為前次的 0.75 倍"},
+          {"label": "強化弩箭消耗", "value": "1 個彈匣"}
+        ]
+      },
+      {
+        "order": 3,
+        "clientSkillId": "ShockExplosion",
+        "name": "震撼爆裂",
+        "tags": ["強擊", "干擾"],
+        "description": "射出震擊弩箭使敵人失去戰鬥力的牽制射擊。發射引發爆炸的震擊弩箭，對周圍敵人造成範圍傷害並擊昏。使用技能後，會裝填強化弩箭彈匣。觸發額外行動時，會追加發射不造成破防傷害的震擊弩箭。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": [
+          {"label": "破防傷害", "value": "1 格"},
+          {"label": "強化弩箭裝填", "value": "1 個彈匣"}
+        ]
+      },
+      {
+        "order": 4,
+        "clientSkillId": "SlidingStep",
+        "name": "滑步",
+        "tags": ["連擊", "移動", "干擾"],
+        "description": "向後滑行同時射出多發弩彈的迴避射擊。發射多發弩彈對目標造成傷害，並降低其移動速度。使用技能後，會裝填強化弩箭彈匣，並在一定時間內減少受到的傷害。觸發額外行動時，會追加發射一般弩箭。",
+        "presentationMode": "corrected_alias",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_corrected_name",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": [
+          {"label": "攻擊次數", "value": "2 次"},
+          {"label": "強化弩箭裝填", "value": "1 個彈匣"}
+        ]
+      },
+      {
+        "order": 5,
+        "clientSkillId": "SpreadingBolt",
+        "name": "擴散弩箭",
+        "tags": ["強擊", "元素"],
+        "description": "如同灑出大量強化弩箭般的多重射擊。以扇形擴散方式發射強化弩箭，對周圍敵人造成大範圍傷害。使用技能後，會消耗強化弩箭彈匣。觸發驅動力時，威力最多可被強化 2 次。",
+        "presentationMode": "corrected_alias",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_corrected_name",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": [
+          {"label": "強化弩箭消耗", "value": "1 個彈匣"}
+        ]
+      }
+    ],
+    "passive": []
   }
 }

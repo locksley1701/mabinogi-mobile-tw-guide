@@ -45,6 +45,10 @@
 .nav-disclosure > summary:hover { background: rgba(255,255,255,.06); }
 .nav-disclosure .nav-link--sub { margin: 1px 4px 3px; padding-left: 18px; }
 
+.profession-nav-group { margin-top: 0; }
+.profession-nav-group > summary { gap: 8px; }
+.profession-nav-group > summary::before { content: none; display: none; }
+
 .content-module-hero {
   display: grid;
   grid-template-columns: 84px minmax(0, 1fr);

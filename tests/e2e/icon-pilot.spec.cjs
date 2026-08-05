@@ -5,12 +5,28 @@ const professionSidebarEntries = [
   ['greatsword-warrior', '大劍戰士', '◆'],
   ['warrior', '戰士', '⬡'],
   ['archer', '弓手', '⌁'],
+  ['longbowman', '長弓兵', '⌁'],
+  ['crossbowman', '弩手', '⌁'],
   ['thief', '盜賊', '◈'],
   ['fighter', '格鬥家', '✊'],
   ['dual-blades', '雙刀客', '⚔']
 ];
 
+const professionSidebarGroups = [
+  ['warrior', ['warrior', 'greatsword-warrior', 'swordsman']],
+  ['archer', ['archer', 'crossbowman', 'longbowman']],
+  ['thief', ['thief', 'fighter', 'dual-blades']]
+];
+
+const professionSeriesEntries = [
+  ['series-warrior', 'warrior', '見習戰士系', '⚔'],
+  ['series-archer', 'archer', '見習弓手系', '⌁'],
+  ['series-thief', 'thief', '見習盜賊系', '◈']
+];
+
 const professionSidebarImageSelector = '.sidebar .nav-link[data-route^="profession/"] > span[aria-hidden="true"] > .official-icon--sidebar > img[data-official-icon]';
+const professionSidebarImageSelectorForGroup = groupId => `.sidebar [data-profession-nav-group="${groupId}"] .nav-link[data-route^="profession/"] > span[aria-hidden="true"] > .official-icon--sidebar > img[data-official-icon]`;
+const professionSeriesImageSelector = '.sidebar [data-profession-series-host] > .official-icon--profession-series > img[data-official-icon]';
 
 function normalizeDomRectPixels(value) {
   return Math.round(value * 1000) / 1000;
@@ -133,10 +149,91 @@ async function expectNoHorizontalOverflow(page, label) {
   expect(widths.body, `${label}: body 水平溢位`).toBeLessThanOrEqual(widths.client + 1);
 }
 
-async function expectProfessionSidebarDimensions(page, label) {
+async function readProfessionSeriesMetrics(page) {
+  return page.locator('.sidebar summary[data-profession-series]').evaluateAll((summaries, entries) => summaries.map(summary => {
+    const entry = entries.find(([id]) => id === summary.dataset.professionSeries);
+    const host = summary.querySelector('[data-profession-series-host]');
+    const wrapper = host?.querySelector('.official-icon--profession-series');
+    const image = wrapper?.querySelector('img[data-official-icon]');
+    const label = summary.querySelector('.profession-nav-group__label');
+    const summaryRect = summary.getBoundingClientRect();
+    const hostRect = host?.getBoundingClientRect();
+    const wrapperRect = wrapper?.getBoundingClientRect();
+    const imageRect = image?.getBoundingClientRect();
+    const labelRect = label?.getBoundingClientRect();
+    const wrapperStyle = wrapper ? getComputedStyle(wrapper) : null;
+    const imageStyle = image ? getComputedStyle(image) : null;
+    return {
+      id: entry?.[0],
+      groupId: entry?.[1],
+      name: entry?.[2],
+      fallback: entry?.[3],
+      summaryHeight: summaryRect.height,
+      summaryFits: summary.scrollWidth <= summary.clientWidth + 1,
+      labelOffset: labelRect.left - summaryRect.left,
+      labelFits: label.scrollWidth <= label.clientWidth + 1,
+      arrowContent: getComputedStyle(summary, '::after').content.replaceAll('"', ''),
+      hostWidth: hostRect?.width ?? null,
+      hostHeight: hostRect?.height ?? null,
+      wrapperWidth: wrapperRect?.width ?? null,
+      wrapperHeight: wrapperRect?.height ?? null,
+      imageWidth: imageRect?.width ?? null,
+      imageHeight: imageRect?.height ?? null,
+      wrapperPadding: wrapperStyle ? [wrapperStyle.paddingTop, wrapperStyle.paddingRight, wrapperStyle.paddingBottom, wrapperStyle.paddingLeft] : null,
+      wrapperBorder: wrapperStyle ? [wrapperStyle.borderTopWidth, wrapperStyle.borderRightWidth, wrapperStyle.borderBottomWidth, wrapperStyle.borderLeftWidth] : null,
+      wrapperBackground: wrapperStyle?.backgroundColor ?? null,
+      wrapperShadow: wrapperStyle?.boxShadow ?? null,
+      wrapperFlex: wrapperStyle ? [wrapperStyle.flexGrow, wrapperStyle.flexShrink, wrapperStyle.flexBasis] : null,
+      imageFit: imageStyle?.objectFit ?? null,
+      imageFilter: imageStyle?.filter ?? null
+    };
+  }), professionSeriesEntries);
+}
+
+async function expectProfessionSeriesDimensions(page, label) {
   await waitForSidebarLayoutStable(page);
-  const links = page.locator('.sidebar .nav-link[data-route^="profession/"]');
-  await expect(links).toHaveCount(professionSidebarEntries.length);
+  await waitForIcons(page, professionSeriesImageSelector, 3);
+  const layouts = await readProfessionSeriesMetrics(page);
+  expect(layouts.map(layout => layout.id)).toEqual(professionSeriesEntries.map(([id]) => id));
+  for (const layout of layouts) {
+    expect(normalizeDomRectPixels(layout.hostWidth), `${label} ${layout.name} host width`).toBe(28);
+    expect(normalizeDomRectPixels(layout.hostHeight), `${label} ${layout.name} host height`).toBe(28);
+    expect(normalizeDomRectPixels(layout.wrapperWidth), `${label} ${layout.name} wrapper width`).toBe(28);
+    expect(normalizeDomRectPixels(layout.wrapperHeight), `${label} ${layout.name} wrapper height`).toBe(28);
+    expect(normalizeDomRectPixels(layout.imageWidth), `${label} ${layout.name} image width`).toBeLessThanOrEqual(24);
+    expect(normalizeDomRectPixels(layout.imageHeight), `${label} ${layout.name} image height`).toBeLessThanOrEqual(24);
+    expect(layout.wrapperPadding, `${label} ${layout.name} wrapper padding`).toEqual(['2px', '2px', '2px', '2px']);
+    expect(layout.wrapperBorder, `${label} ${layout.name} wrapper border`).toEqual(['0px', '0px', '0px', '0px']);
+    expect(layout.wrapperBackground, `${label} ${layout.name} wrapper background`).toBe('rgba(0, 0, 0, 0)');
+    expect(layout.wrapperShadow, `${label} ${layout.name} wrapper shadow`).toBe('none');
+    expect(layout.wrapperFlex, `${label} ${layout.name} wrapper flex`).toEqual(['0', '0', '28px']);
+    expect(layout.imageFit, `${label} ${layout.name} image fit`).toBe('contain');
+    expect(layout.imageFilter, `${label} ${layout.name} image filter`).toBe('none');
+    expect(layout.summaryHeight, `${label} ${layout.name} summary height`).toBeGreaterThanOrEqual(45);
+    expect(layout.summaryFits, `${label} ${layout.name} summary 不得擠壓箭頭`).toBe(true);
+    expect(layout.labelFits, `${label} ${layout.name} 文字不得截斷`).toBe(true);
+    expect(layout.arrowContent, `${label} ${layout.name} disclosure arrow`).toBe('⌄');
+  }
+  const labelOffsets = layouts.map(layout => layout.labelOffset);
+  expect(Math.max(...labelOffsets) - Math.min(...labelOffsets), `${label} 系列文字左緣`).toBeLessThanOrEqual(2);
+  await expectNoHorizontalOverflow(page, `${label} 系列 summary`);
+  return layouts;
+}
+
+async function openProfessionSidebarGroup(page, groupId) {
+  const group = page.locator(`[data-profession-nav-group="${groupId}"]`);
+  if (!(await group.evaluate(element => element.open))) await group.locator('summary').click();
+  await expect(group).toHaveAttribute('open', '');
+  await waitForSidebarLayoutStable(page);
+  return group;
+}
+
+async function expectProfessionSidebarDimensions(page, label, groupId) {
+  await waitForSidebarLayoutStable(page);
+  const entryIds = professionSidebarGroups.find(([id]) => id === groupId)?.[1] || [];
+  const entries = entryIds.map(id => professionSidebarEntries.find(([entryId]) => entryId === id));
+  const links = page.locator(`[data-profession-nav-group="${groupId}"] .nav-link[data-route^="profession/"]`);
+  await expect(links).toHaveCount(entries.length);
   const layouts = await links.evaluateAll((elements, entries) => {
     const entryById = new Map(entries.map(([id, name, fallback]) => [id, {name, fallback}]));
     const references = elements.map(element => {
@@ -205,9 +302,9 @@ async function expectProfessionSidebarDimensions(page, label) {
     } finally {
       references.forEach(reference => reference.remove());
     }
-  }, professionSidebarEntries);
+  }, entries);
 
-  expect(layouts.map(layout => layout.id)).toEqual(professionSidebarEntries.map(([id]) => id));
+  expect(layouts.map(layout => layout.id)).toEqual(entries.map(([id]) => id));
   for (const layout of layouts) {
     const name = layout.name;
     expect(Math.abs(layout.rowHeight - layout.fallbackHeight), `${label} ${name} 列高`).toBeLessThanOrEqual(1);
@@ -242,7 +339,7 @@ async function expectProfessionSidebarDimensions(page, label) {
   }
 
   const labelOffsets = layouts.map(layout => layout.labelOffset);
-  expect(Math.max(...labelOffsets) - Math.min(...labelOffsets), `${label} 七列文字相對左緣`).toBeLessThanOrEqual(2);
+  expect(Math.max(...labelOffsets) - Math.min(...labelOffsets), `${label} ${groupId} 文字相對左緣`).toBeLessThanOrEqual(2);
   const sidebarWidths = await page.locator('#sidebar').evaluate(sidebar => ({
     scrollWidth: sidebar.scrollWidth,
     clientWidth: sidebar.clientWidth
@@ -251,8 +348,8 @@ async function expectProfessionSidebarDimensions(page, label) {
   return layouts;
 }
 
-async function readProfessionSidebarMetrics(page) {
-  return page.locator('.sidebar .nav-link[data-route^="profession/"]').evaluateAll(links => links.map(link => {
+async function readProfessionSidebarMetrics(page, groupId) {
+  return page.locator(`[data-profession-nav-group="${groupId}"] .nav-link[data-route^="profession/"]`).evaluateAll(links => links.map(link => {
     const id = link.dataset.route.split('/')[1];
     const label = link.querySelector(':scope > b');
     const wrapper = link.querySelector('.official-icon--sidebar');
@@ -303,14 +400,14 @@ test('生活技能20枚在列表與明細顯示核准圖標', async ({ page }) =
   }
 });
 
-test('職業7枚在總覽與職業頁 hero 顯示', async ({ page }) => {
+test('職業9枚在總覽與職業頁 hero 顯示', async ({ page }) => {
   await page.goto('/#/professions');
   await waitForGuide(page);
   const selector = '.profession-card img[data-official-icon]';
-  await waitForIcons(page, selector, 7);
+  await waitForIcons(page, selector, 9);
   await expectAccessibleDecorativeImages(page, selector);
 
-  for (const id of ['swordsman', 'warrior', 'greatsword-warrior', 'archer', 'thief', 'fighter', 'dual-blades']) {
+  for (const id of ['swordsman', 'warrior', 'greatsword-warrior', 'archer', 'longbowman', 'crossbowman', 'thief', 'fighter', 'dual-blades']) {
     await page.goto(`/#/profession/${id}`);
     await waitForGuide(page);
     const hero = page.locator(`.profession-hero [data-official-icon-detail="${id}"] img[data-official-icon="${id}"]`);
@@ -319,7 +416,78 @@ test('職業7枚在總覽與職業頁 hero 顯示', async ({ page }) => {
   }
 });
 
-test('桌面側邊欄七職業使用 manifest 官方圖標且接線保持冪等', async ({ page }, testInfo) => {
+test('見習職業系列 summary 使用官方圖標並保留單一 fallback', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案驗證 summary 圖標契約');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/#/home');
+  await waitForGuide(page);
+  await expect(page.locator('.sidebar summary[data-profession-series]')).toHaveCount(3);
+  await waitForIcons(page, professionSeriesImageSelector, 3);
+  await expectAccessibleDecorativeImages(page, professionSeriesImageSelector);
+
+  for (const [id, groupId, name] of professionSeriesEntries) {
+    const summary = page.locator(`summary[data-profession-series="${id}"]`);
+    const host = summary.locator(`[data-profession-series-host="${id}"]`);
+    const image = host.locator(`img[data-official-icon="${id}"]`);
+    await expect(summary).toContainText(name);
+    await expect(host.locator('.official-icon--profession-series')).toHaveCount(1);
+    await expect(image).toHaveCount(1);
+    await expect(image).toHaveAttribute('src', `assets/icons/profession-series/${groupId}.png`);
+    await expect(page.locator(`[data-profession-nav-group="${groupId}"]`)).not.toHaveAttribute('open', '');
+  }
+
+  await page.evaluate(() => {
+    window.FanatioIconPilot.patch();
+    window.FanatioIconPilot.patch();
+  });
+  await expect(page.locator(professionSeriesImageSelector)).toHaveCount(3);
+  const before = await expectProfessionSeriesDimensions(page, '桌面');
+
+  for (const appearance of ['light', 'dark']) {
+    await page.evaluate(value => window.FanatioThemeSystem.apply({ appearance: value, palette: 'forest', persist: false }), appearance);
+    await expect(page.locator('html')).toHaveAttribute('data-theme', appearance);
+    await expectProfessionSeriesDimensions(page, `${appearance} 桌面`);
+  }
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expectProfessionSeriesDimensions(page, 'reduced motion 桌面');
+
+  const warriorHost = page.locator('[data-profession-series-host="series-warrior"]');
+  await warriorHost.locator('img[data-official-icon="series-warrior"]').evaluate(image => image.dispatchEvent(new Event('error')));
+  await expect(warriorHost.locator('img')).toHaveCount(0);
+  await expect(warriorHost).toHaveText('⚔');
+  await expect(page.locator(professionSeriesImageSelector)).toHaveCount(2);
+  await page.locator('[data-profession-nav-group="warrior"] summary').click();
+  await expect(page.locator('[data-profession-nav-group="warrior"]')).toHaveAttribute('open', '');
+  const after = await readProfessionSeriesMetrics(page);
+  const beforeWarrior = before.find(item => item.id === 'series-warrior');
+  const afterWarrior = after.find(item => item.id === 'series-warrior');
+  expect(Math.abs(afterWarrior.summaryHeight - beforeWarrior.summaryHeight), '系列 fallback 前後列高').toBeLessThanOrEqual(1);
+  expect(Math.abs(afterWarrior.labelOffset - beforeWarrior.labelOffset), '系列 fallback 前後文字左緣').toBeLessThanOrEqual(1);
+  for (const series of before.filter(item => item.id !== 'series-warrior')) {
+    expect(after.find(item => item.id === series.id), `${series.name} 不得因單一 fallback 重排`).toEqual(series);
+  }
+});
+
+test('918px 與 390x844 抽屜維持見習職業系列圖標契約', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案模擬窄版抽屜');
+  await page.setViewportSize({ width: 918, height: 900 });
+  await page.goto('/#/home');
+  await waitForGuide(page);
+  await page.locator('#menu-button').click();
+  await expectProfessionSeriesDimensions(page, '918px');
+  const backdrop = page.locator('#drawer-backdrop');
+  const backdropBox = await backdrop.boundingBox();
+  await backdrop.click({ position: { x: backdropBox.width - 8, y: 80 } });
+  await expect(page.locator('body')).not.toHaveClass(/drawer-open/);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/#/home');
+  await waitForGuide(page);
+  await page.locator('#menu-button').click();
+  await expectProfessionSeriesDimensions(page, '390x844');
+});
+
+test('桌面側邊欄九職業使用 manifest 官方圖標且接線保持冪等', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案驗證側邊欄版面');
   expect(normalizeDomRectPixels(28.0000019)).toBe(28);
   expect(normalizeDomRectPixels(29)).toBe(29);
@@ -328,9 +496,9 @@ test('桌面側邊欄七職業使用 manifest 官方圖標且接線保持冪等'
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#/home');
   await waitForGuide(page);
-  await waitForIcons(page, professionSidebarImageSelector, 7);
   await expectAccessibleDecorativeImages(page, professionSidebarImageSelector);
 
+  await expect(page.locator('[data-profession-nav-group]')).toHaveCount(3);
   for (const [id, name] of professionSidebarEntries) {
     const link = page.locator(`.sidebar .nav-link[data-route="profession/${id}"]`);
     const host = link.locator(':scope > span[aria-hidden="true"]');
@@ -338,7 +506,7 @@ test('桌面側邊欄七職業使用 manifest 官方圖標且接線保持冪等'
     await expect(link).toHaveAttribute('href', `#/profession/${id}`);
     await expect(link).toHaveAttribute('data-route', `profession/${id}`);
     await expect(link.locator(':scope > b')).toHaveText(name);
-    await expect(link.locator(':scope > b')).toBeVisible();
+    await expect(link.locator(':scope > b')).toBeHidden();
     await expect(image).toHaveCount(1);
     await expect(image).toHaveAttribute('src', `assets/icons/professions/${id}.png`);
     await expect(host.locator(':scope > .official-icon--sidebar')).toHaveCount(1);
@@ -349,15 +517,19 @@ test('桌面側邊欄七職業使用 manifest 官方圖標且接線保持冪等'
     window.FanatioIconPilot.patch();
     window.FanatioThemeSystem.apply({ appearance: 'dark', palette: 'contrast', persist: false });
   });
-  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(7);
+  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(9);
   for (const [id] of professionSidebarEntries) {
     await expect(page.locator(`.sidebar .nav-link[data-route="profession/${id}"] img[data-official-icon]`)).toHaveCount(1);
   }
-  await expectProfessionSidebarDimensions(page, '桌面');
+  for (const [groupId] of professionSidebarGroups) {
+    await openProfessionSidebarGroup(page, groupId);
+    await waitForIcons(page, professionSidebarImageSelectorForGroup(groupId), 3);
+    await expectProfessionSidebarDimensions(page, '桌面', groupId);
+  }
   await expectNoHorizontalOverflow(page, '桌面側邊欄職業圖標');
 });
 
-test('918px 抽屜維持七職業圖標、導航與重新開啟不重複', async ({ page }, testInfo) => {
+test('918px 抽屜維持九職業圖標、導航與重新開啟不重複', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案模擬 918px 抽屜');
   await page.setViewportSize({ width: 918, height: 900 });
   await page.goto('/#/home');
@@ -365,15 +537,16 @@ test('918px 抽屜維持七職業圖標、導航與重新開啟不重複', async
   await page.locator('#menu-button').click();
   await expect(page.locator('#sidebar')).toHaveAttribute('aria-hidden', 'false');
   await waitForSidebarLayoutStable(page);
-  await waitForIcons(page, professionSidebarImageSelector, 7);
 
   for (const [id, name] of professionSidebarEntries) {
     const link = page.locator(`.sidebar .nav-link[data-route="profession/${id}"]`);
-    await expect(link).toBeVisible();
+    await expect(link).toBeHidden();
     await expect(link.locator(':scope > b')).toHaveText(name);
   }
-  await expectProfessionSidebarDimensions(page, '918px');
-  const inactiveMetrics = await readProfessionSidebarMetrics(page);
+  await openProfessionSidebarGroup(page, 'thief');
+  await waitForIcons(page, professionSidebarImageSelectorForGroup('thief'), 3);
+  await expectProfessionSidebarDimensions(page, '918px', 'thief');
+  const inactiveMetrics = await readProfessionSidebarMetrics(page, 'thief');
 
   await page.locator('.sidebar .nav-link[data-route="profession/thief"]').click();
   await expect(page).toHaveURL(/#\/profession\/thief$/);
@@ -382,12 +555,13 @@ test('918px 抽屜維持七職業圖標、導航與重新開啟不重複', async
   await page.locator('#menu-button').click();
   await waitForSidebarLayoutStable(page);
   await expect(page.locator('.sidebar .nav-link[data-route="profession/thief"]')).toHaveClass(/is-active/);
-  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(7);
+  await expect(page.locator('[data-profession-nav-group="thief"]')).toHaveAttribute('open', '');
+  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(9);
   for (const [id] of professionSidebarEntries) {
     await expect(page.locator(`.sidebar .nav-link[data-route="profession/${id}"] img[data-official-icon]`)).toHaveCount(1);
   }
-  await expectProfessionSidebarDimensions(page, '918px active');
-  const activeMetrics = await readProfessionSidebarMetrics(page);
+  await expectProfessionSidebarDimensions(page, '918px active', 'thief');
+  const activeMetrics = await readProfessionSidebarMetrics(page, 'thief');
   const inactiveThief = inactiveMetrics.find(item => item.id === 'thief');
   const activeThief = activeMetrics.find(item => item.id === 'thief');
   expect(Math.abs(activeThief.linkHeight - inactiveThief.linkHeight), 'active／inactive 列高').toBeLessThanOrEqual(1);
@@ -401,15 +575,17 @@ test('390x844 手機側欄可捲到底且職業圖標不壓縮文字', async ({ 
   await waitForGuide(page);
   await page.locator('#menu-button').click();
   await waitForSidebarLayoutStable(page);
-  await waitForIcons(page, professionSidebarImageSelector, 7);
 
   for (const [id, name] of professionSidebarEntries) {
     const link = page.locator(`.sidebar .nav-link[data-route="profession/${id}"]`);
+    await expect(link).toBeHidden();
     await expect(link.locator(':scope > b')).toHaveText(name);
-    const labelFits = await link.locator(':scope > b').evaluate(label => label.scrollWidth <= label.clientWidth + 1);
-    expect(labelFits, `${name} 不應被圖標壓縮或截斷`).toBe(true);
   }
-  await expectProfessionSidebarDimensions(page, '390x844');
+  for (const [groupId] of professionSidebarGroups) {
+    await openProfessionSidebarGroup(page, groupId);
+    await waitForIcons(page, professionSidebarImageSelectorForGroup(groupId), 3);
+    await expectProfessionSidebarDimensions(page, '390x844', groupId);
+  }
 
   const scroll = await page.locator('#sidebar').evaluate(sidebar => {
     sidebar.scrollTop = sidebar.scrollHeight;
@@ -439,8 +615,9 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   });
   await page.goto('/#/home');
   await waitForGuide(page);
-  await waitForIcons(page, professionSidebarImageSelector, 7);
-  const before = await readProfessionSidebarMetrics(page);
+  await openProfessionSidebarGroup(page, 'thief');
+  await waitForIcons(page, professionSidebarImageSelectorForGroup('thief'), 3);
+  const before = await readProfessionSidebarMetrics(page, 'thief');
 
   const link = page.locator('.sidebar .nav-link[data-route="profession/thief"]');
   const host = link.locator(':scope > span[aria-hidden="true"]');
@@ -449,8 +626,8 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   });
   await expect(host.locator('img')).toHaveCount(0);
   await expect(host).toHaveText('◈');
-  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(6);
-  const after = await readProfessionSidebarMetrics(page);
+  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(8);
+  const after = await readProfessionSidebarMetrics(page, 'thief');
   const beforeThief = before.find(item => item.id === 'thief');
   const afterThief = after.find(item => item.id === 'thief');
   expect(Math.abs(afterThief.linkHeight - beforeThief.linkHeight), 'fallback 前後列高').toBeLessThanOrEqual(1);
@@ -469,12 +646,14 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   expect(runtimeErrors).toEqual([]);
 });
 
-test('21枚職業技能在七個職業頁取代編號底盤', async ({ page }) => {
+test('31枚職業技能在九個職業頁取代編號底盤', async ({ page }) => {
   const matrix = [
     ['swordsman', ['swordmaster-steel-wedge', 'swordmaster-detection']],
     ['warrior', ['expert-warrior-battle-cry', 'expert-warrior-blade-smash']],
     ['greatsword-warrior', ['greatsword-warrior-blockade-front']],
     ['archer', ['expert-archer-magnum-shot']],
+    ['longbowman', ['longbowman-crash-shot', 'longbowman-flame-barrage', 'longbowman-heart-seeker', 'longbowman-shell-breaker', 'longbowman-wing-skewer']],
+    ['crossbowman', ['crossbowman-buster-shot', 'crossbowman-gusting-bolt', 'crossbowman-shock-explosion', 'crossbowman-sliding-step', 'crossbowman-spreading-bolt']],
     ['thief', ['thief-back-stab', 'thief-hide', 'thief-poison-trap', 'thief-screw-dagger', 'thief-throwing-bomb']],
     ['fighter', ['fighter-back-step', 'fighter-burst-punch-1', 'fighter-charging-fist', 'fighter-somersault-1', 'fighter-stomp-kick']],
     ['dual-blades', ['dual-blades-double-crescent', 'dual-blades-gliding-fury', 'dual-blades-howling-gale', 'dual-blades-hurricane-dance', 'dual-blades-outer-slash']]

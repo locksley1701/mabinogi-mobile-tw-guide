@@ -20,7 +20,7 @@
     image.alt = '';
     image.width = item.width;
     image.height = item.height;
-    image.loading = ['detail', 'hero'].includes(context) ? 'eager' : 'lazy';
+    image.loading = ['detail', 'hero', 'profession-series'].includes(context) ? 'eager' : 'lazy';
     image.decoding = 'async';
     image.className = 'official-icon__image';
     image.dataset.officialIcon = item.id;
@@ -67,6 +67,7 @@
     const categories = data?.categories || {};
     return {
       lifeById: new Map((categories.lifeSkills || []).map(item => [item.id, item])),
+      professionSeriesById: new Map((categories.professionSeries || []).map(item => [item.id, item])),
       professionById: new Map((categories.professions || []).map(item => [item.id, item])),
       skillByKey: new Map((categories.professionSkills || []).map(item => {
         const bindingName = skillBindingOverrides[item.id] || item.name;
@@ -137,6 +138,45 @@
       const match = route.match(/^profession\/([^/?#]+)$/);
       const item = match ? iconMaps.professionById.get(match[1]) : null;
       if (item) replaceSidebarHost(host, item);
+    });
+  }
+
+  function replaceProfessionSeriesHost(host, item) {
+    if (!host
+      || host.dataset.officialIconHost === item.id
+      || host.dataset.officialIconFailed === item.id) return;
+
+    if (host.dataset.officialIconFailed && host.dataset.officialIconFailed !== item.id) {
+      delete host.dataset.officialIconFailed;
+    }
+    if (!host.dataset.officialIconFallback) {
+      host.dataset.officialIconFallback = normalize(host.textContent);
+    }
+
+    const fallback = host.dataset.officialIconFallback || '';
+    host.dataset.officialIconHost = item.id;
+    host.classList.add('official-icon-source--profession-series');
+    host.textContent = fallback;
+
+    const wrapper = document.createElement('span');
+    wrapper.className = 'official-icon--profession-series';
+    wrapper.dataset.officialIconProfessionSeries = item.id;
+    wrapper.setAttribute('aria-hidden', 'true');
+    const image = createImage(item, 'profession-series');
+    image.addEventListener('error', () => {
+      host.dataset.officialIconFailed = item.id;
+      host.classList.remove('official-icon-source--profession-series');
+      host.textContent = fallback;
+      delete host.dataset.officialIconHost;
+    }, { once: true });
+    wrapper.append(image);
+    host.append(wrapper);
+  }
+
+  function patchProfessionSeries(iconMaps) {
+    document.querySelectorAll('[data-profession-series-host]').forEach(host => {
+      const item = iconMaps.professionSeriesById.get(host.dataset.professionSeriesHost);
+      if (item) replaceProfessionSeriesHost(host, item);
     });
   }
 
@@ -219,6 +259,7 @@
     if (!data) return;
     const iconMaps = maps();
     patchLife(iconMaps);
+    patchProfessionSeries(iconMaps);
     patchProfessionSidebar(iconMaps);
     patchProfessions(iconMaps);
     patchProfessionSkills(iconMaps);
