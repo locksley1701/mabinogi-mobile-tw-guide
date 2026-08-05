@@ -130,12 +130,15 @@ jobs:
           }
 
           const iconCount = Object.values(icons.categories || {}).flat().length;
-          if (iconCount !== 64) throw new Error(`Expected 64 approved icon records, got ${iconCount}`);
+          if (iconCount !== 67) throw new Error(`Expected 67 approved icon records, got ${iconCount}`);
 
           const lifeIconCount = icons.categories?.lifeSkills?.length || 0;
           if (lifeIconCount !== 20) throw new Error(`Expected 20 approved life-skill icon records, got ${lifeIconCount}`);
 
-          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 9 professions, ${aliases.length} alias definitions, and ${iconCount} icon records (${lifeIconCount}/20 life-skill categories covered).`);
+          const professionSeriesIconCount = icons.categories?.professionSeries?.length || 0;
+          if (professionSeriesIconCount !== 3) throw new Error(`Expected 3 approved profession-series icon records, got ${professionSeriesIconCount}`);
+
+          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 9 professions, ${aliases.length} alias definitions, and ${iconCount} icon records (${lifeIconCount}/20 life-skill categories covered; ${professionSeriesIconCount}/3 profession series).`);
           NODE
 
       - name: Validate public data and UI state contract

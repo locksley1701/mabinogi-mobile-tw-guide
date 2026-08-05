@@ -5,6 +5,7 @@ import { extname, join, relative, resolve, sep } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const manifestPath = join(root, 'data', 'icon-pilot.json');
 const lifeCategoriesPath = join(root, 'data', 'life-skill-categories.json');
+const professionsPath = join(root, 'data', 'professions.json');
 const contractPath = join(root, 'ICON_ASSET_CONTRACT.md');
 const privateFragments = [
   'blob', 'bundle', 'segment', 'private', 'raw-screenshot',
@@ -40,6 +41,7 @@ function pngInfo(buffer) {
 
 if (!existsSync(manifestPath)) fail('缺少 data/icon-pilot.json');
 if (!existsSync(lifeCategoriesPath)) fail('缺少 data/life-skill-categories.json');
+if (!existsSync(professionsPath)) fail('缺少 data/professions.json');
 if (!existsSync(contractPath)) fail('缺少 ICON_ASSET_CONTRACT.md');
 
 const manifestSource = readFileSync(manifestPath, 'utf8');
@@ -55,9 +57,11 @@ for (const fragment of ['blob', 'segment', 'bundle', 'officialiconlibrary', 'app
 
 const manifest = JSON.parse(manifestSource);
 const lifeCategories = JSON.parse(readFileSync(lifeCategoriesPath, 'utf8'));
+const professions = JSON.parse(readFileSync(professionsPath, 'utf8'));
 const categories = manifest.categories || {};
 const expectedCounts = {
   lifeSkills: 20,
+  professionSeries: 3,
   professions: 9,
   professionSkills: 31,
   cooking: 4
@@ -70,7 +74,7 @@ for (const [category, count] of Object.entries(expectedCounts)) {
   if (items.length !== count) fail(`${category} 數量為 ${items.length}，預期 ${count}`);
   all.push(...items.map(item => ({ ...item, category })));
 }
-if (all.length !== 64) fail(`總數為 ${all.length}，預期 64`);
+if (all.length !== 67) fail(`總數為 ${all.length}，預期 67`);
 
 const lifeCategoryIds = new Set(lifeCategories.map(item => item.id));
 if (lifeCategoryIds.size !== 20) fail(`生活技能分類穩定 ID 數量為 ${lifeCategoryIds.size}，預期 20`);
@@ -91,6 +95,32 @@ const professionIds = new Set(categories.professions.map(item => item.id));
 if (professionIds.size !== expectedProfessionIds.size) fail(`職業圖標穩定 ID 數量為 ${professionIds.size}，預期 ${expectedProfessionIds.size}`);
 for (const id of expectedProfessionIds) {
   if (!professionIds.has(id)) fail(`職業缺少正式圖標：${id}`);
+}
+
+const expectedProfessionSeries = new Map([
+  ['series-warrior', { name: '見習戰士系', icon: 'assets/icons/profession-series/warrior.png' }],
+  ['series-archer', { name: '見習弓手系', icon: 'assets/icons/profession-series/archer.png' }],
+  ['series-thief', { name: '見習盜賊系', icon: 'assets/icons/profession-series/thief.png' }]
+]);
+const professionSeries = categories.professionSeries;
+if (professionSeries.length !== expectedProfessionSeries.size) fail(`professionSeries 數量為 ${professionSeries.length}，預期 ${expectedProfessionSeries.size}`);
+const professionSeriesHashes = new Set();
+for (const item of professionSeries) {
+  const expected = expectedProfessionSeries.get(item.id);
+  if (!expected) fail(`professionSeries 含未核准 ID：${item.id}`);
+  if (item.name !== expected.name || item.icon !== expected.icon) fail(`${item.id} 公開名稱或路徑不符合契約`);
+  if (item.width !== 256 || item.height !== 256) fail(`${item.id} 系列圖標必須宣告為 256x256`);
+  if (item.sourceClass !== '台版客戶端見習職業系列圖標核准輸出') fail(`${item.id} sourceClass 不符合公開契約`);
+  professionSeriesHashes.add(item.sha256);
+}
+if (professionSeriesHashes.size !== expectedProfessionSeries.size) fail('見習職業系列圖標 SHA256 不得重複');
+for (const item of categories.professions) {
+  if (professionSeriesHashes.has(item.sha256)) fail(`見習職業系列圖標不得與職業圖標共用 SHA256：${item.id}`);
+}
+for (const id of expectedProfessionSeries.keys()) {
+  if (professions.some(item => item.id === id || item.documented && item.name === expectedProfessionSeries.get(id).name)) {
+    fail(`${id} 不得計入 documented professions`);
+  }
 }
 for (const id of professionIds) {
   if (!expectedProfessionIds.has(id)) fail(`職業圖標未對應正式職業：${id}`);
@@ -147,7 +177,7 @@ for (const item of all) {
   if (ids.has(item.id)) fail(`重複 ID：${item.id}`);
   ids.add(item.id);
 
-  if (!/^assets\/icons\/(life-skills|professions|profession-skills|cooking)\/[a-z0-9-]+\.png$/.test(item.icon)) {
+  if (!/^assets\/icons\/(life-skills|profession-series|professions|profession-skills|cooking)\/[a-z0-9-]+\.png$/.test(item.icon)) {
     fail(`${item.id} 的 icon 路徑不符合契約：${item.icon}`);
   }
   if (paths.has(item.icon)) fail(`不同 ID 共用同一路徑：${item.icon}`);
@@ -180,6 +210,11 @@ for (const full of walk(root)) {
 const index = readFileSync(join(root, 'index.html'), 'utf8');
 for (const required of ['icon-pilot.css', 'icon-pilot.js']) {
   if (!index.includes(required)) fail(`index.html 尚未載入 ${required}`);
+}
+for (const id of expectedProfessionSeries.keys()) {
+  if (!index.includes(`data-profession-series="${id}"`) || !index.includes(`data-profession-series-host="${id}"`)) {
+    fail(`index.html 缺少 ${id} 穩定 series host`);
+  }
 }
 
 console.log(

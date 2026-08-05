@@ -18,8 +18,15 @@ const professionSidebarGroups = [
   ['thief', ['thief', 'fighter', 'dual-blades']]
 ];
 
+const professionSeriesEntries = [
+  ['series-warrior', 'warrior', '見習戰士系', '⚔'],
+  ['series-archer', 'archer', '見習弓手系', '⌁'],
+  ['series-thief', 'thief', '見習盜賊系', '◈']
+];
+
 const professionSidebarImageSelector = '.sidebar .nav-link[data-route^="profession/"] > span[aria-hidden="true"] > .official-icon--sidebar > img[data-official-icon]';
 const professionSidebarImageSelectorForGroup = groupId => `.sidebar [data-profession-nav-group="${groupId}"] .nav-link[data-route^="profession/"] > span[aria-hidden="true"] > .official-icon--sidebar > img[data-official-icon]`;
+const professionSeriesImageSelector = '.sidebar [data-profession-series-host] > .official-icon--profession-series > img[data-official-icon]';
 
 function normalizeDomRectPixels(value) {
   return Math.round(value * 1000) / 1000;
@@ -140,6 +147,77 @@ async function expectNoHorizontalOverflow(page, label) {
   }));
   expect(widths.html, `${label}: html 水平溢位`).toBeLessThanOrEqual(widths.client + 1);
   expect(widths.body, `${label}: body 水平溢位`).toBeLessThanOrEqual(widths.client + 1);
+}
+
+async function readProfessionSeriesMetrics(page) {
+  return page.locator('.sidebar summary[data-profession-series]').evaluateAll((summaries, entries) => summaries.map(summary => {
+    const entry = entries.find(([id]) => id === summary.dataset.professionSeries);
+    const host = summary.querySelector('[data-profession-series-host]');
+    const wrapper = host?.querySelector('.official-icon--profession-series');
+    const image = wrapper?.querySelector('img[data-official-icon]');
+    const label = summary.querySelector('.profession-nav-group__label');
+    const summaryRect = summary.getBoundingClientRect();
+    const hostRect = host?.getBoundingClientRect();
+    const wrapperRect = wrapper?.getBoundingClientRect();
+    const imageRect = image?.getBoundingClientRect();
+    const labelRect = label?.getBoundingClientRect();
+    const wrapperStyle = wrapper ? getComputedStyle(wrapper) : null;
+    const imageStyle = image ? getComputedStyle(image) : null;
+    return {
+      id: entry?.[0],
+      groupId: entry?.[1],
+      name: entry?.[2],
+      fallback: entry?.[3],
+      summaryHeight: summaryRect.height,
+      summaryFits: summary.scrollWidth <= summary.clientWidth + 1,
+      labelOffset: labelRect.left - summaryRect.left,
+      labelFits: label.scrollWidth <= label.clientWidth + 1,
+      arrowContent: getComputedStyle(summary, '::after').content.replaceAll('"', ''),
+      hostWidth: hostRect?.width ?? null,
+      hostHeight: hostRect?.height ?? null,
+      wrapperWidth: wrapperRect?.width ?? null,
+      wrapperHeight: wrapperRect?.height ?? null,
+      imageWidth: imageRect?.width ?? null,
+      imageHeight: imageRect?.height ?? null,
+      wrapperPadding: wrapperStyle ? [wrapperStyle.paddingTop, wrapperStyle.paddingRight, wrapperStyle.paddingBottom, wrapperStyle.paddingLeft] : null,
+      wrapperBorder: wrapperStyle ? [wrapperStyle.borderTopWidth, wrapperStyle.borderRightWidth, wrapperStyle.borderBottomWidth, wrapperStyle.borderLeftWidth] : null,
+      wrapperBackground: wrapperStyle?.backgroundColor ?? null,
+      wrapperShadow: wrapperStyle?.boxShadow ?? null,
+      wrapperFlex: wrapperStyle ? [wrapperStyle.flexGrow, wrapperStyle.flexShrink, wrapperStyle.flexBasis] : null,
+      imageFit: imageStyle?.objectFit ?? null,
+      imageFilter: imageStyle?.filter ?? null
+    };
+  }), professionSeriesEntries);
+}
+
+async function expectProfessionSeriesDimensions(page, label) {
+  await waitForSidebarLayoutStable(page);
+  await waitForIcons(page, professionSeriesImageSelector, 3);
+  const layouts = await readProfessionSeriesMetrics(page);
+  expect(layouts.map(layout => layout.id)).toEqual(professionSeriesEntries.map(([id]) => id));
+  for (const layout of layouts) {
+    expect(normalizeDomRectPixels(layout.hostWidth), `${label} ${layout.name} host width`).toBe(28);
+    expect(normalizeDomRectPixels(layout.hostHeight), `${label} ${layout.name} host height`).toBe(28);
+    expect(normalizeDomRectPixels(layout.wrapperWidth), `${label} ${layout.name} wrapper width`).toBe(28);
+    expect(normalizeDomRectPixels(layout.wrapperHeight), `${label} ${layout.name} wrapper height`).toBe(28);
+    expect(normalizeDomRectPixels(layout.imageWidth), `${label} ${layout.name} image width`).toBeLessThanOrEqual(24);
+    expect(normalizeDomRectPixels(layout.imageHeight), `${label} ${layout.name} image height`).toBeLessThanOrEqual(24);
+    expect(layout.wrapperPadding, `${label} ${layout.name} wrapper padding`).toEqual(['2px', '2px', '2px', '2px']);
+    expect(layout.wrapperBorder, `${label} ${layout.name} wrapper border`).toEqual(['0px', '0px', '0px', '0px']);
+    expect(layout.wrapperBackground, `${label} ${layout.name} wrapper background`).toBe('rgba(0, 0, 0, 0)');
+    expect(layout.wrapperShadow, `${label} ${layout.name} wrapper shadow`).toBe('none');
+    expect(layout.wrapperFlex, `${label} ${layout.name} wrapper flex`).toEqual(['0', '0', '28px']);
+    expect(layout.imageFit, `${label} ${layout.name} image fit`).toBe('contain');
+    expect(layout.imageFilter, `${label} ${layout.name} image filter`).toBe('none');
+    expect(layout.summaryHeight, `${label} ${layout.name} summary height`).toBeGreaterThanOrEqual(45);
+    expect(layout.summaryFits, `${label} ${layout.name} summary 不得擠壓箭頭`).toBe(true);
+    expect(layout.labelFits, `${label} ${layout.name} 文字不得截斷`).toBe(true);
+    expect(layout.arrowContent, `${label} ${layout.name} disclosure arrow`).toBe('⌄');
+  }
+  const labelOffsets = layouts.map(layout => layout.labelOffset);
+  expect(Math.max(...labelOffsets) - Math.min(...labelOffsets), `${label} 系列文字左緣`).toBeLessThanOrEqual(2);
+  await expectNoHorizontalOverflow(page, `${label} 系列 summary`);
+  return layouts;
 }
 
 async function openProfessionSidebarGroup(page, groupId) {
@@ -336,6 +414,77 @@ test('職業9枚在總覽與職業頁 hero 顯示', async ({ page }) => {
     await expect(hero).toBeVisible();
     await expect(hero).toHaveJSProperty('complete', true);
   }
+});
+
+test('見習職業系列 summary 使用官方圖標並保留單一 fallback', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案驗證 summary 圖標契約');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/#/home');
+  await waitForGuide(page);
+  await expect(page.locator('.sidebar summary[data-profession-series]')).toHaveCount(3);
+  await waitForIcons(page, professionSeriesImageSelector, 3);
+  await expectAccessibleDecorativeImages(page, professionSeriesImageSelector);
+
+  for (const [id, groupId, name] of professionSeriesEntries) {
+    const summary = page.locator(`summary[data-profession-series="${id}"]`);
+    const host = summary.locator(`[data-profession-series-host="${id}"]`);
+    const image = host.locator(`img[data-official-icon="${id}"]`);
+    await expect(summary).toContainText(name);
+    await expect(host.locator('.official-icon--profession-series')).toHaveCount(1);
+    await expect(image).toHaveCount(1);
+    await expect(image).toHaveAttribute('src', `assets/icons/profession-series/${groupId}.png`);
+    await expect(page.locator(`[data-profession-nav-group="${groupId}"]`)).not.toHaveAttribute('open', '');
+  }
+
+  await page.evaluate(() => {
+    window.FanatioIconPilot.patch();
+    window.FanatioIconPilot.patch();
+  });
+  await expect(page.locator(professionSeriesImageSelector)).toHaveCount(3);
+  const before = await expectProfessionSeriesDimensions(page, '桌面');
+
+  for (const appearance of ['light', 'dark']) {
+    await page.evaluate(value => window.FanatioThemeSystem.apply({ appearance: value, palette: 'forest', persist: false }), appearance);
+    await expect(page.locator('html')).toHaveAttribute('data-theme', appearance);
+    await expectProfessionSeriesDimensions(page, `${appearance} 桌面`);
+  }
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expectProfessionSeriesDimensions(page, 'reduced motion 桌面');
+
+  const warriorHost = page.locator('[data-profession-series-host="series-warrior"]');
+  await warriorHost.locator('img[data-official-icon="series-warrior"]').evaluate(image => image.dispatchEvent(new Event('error')));
+  await expect(warriorHost.locator('img')).toHaveCount(0);
+  await expect(warriorHost).toHaveText('⚔');
+  await expect(page.locator(professionSeriesImageSelector)).toHaveCount(2);
+  await page.locator('[data-profession-nav-group="warrior"] summary').click();
+  await expect(page.locator('[data-profession-nav-group="warrior"]')).toHaveAttribute('open', '');
+  const after = await readProfessionSeriesMetrics(page);
+  const beforeWarrior = before.find(item => item.id === 'series-warrior');
+  const afterWarrior = after.find(item => item.id === 'series-warrior');
+  expect(Math.abs(afterWarrior.summaryHeight - beforeWarrior.summaryHeight), '系列 fallback 前後列高').toBeLessThanOrEqual(1);
+  expect(Math.abs(afterWarrior.labelOffset - beforeWarrior.labelOffset), '系列 fallback 前後文字左緣').toBeLessThanOrEqual(1);
+  for (const series of before.filter(item => item.id !== 'series-warrior')) {
+    expect(after.find(item => item.id === series.id), `${series.name} 不得因單一 fallback 重排`).toEqual(series);
+  }
+});
+
+test('918px 與 390x844 抽屜維持見習職業系列圖標契約', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案模擬窄版抽屜');
+  await page.setViewportSize({ width: 918, height: 900 });
+  await page.goto('/#/home');
+  await waitForGuide(page);
+  await page.locator('#menu-button').click();
+  await expectProfessionSeriesDimensions(page, '918px');
+  const backdrop = page.locator('#drawer-backdrop');
+  const backdropBox = await backdrop.boundingBox();
+  await backdrop.click({ position: { x: backdropBox.width - 8, y: 80 } });
+  await expect(page.locator('body')).not.toHaveClass(/drawer-open/);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/#/home');
+  await waitForGuide(page);
+  await page.locator('#menu-button').click();
+  await expectProfessionSeriesDimensions(page, '390x844');
 });
 
 test('桌面側邊欄九職業使用 manifest 官方圖標且接線保持冪等', async ({ page }, testInfo) => {

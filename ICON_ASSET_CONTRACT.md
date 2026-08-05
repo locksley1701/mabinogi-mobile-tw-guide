@@ -43,6 +43,7 @@
 assets/
   icons/
     life-skills/
+    profession-series/
     professions/
     profession-skills/
     cooking/
@@ -62,6 +63,7 @@ assets/
 
 ```text
 assets/icons/life-skills/daily-gathering.png
+assets/icons/profession-series/warrior.png
 assets/icons/professions/swordsman.png
 assets/icons/profession-skills/swordmaster-steel-wedge.png
 assets/icons/cooking/fried-egg.png
@@ -230,13 +232,21 @@ JSON 以穩定英文 ID 綁定圖標：
 
 本批 12 枚圖標均使用既有本機核准的台版客戶端 PNG 輸出，不下載、不重新抽取，也不在公開 manifest 記錄私人素材路徑或內部別名。
 
+### 見習職業系列
+
+- `series-warrior`：見習戰士系
+- `series-archer`：見習弓手系
+- `series-thief`：見習盜賊系
+
+三枚系列圖標為側邊欄收合 summary 的獨立資產，不計入 documented professions，也不與一般職業圖標共用 SHA256。公開 manifest 僅保留穩定 ID、台版系列名稱、公開路徑、SHA256 與核准來源分類。
+
 ## 14. 自動驗證最低要求
 
 - JSON 內每個非空 `icon` 路徑都必須存在。
 - 試點 PNG 必須可讀取且具有透明通道。
 - 不允許提交原始封裝格式、完整截圖或私人資料夾內容。
 - 不允許兩個不同穩定 ID 意外綁定同一檔案，除非資料契約明確宣告共用。
-- 公開圖標 manifest 固定為生活技能 20、職業 9、職業技能 31、料理 4，共 64 枚唯一 SHA256 資產。
+- 公開圖標 manifest 固定為生活技能 20、見習職業系列 3、職業 9、職業技能 31、料理 4，共 67 枚唯一 SHA256 資產。
 - Issue #9 與 Issue #10 職業及技能必須維持正式 ID、正式名稱與 `professionId` 一對一綁定。
 - 公開圖標 manifest 不得包含內部別名、Windows 絕對路徑或私人素材庫識別字。
 - changelog 必須記錄試點導入。

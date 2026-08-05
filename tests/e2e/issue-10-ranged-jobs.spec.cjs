@@ -153,6 +153,10 @@ test('390×844 抽屜開啟後可選長弓兵，重新開啟時保持弓手系�
   await page.locator('#menu-button').click();
 
   const archerGroup = page.locator('[data-profession-nav-group="archer"]');
+  await expectLoadedIcon(
+    archerGroup.locator('summary img[data-official-icon="series-archer"]'),
+    'assets/icons/profession-series/archer.png'
+  );
   await archerGroup.locator('summary').click();
   await expect(archerGroup).toHaveAttribute('open', '');
   await expect(page.locator('[data-route="profession/longbowman"]')).toBeVisible();

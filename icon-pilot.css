@@ -95,6 +95,47 @@
   object-position: center;
 }
 
+.sidebar .profession-nav-group > summary > .profession-series-icon {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  flex: 0 0 28px;
+  color: var(--gold-400);
+  font-size: 1.05rem;
+}
+
+.sidebar .profession-nav-group > summary > .official-icon-source--profession-series {
+  color: transparent;
+}
+
+.sidebar .profession-nav-group > summary > .official-icon-source--profession-series > .official-icon--profession-series {
+  position: absolute;
+  inset: 0;
+  display: inline-grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  flex: 0 0 28px;
+  padding: 2px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.sidebar .profession-nav-group > summary > .official-icon-source--profession-series > .official-icon--profession-series > .official-icon__image {
+  inline-size: 24px;
+  block-size: 24px;
+  max-inline-size: 24px;
+  max-block-size: 24px;
+  object-fit: contain;
+  object-position: center;
+  filter: none;
+}
+
 .profession-hero .official-icon--hero {
   --official-icon-size: 88px;
   --official-icon-padding: 9px;

@@ -147,12 +147,14 @@ test('職業側邊欄依起始職業系列收合，保留原生鍵盤與世界�
     archer: ['archer', 'crossbowman', 'longbowman'],
     thief: ['thief', 'fighter', 'dual-blades']
   };
+  const seriesIds = { warrior: 'series-warrior', archer: 'series-archer', thief: 'series-thief' };
   const group = id => page.locator(`[data-profession-nav-group="${id}"]`);
   const links = id => group(id).locator('.nav-link[data-route^="profession/"]');
 
   await expect(page.locator('.nav-link[data-route="professions"]')).toBeVisible();
   for (const [id, professionIds] of Object.entries(groups)) {
     await expect(group(id).locator('summary')).toBeVisible();
+    await expect(group(id).locator('summary')).toHaveAttribute('data-profession-series', seriesIds[id]);
     await expect(group(id)).not.toHaveAttribute('open', '');
     await expect(links(id)).toHaveCount(3);
     for (const professionId of professionIds) await expect(page.locator(`[data-route="profession/${professionId}"]`)).toBeHidden();
