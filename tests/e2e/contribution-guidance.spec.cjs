@@ -143,7 +143,7 @@ test('未編纂職業卡片保存職業名稱並接到投稿頁', async ({ page 
   await expect(guidance).toContainText('台版職業技能情報');
 
   const pending = page.locator('.profession-card.is-contribution-entry');
-  await expect(pending).toHaveCount(9);
+  await expect(pending).toHaveCount(6);
   await expect(pending.first()).toHaveAttribute('href', '#/contribute');
   await expect(pending.first()).not.toHaveAttribute('aria-disabled', 'true');
   await expect(pending.first()).toHaveAttribute('aria-label', /提供.+台版職業技能情報/);

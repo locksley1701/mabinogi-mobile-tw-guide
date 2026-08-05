@@ -145,9 +145,10 @@ test('職業側邊欄依起始職業系列收合，保留原生鍵盤與世界�
   const groups = {
     warrior: ['warrior', 'greatsword-warrior', 'swordsman'],
     archer: ['archer', 'crossbowman', 'longbowman'],
-    thief: ['thief', 'fighter', 'dual-blades']
+    thief: ['thief', 'fighter', 'dual-blades'],
+    mage: ['mage', 'flame-mage', 'frost-mage']
   };
-  const seriesIds = { warrior: 'series-warrior', archer: 'series-archer', thief: 'series-thief' };
+  const seriesIds = { warrior: 'series-warrior', archer: 'series-archer', thief: 'series-thief', mage: 'series-mage' };
   const group = id => page.locator(`[data-profession-nav-group="${id}"]`);
   const links = id => group(id).locator('.nav-link[data-route^="profession/"]');
 
@@ -177,6 +178,9 @@ test('職業側邊欄依起始職業系列收合，保留原生鍵盤與世界�
   await group('thief').locator('summary').click();
   await expect(group('thief')).toHaveAttribute('open', '');
   await expect(group('archer')).not.toHaveAttribute('open', '');
+  await group('mage').locator('summary').click();
+  await expect(group('mage')).toHaveAttribute('open', '');
+  await expect(group('thief')).not.toHaveAttribute('open', '');
 
   await page.goto('/#/profession/crossbowman');
   await waitForGuide(page);
@@ -189,9 +193,16 @@ test('職業側邊欄依起始職業系列收合，保留原生鍵盤與世界�
   await expect(group('thief')).toHaveAttribute('open', '');
   await expect(group('archer')).not.toHaveAttribute('open', '');
 
+  await page.goto('/#/profession/mage');
+  await waitForGuide(page);
+  await expect(group('mage')).toHaveAttribute('open', '');
+  await expect(group('archer')).not.toHaveAttribute('open', '');
+  await expect(group('thief')).not.toHaveAttribute('open', '');
+  await expect(page.locator('[data-route="profession/mage"]')).toHaveClass(/is-active/);
+
   await page.goto('/#/professions');
   await waitForGuide(page);
-  await expect(group('thief')).toHaveAttribute('open', '');
+  await expect(group('mage')).toHaveAttribute('open', '');
 
   const adventure = page.locator('[data-content-module-nav]');
   await expect(adventure).not.toHaveAttribute('open', '');
