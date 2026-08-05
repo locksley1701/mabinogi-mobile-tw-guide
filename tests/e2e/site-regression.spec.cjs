@@ -138,6 +138,67 @@ test('手機抽屜可開啟、切換章節並自動關閉', async ({ page }, tes
   await expect(page.locator('#drawer-backdrop')).toBeHidden();
 });
 
+test('職業側邊欄依起始職業系列收合，保留原生鍵盤與世界模組 disclosure', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案驗證側邊欄收合行為');
+  await gotoRoute(page, 'home', '手札總覽');
+
+  const groups = {
+    warrior: ['warrior', 'greatsword-warrior', 'swordsman'],
+    archer: ['archer', 'crossbowman', 'longbowman'],
+    thief: ['thief', 'fighter', 'dual-blades']
+  };
+  const group = id => page.locator(`[data-profession-nav-group="${id}"]`);
+  const links = id => group(id).locator('.nav-link[data-route^="profession/"]');
+
+  await expect(page.locator('.nav-link[data-route="professions"]')).toBeVisible();
+  for (const [id, professionIds] of Object.entries(groups)) {
+    await expect(group(id).locator('summary')).toBeVisible();
+    await expect(group(id)).not.toHaveAttribute('open', '');
+    await expect(links(id)).toHaveCount(3);
+    for (const professionId of professionIds) await expect(page.locator(`[data-route="profession/${professionId}"]`)).toBeHidden();
+  }
+
+  await page.locator('.nav-link[data-route="professions"]').focus();
+  await page.keyboard.press('Tab');
+  await expect(group('warrior').locator('summary')).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(group('warrior')).toHaveAttribute('open', '');
+  for (const professionId of groups.warrior) await expect(page.locator(`[data-route="profession/${professionId}"]`)).toBeVisible();
+  await page.keyboard.press('Space');
+  await expect(group('warrior')).not.toHaveAttribute('open', '');
+  await page.keyboard.press('Enter');
+  await expect(group('warrior')).toHaveAttribute('open', '');
+
+  await group('archer').locator('summary').click();
+  await expect(group('archer')).toHaveAttribute('open', '');
+  await expect(group('warrior')).not.toHaveAttribute('open', '');
+  await group('thief').locator('summary').click();
+  await expect(group('thief')).toHaveAttribute('open', '');
+  await expect(group('archer')).not.toHaveAttribute('open', '');
+
+  await page.goto('/#/profession/crossbowman');
+  await waitForGuide(page);
+  await expect(group('archer')).toHaveAttribute('open', '');
+  await expect(group('warrior')).not.toHaveAttribute('open', '');
+  await expect(group('thief')).not.toHaveAttribute('open', '');
+  await expect(page.locator('[data-route="profession/crossbowman"]')).toHaveClass(/is-active/);
+  await page.goto('/#/profession/fighter');
+  await waitForGuide(page);
+  await expect(group('thief')).toHaveAttribute('open', '');
+  await expect(group('archer')).not.toHaveAttribute('open', '');
+
+  await page.goto('/#/professions');
+  await waitForGuide(page);
+  await expect(group('thief')).toHaveAttribute('open', '');
+
+  const adventure = page.locator('[data-content-module-nav]');
+  await expect(adventure).not.toHaveAttribute('open', '');
+  await adventure.locator('summary').click();
+  await expect(adventure).toHaveAttribute('open', '');
+  await adventure.locator('summary').click();
+  await expect(adventure).not.toHaveAttribute('open', '');
+});
+
 test('料理側邊欄篩選可切換到 Lv.15 並顯示 4 筆', async ({ page }, testInfo) => {
   await gotoRoute(page, 'cooking', '料理手札');
   const filter = page.locator('#cooking-sidebar-filter');

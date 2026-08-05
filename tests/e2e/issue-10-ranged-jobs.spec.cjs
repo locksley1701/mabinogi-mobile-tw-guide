@@ -145,3 +145,28 @@ test('390×844、亮暗主題與 reduced motion 下維持可閱讀的 ranged job
     await expect(page.locator('.profession-skill__identity strong', { hasText: '擴散弩箭' })).toBeVisible();
   }
 });
+
+test('390×844 抽屜開啟後可選長弓兵，重新開啟時保持弓手系展開', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chrome', '固定 viewport 案例只需執行一次');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openRoute(page, 'home');
+  await page.locator('#menu-button').click();
+
+  const archerGroup = page.locator('[data-profession-nav-group="archer"]');
+  await archerGroup.locator('summary').click();
+  await expect(archerGroup).toHaveAttribute('open', '');
+  await expect(page.locator('[data-route="profession/longbowman"]')).toBeVisible();
+  await page.locator('[data-route="profession/longbowman"]').click();
+  await expect(page).toHaveURL(/#\/profession\/longbowman$/);
+  await expect(page.locator('body')).not.toHaveClass(/drawer-open/);
+
+  await page.locator('#menu-button').click();
+  await expect(archerGroup).toHaveAttribute('open', '');
+  await expect(page.locator('[data-route="profession/longbowman"]')).toHaveClass(/is-active/);
+  const scroll = await page.locator('#sidebar').evaluate(sidebar => {
+    sidebar.scrollTop = sidebar.scrollHeight;
+    return sidebar.scrollHeight - sidebar.clientHeight - sidebar.scrollTop <= 1;
+  });
+  expect(scroll).toBe(true);
+  await expectNoHorizontalOverflow(page);
+});

@@ -12,7 +12,14 @@ const professionSidebarEntries = [
   ['dual-blades', '雙刀客', '⚔']
 ];
 
+const professionSidebarGroups = [
+  ['warrior', ['warrior', 'greatsword-warrior', 'swordsman']],
+  ['archer', ['archer', 'crossbowman', 'longbowman']],
+  ['thief', ['thief', 'fighter', 'dual-blades']]
+];
+
 const professionSidebarImageSelector = '.sidebar .nav-link[data-route^="profession/"] > span[aria-hidden="true"] > .official-icon--sidebar > img[data-official-icon]';
+const professionSidebarImageSelectorForGroup = groupId => `.sidebar [data-profession-nav-group="${groupId}"] .nav-link[data-route^="profession/"] > span[aria-hidden="true"] > .official-icon--sidebar > img[data-official-icon]`;
 
 function normalizeDomRectPixels(value) {
   return Math.round(value * 1000) / 1000;
@@ -135,10 +142,20 @@ async function expectNoHorizontalOverflow(page, label) {
   expect(widths.body, `${label}: body 水平溢位`).toBeLessThanOrEqual(widths.client + 1);
 }
 
-async function expectProfessionSidebarDimensions(page, label) {
+async function openProfessionSidebarGroup(page, groupId) {
+  const group = page.locator(`[data-profession-nav-group="${groupId}"]`);
+  if (!(await group.evaluate(element => element.open))) await group.locator('summary').click();
+  await expect(group).toHaveAttribute('open', '');
   await waitForSidebarLayoutStable(page);
-  const links = page.locator('.sidebar .nav-link[data-route^="profession/"]');
-  await expect(links).toHaveCount(professionSidebarEntries.length);
+  return group;
+}
+
+async function expectProfessionSidebarDimensions(page, label, groupId) {
+  await waitForSidebarLayoutStable(page);
+  const entryIds = professionSidebarGroups.find(([id]) => id === groupId)?.[1] || [];
+  const entries = entryIds.map(id => professionSidebarEntries.find(([entryId]) => entryId === id));
+  const links = page.locator(`[data-profession-nav-group="${groupId}"] .nav-link[data-route^="profession/"]`);
+  await expect(links).toHaveCount(entries.length);
   const layouts = await links.evaluateAll((elements, entries) => {
     const entryById = new Map(entries.map(([id, name, fallback]) => [id, {name, fallback}]));
     const references = elements.map(element => {
@@ -207,9 +224,9 @@ async function expectProfessionSidebarDimensions(page, label) {
     } finally {
       references.forEach(reference => reference.remove());
     }
-  }, professionSidebarEntries);
+  }, entries);
 
-  expect(layouts.map(layout => layout.id)).toEqual(professionSidebarEntries.map(([id]) => id));
+  expect(layouts.map(layout => layout.id)).toEqual(entries.map(([id]) => id));
   for (const layout of layouts) {
     const name = layout.name;
     expect(Math.abs(layout.rowHeight - layout.fallbackHeight), `${label} ${name} 列高`).toBeLessThanOrEqual(1);
@@ -244,7 +261,7 @@ async function expectProfessionSidebarDimensions(page, label) {
   }
 
   const labelOffsets = layouts.map(layout => layout.labelOffset);
-  expect(Math.max(...labelOffsets) - Math.min(...labelOffsets), `${label} 七列文字相對左緣`).toBeLessThanOrEqual(2);
+  expect(Math.max(...labelOffsets) - Math.min(...labelOffsets), `${label} ${groupId} 文字相對左緣`).toBeLessThanOrEqual(2);
   const sidebarWidths = await page.locator('#sidebar').evaluate(sidebar => ({
     scrollWidth: sidebar.scrollWidth,
     clientWidth: sidebar.clientWidth
@@ -253,8 +270,8 @@ async function expectProfessionSidebarDimensions(page, label) {
   return layouts;
 }
 
-async function readProfessionSidebarMetrics(page) {
-  return page.locator('.sidebar .nav-link[data-route^="profession/"]').evaluateAll(links => links.map(link => {
+async function readProfessionSidebarMetrics(page, groupId) {
+  return page.locator(`[data-profession-nav-group="${groupId}"] .nav-link[data-route^="profession/"]`).evaluateAll(links => links.map(link => {
     const id = link.dataset.route.split('/')[1];
     const label = link.querySelector(':scope > b');
     const wrapper = link.querySelector('.official-icon--sidebar');
@@ -330,9 +347,9 @@ test('桌面側邊欄九職業使用 manifest 官方圖標且接線保持冪等'
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#/home');
   await waitForGuide(page);
-  await waitForIcons(page, professionSidebarImageSelector, 9);
   await expectAccessibleDecorativeImages(page, professionSidebarImageSelector);
 
+  await expect(page.locator('[data-profession-nav-group]')).toHaveCount(3);
   for (const [id, name] of professionSidebarEntries) {
     const link = page.locator(`.sidebar .nav-link[data-route="profession/${id}"]`);
     const host = link.locator(':scope > span[aria-hidden="true"]');
@@ -340,7 +357,7 @@ test('桌面側邊欄九職業使用 manifest 官方圖標且接線保持冪等'
     await expect(link).toHaveAttribute('href', `#/profession/${id}`);
     await expect(link).toHaveAttribute('data-route', `profession/${id}`);
     await expect(link.locator(':scope > b')).toHaveText(name);
-    await expect(link.locator(':scope > b')).toBeVisible();
+    await expect(link.locator(':scope > b')).toBeHidden();
     await expect(image).toHaveCount(1);
     await expect(image).toHaveAttribute('src', `assets/icons/professions/${id}.png`);
     await expect(host.locator(':scope > .official-icon--sidebar')).toHaveCount(1);
@@ -355,7 +372,11 @@ test('桌面側邊欄九職業使用 manifest 官方圖標且接線保持冪等'
   for (const [id] of professionSidebarEntries) {
     await expect(page.locator(`.sidebar .nav-link[data-route="profession/${id}"] img[data-official-icon]`)).toHaveCount(1);
   }
-  await expectProfessionSidebarDimensions(page, '桌面');
+  for (const [groupId] of professionSidebarGroups) {
+    await openProfessionSidebarGroup(page, groupId);
+    await waitForIcons(page, professionSidebarImageSelectorForGroup(groupId), 3);
+    await expectProfessionSidebarDimensions(page, '桌面', groupId);
+  }
   await expectNoHorizontalOverflow(page, '桌面側邊欄職業圖標');
 });
 
@@ -367,15 +388,16 @@ test('918px 抽屜維持九職業圖標、導航與重新開啟不重複', async
   await page.locator('#menu-button').click();
   await expect(page.locator('#sidebar')).toHaveAttribute('aria-hidden', 'false');
   await waitForSidebarLayoutStable(page);
-  await waitForIcons(page, professionSidebarImageSelector, 9);
 
   for (const [id, name] of professionSidebarEntries) {
     const link = page.locator(`.sidebar .nav-link[data-route="profession/${id}"]`);
-    await expect(link).toBeVisible();
+    await expect(link).toBeHidden();
     await expect(link.locator(':scope > b')).toHaveText(name);
   }
-  await expectProfessionSidebarDimensions(page, '918px');
-  const inactiveMetrics = await readProfessionSidebarMetrics(page);
+  await openProfessionSidebarGroup(page, 'thief');
+  await waitForIcons(page, professionSidebarImageSelectorForGroup('thief'), 3);
+  await expectProfessionSidebarDimensions(page, '918px', 'thief');
+  const inactiveMetrics = await readProfessionSidebarMetrics(page, 'thief');
 
   await page.locator('.sidebar .nav-link[data-route="profession/thief"]').click();
   await expect(page).toHaveURL(/#\/profession\/thief$/);
@@ -384,12 +406,13 @@ test('918px 抽屜維持九職業圖標、導航與重新開啟不重複', async
   await page.locator('#menu-button').click();
   await waitForSidebarLayoutStable(page);
   await expect(page.locator('.sidebar .nav-link[data-route="profession/thief"]')).toHaveClass(/is-active/);
+  await expect(page.locator('[data-profession-nav-group="thief"]')).toHaveAttribute('open', '');
   await expect(page.locator(professionSidebarImageSelector)).toHaveCount(9);
   for (const [id] of professionSidebarEntries) {
     await expect(page.locator(`.sidebar .nav-link[data-route="profession/${id}"] img[data-official-icon]`)).toHaveCount(1);
   }
-  await expectProfessionSidebarDimensions(page, '918px active');
-  const activeMetrics = await readProfessionSidebarMetrics(page);
+  await expectProfessionSidebarDimensions(page, '918px active', 'thief');
+  const activeMetrics = await readProfessionSidebarMetrics(page, 'thief');
   const inactiveThief = inactiveMetrics.find(item => item.id === 'thief');
   const activeThief = activeMetrics.find(item => item.id === 'thief');
   expect(Math.abs(activeThief.linkHeight - inactiveThief.linkHeight), 'active／inactive 列高').toBeLessThanOrEqual(1);
@@ -403,15 +426,17 @@ test('390x844 手機側欄可捲到底且職業圖標不壓縮文字', async ({ 
   await waitForGuide(page);
   await page.locator('#menu-button').click();
   await waitForSidebarLayoutStable(page);
-  await waitForIcons(page, professionSidebarImageSelector, 9);
 
   for (const [id, name] of professionSidebarEntries) {
     const link = page.locator(`.sidebar .nav-link[data-route="profession/${id}"]`);
+    await expect(link).toBeHidden();
     await expect(link.locator(':scope > b')).toHaveText(name);
-    const labelFits = await link.locator(':scope > b').evaluate(label => label.scrollWidth <= label.clientWidth + 1);
-    expect(labelFits, `${name} 不應被圖標壓縮或截斷`).toBe(true);
   }
-  await expectProfessionSidebarDimensions(page, '390x844');
+  for (const [groupId] of professionSidebarGroups) {
+    await openProfessionSidebarGroup(page, groupId);
+    await waitForIcons(page, professionSidebarImageSelectorForGroup(groupId), 3);
+    await expectProfessionSidebarDimensions(page, '390x844', groupId);
+  }
 
   const scroll = await page.locator('#sidebar').evaluate(sidebar => {
     sidebar.scrollTop = sidebar.scrollHeight;
@@ -441,8 +466,9 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   });
   await page.goto('/#/home');
   await waitForGuide(page);
-  await waitForIcons(page, professionSidebarImageSelector, 9);
-  const before = await readProfessionSidebarMetrics(page);
+  await openProfessionSidebarGroup(page, 'thief');
+  await waitForIcons(page, professionSidebarImageSelectorForGroup('thief'), 3);
+  const before = await readProfessionSidebarMetrics(page, 'thief');
 
   const link = page.locator('.sidebar .nav-link[data-route="profession/thief"]');
   const host = link.locator(':scope > span[aria-hidden="true"]');
@@ -452,7 +478,7 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   await expect(host.locator('img')).toHaveCount(0);
   await expect(host).toHaveText('◈');
   await expect(page.locator(professionSidebarImageSelector)).toHaveCount(8);
-  const after = await readProfessionSidebarMetrics(page);
+  const after = await readProfessionSidebarMetrics(page, 'thief');
   const beforeThief = before.find(item => item.id === 'thief');
   const afterThief = after.find(item => item.id === 'thief');
   expect(Math.abs(afterThief.linkHeight - beforeThief.linkHeight), 'fallback 前後列高').toBeLessThanOrEqual(1);

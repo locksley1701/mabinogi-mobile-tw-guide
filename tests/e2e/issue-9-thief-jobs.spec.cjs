@@ -252,6 +252,9 @@ test('918px 抽屜可抵達三個新職業且頁面無水平溢位', async ({ pa
 
   for (const job of jobs) {
     await page.locator('#menu-button').click();
+    const thiefGroup = page.locator('[data-profession-nav-group="thief"]');
+    if (!(await thiefGroup.evaluate(element => element.open))) await thiefGroup.locator('summary').click();
+    await expect(thiefGroup).toHaveAttribute('open', '');
     const link = page.locator(`.nav-link[data-route="profession/${job.id}"]`);
     await expect(link).toBeVisible();
     await link.click();

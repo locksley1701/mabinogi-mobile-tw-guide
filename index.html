@@ -51,15 +51,24 @@
 
         <p class="nav-label">戰鬥與職業</p>
         <a class="nav-link" href="#/professions" data-route="professions"><span aria-hidden="true">⚔</span><b>職業總覽</b></a>
-        <a class="nav-link nav-link--sub" href="#/profession/swordsman" data-route="profession/swordsman"><span aria-hidden="true">◇</span><b>劍術士</b></a>
-        <a class="nav-link nav-link--sub" href="#/profession/greatsword-warrior" data-route="profession/greatsword-warrior"><span aria-hidden="true">◆</span><b>大劍戰士</b></a>
-        <a class="nav-link nav-link--sub" href="#/profession/warrior" data-route="profession/warrior"><span aria-hidden="true">⬡</span><b>戰士</b></a>
-        <a class="nav-link nav-link--sub" href="#/profession/archer" data-route="profession/archer"><span aria-hidden="true">⌁</span><b>弓手</b></a>
-        <a class="nav-link nav-link--sub" href="#/profession/longbowman" data-route="profession/longbowman"><span aria-hidden="true">⌁</span><b>長弓兵</b></a>
-        <a class="nav-link nav-link--sub" href="#/profession/crossbowman" data-route="profession/crossbowman"><span aria-hidden="true">⌁</span><b>弩手</b></a>
-        <a class="nav-link nav-link--sub" href="#/profession/thief" data-route="profession/thief"><span aria-hidden="true">◈</span><b>盜賊</b></a>
-        <a class="nav-link nav-link--sub" href="#/profession/fighter" data-route="profession/fighter"><span aria-hidden="true">✊</span><b>格鬥家</b></a>
-        <a class="nav-link nav-link--sub" href="#/profession/dual-blades" data-route="profession/dual-blades"><span aria-hidden="true">⚔</span><b>雙刀客</b></a>
+        <details class="nav-disclosure profession-nav-group" data-profession-nav-group="warrior">
+          <summary data-group-symbol="⚔">見習戰士系</summary>
+          <a class="nav-link nav-link--sub" href="#/profession/warrior" data-route="profession/warrior"><span aria-hidden="true">⬡</span><b>戰士</b></a>
+          <a class="nav-link nav-link--sub" href="#/profession/greatsword-warrior" data-route="profession/greatsword-warrior"><span aria-hidden="true">◆</span><b>大劍戰士</b></a>
+          <a class="nav-link nav-link--sub" href="#/profession/swordsman" data-route="profession/swordsman"><span aria-hidden="true">◇</span><b>劍術士</b></a>
+        </details>
+        <details class="nav-disclosure profession-nav-group" data-profession-nav-group="archer">
+          <summary data-group-symbol="⌁">見習弓手系</summary>
+          <a class="nav-link nav-link--sub" href="#/profession/archer" data-route="profession/archer"><span aria-hidden="true">⌁</span><b>弓手</b></a>
+          <a class="nav-link nav-link--sub" href="#/profession/crossbowman" data-route="profession/crossbowman"><span aria-hidden="true">⌁</span><b>弩手</b></a>
+          <a class="nav-link nav-link--sub" href="#/profession/longbowman" data-route="profession/longbowman"><span aria-hidden="true">⌁</span><b>長弓兵</b></a>
+        </details>
+        <details class="nav-disclosure profession-nav-group" data-profession-nav-group="thief">
+          <summary data-group-symbol="◈">見習盜賊系</summary>
+          <a class="nav-link nav-link--sub" href="#/profession/thief" data-route="profession/thief"><span aria-hidden="true">◈</span><b>盜賊</b></a>
+          <a class="nav-link nav-link--sub" href="#/profession/fighter" data-route="profession/fighter"><span aria-hidden="true">✊</span><b>格鬥家</b></a>
+          <a class="nav-link nav-link--sub" href="#/profession/dual-blades" data-route="profession/dual-blades"><span aria-hidden="true">⚔</span><b>雙刀客</b></a>
+        </details>
 
         <p class="nav-label">世界與冒險</p>
         <details class="nav-disclosure" data-content-module-nav>

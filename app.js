@@ -118,6 +118,14 @@ function setActiveNav(route) {
   });
 }
 
+function syncProfessionNavGroups(route = getRoute()) {
+  if (!route.startsWith('profession/')) return;
+  const groups = [...document.querySelectorAll('[data-profession-nav-group]')];
+  const activeGroup = groups.find(group => group.querySelector(`.nav-link[data-route="${route}"]`));
+  if (!activeGroup) return;
+  groups.forEach(group => { group.open = group === activeGroup; });
+}
+
 function getRoute() {
   return location.hash.replace(/^#\/?/, '') || 'home';
 }
@@ -144,6 +152,7 @@ function closeDrawer() {
 }
 
 function openDrawer() {
+  syncProfessionNavGroups(getRoute());
   document.body.classList.add('drawer-open');
   document.querySelector('#drawer-backdrop').hidden = false;
   document.querySelector('#menu-button').setAttribute('aria-expanded', 'true');
@@ -455,6 +464,7 @@ function renderContribute() {
 function renderRoute() {
   const route = getRoute();
   setActiveNav(route);
+  syncProfessionNavGroups(route);
   if (route.startsWith('profession/')) renderProfession(route.split('/')[1]);
   else {
     setTopbar(route);
@@ -493,6 +503,12 @@ function setupInteractions() {
   });
   document.querySelector('#drawer-backdrop').addEventListener('click', closeDrawer);
   document.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', closeDrawer));
+  const professionGroups = [...document.querySelectorAll('[data-profession-nav-group]')];
+  professionGroups.forEach(group => group.addEventListener('toggle', () => {
+    if (group.open) professionGroups.forEach(other => {
+      if (other !== group) other.open = false;
+    });
+  }));
   document.querySelector('#theme-toggle').addEventListener('click', toggleTheme);
   document.querySelector('#top-theme-toggle').addEventListener('click', toggleTheme);
   document.querySelector('#top-search-button').addEventListener('click', () => navigate('search'));
