@@ -238,20 +238,48 @@ JSON 以穩定英文 ID 綁定圖標：
 - `series-archer`：見習弓手系
 - `series-thief`：見習盜賊系
 
-三枚系列圖標為側邊欄收合 summary 的獨立資產，不計入 documented professions，也不與一般職業圖標共用 SHA256。公開 manifest 僅保留穩定 ID、台版系列名稱、公開路徑、SHA256 與核准來源分類。
+四枚系列圖標為側邊欄收合 summary 資產，不計入 documented professions。`series-mage` 以 `sharedWith: "mage"` 明確宣告與魔法師共用同一路徑及 SHA256；其餘系列圖標均為獨立資產。公開 manifest 僅保留穩定 ID、台版系列名稱、公開路徑、SHA256 與核准來源分類。
 
-## 14. 自動驗證最低要求
+## 14. Issue #10 魔法師、火焰術士與冰霜術士圖標清單
+
+### 職業
+
+- `mage`：魔法師
+- `flame-mage`：火焰術士
+- `frost-mage`：冰霜術士
+
+### 職業技能
+
+- `mage-ice-dagger`：冰晶匕首
+- `mage-lightning`：雷電
+- `mage-mana-storm`：魔力風暴
+- `mage-meteor-strike`：流星打擊
+- `mage-telekinesis`：念動力
+- `flame-mage-fire-storm`：火焰風暴
+- `flame-mage-flame-cannon`：烈焰火炮
+- `flame-mage-flash-over`：閃燃
+- `flame-mage-ignite`：爆炸
+- `flame-mage-rapid-fire`：疾火連彈
+- `frost-mage-crystal-edge`：水晶之刃
+- `frost-mage-freezing-field`：冰封領域
+- `frost-mage-frozen-orb`：霜凍法球
+- `frost-mage-ice-spike`：冰棘
+- `frost-mage-split-slash`：冰川裂刃
+
+本批 18 枚職業與技能圖標使用既有本機核准的台版客戶端 PNG 輸出，不下載、不重新抽取。公開資料、穩定檔名與 runtime 不記錄內部素材變體或拼法。
+
+## 15. 自動驗證最低要求
 
 - JSON 內每個非空 `icon` 路徑都必須存在。
 - 試點 PNG 必須可讀取且具有透明通道。
 - 不允許提交原始封裝格式、完整截圖或私人資料夾內容。
 - 不允許兩個不同穩定 ID 意外綁定同一檔案，除非資料契約明確宣告共用。
-- 公開圖標 manifest 固定為生活技能 20、見習職業系列 3、職業 9、職業技能 31、料理 4，共 67 枚唯一 SHA256 資產。
+- 公開圖標 manifest 固定為生活技能 20、見習職業系列 4、職業 12、職業技能 46、料理 4，共 86 筆紀錄與 85 枚唯一 SHA256 資產；唯一允許的共用是 `series-mage` 與 `mage`。
 - Issue #9 與 Issue #10 職業及技能必須維持正式 ID、正式名稱與 `professionId` 一對一綁定。
 - 公開圖標 manifest 不得包含內部別名、Windows 絕對路徑或私人素材庫識別字。
 - changelog 必須記錄試點導入。
 
-## 15. 完成定義
+## 16. 完成定義
 
 Issue #7 僅在下列條件全部成立時完成：
 

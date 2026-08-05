@@ -1023,5 +1023,71 @@
       }
     ],
     "passive": []
+  },
+  "mage": {
+    "id": "mage",
+    "name": "魔法師",
+    "clientJobId": "HighMage",
+    "series": "魔法師",
+    "routeSlug": "mage",
+    "description": "運用冰晶、雷電與魔力操控戰場的職業。依已確認技能內容整理，能以元素攻擊與念動力在不同距離牽制敵人。",
+    "summaryBasis": "derived_from_verified_skills",
+    "preferredEquipment": null,
+    "preferredEquipmentStatus": "pending_verified_source",
+    "status": "tw-confirmed",
+    "source": "台版遊戲內容",
+    "contributor": "法那提歐",
+    "active": [
+      {"order": 1, "clientSkillId": "IceDagger", "name": "冰晶匕首", "tags": ["連擊", "元素", "干擾"], "description": "召喚冰霜碎片進行攻擊的寒氣魔法。召喚六片旋轉的冰霜碎片，以鋒利冰刃橫掃周圍敵人後，依序向周圍敵人發射，造成寒氣傷害並使其減速。當敵人有多名時，冰霜碎片會分散發射。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": [{"label": "冰霜碎片數量", "value": "6 片"}]},
+      {"order": 2, "clientSkillId": "Lightning", "name": "雷電", "tags": ["元素", "干擾"], "description": "在周圍連鎖猛烈擴散的閃電魔法。噴出會傳遞至敵人的強力閃電鏈；被擊中的敵人會受到持續傷害「觸電」。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": []},
+      {"order": 3, "clientSkillId": "ManaStorm", "name": "魔力風暴", "tags": ["生存", "輔助"], "description": "引發猛烈魔力風暴保護自己的魔法。加速循環的魔力，引發將周圍敵人擊退的風暴。施展期間會恢復魔力，並使魔力風暴以外技能的冷卻恢復速度提高，同時獲得減少所受傷害的魔力護甲。魔力護甲在再次使用技能或受到破防傷害時結束，並造成範圍傷害向後方移動。使用技能時也會啟動一次元素和諧。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": []},
+      {"order": 4, "clientSkillId": "MeteorStrike", "name": "流星打擊", "tags": ["強擊", "元素", "召喚"], "description": "從天空召喚巨大隕石，將大範圍區域化為火海的強力魔法。隕石撞擊瞬間引發大爆炸，對周圍敵人造成範圍傷害並擊倒，同時造成週期性傷害。此外會生成對周圍敵人造成持續傷害的火焰地帶。", "presentationMode": "corrected_alias", "status": "tw-confirmed", "dataStatus": "verified_corrected_name", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": [{"label": "破防傷害", "value": "1 格"}, {"label": "火焰地帶傷害次數", "value": "6 次"}, {"label": "火焰地帶範圍", "value": "5 m"}, {"label": "火焰地帶持續時間", "value": "6 秒"}, {"label": "最大疊層數", "value": "2"}]},
+      {"order": 5, "clientSkillId": "Telekinesis", "name": "念動力", "tags": ["連擊", "干擾"], "description": "擊退近身敵人並發射岩石的重力魔法。產生無形的魔力衝擊，立即擊退大量敵人，同時連續如狂風般發射大量岩石碎片。攻擊處於破防狀態的敵人時，會造成更大傷害。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": [{"label": "岩石碎片數量", "value": "8 個"}]}
+    ],
+    "passive": []
+  },
+  "flame-mage": {
+    "id": "flame-mage",
+    "name": "火焰術士",
+    "clientJobId": "FireMage",
+    "series": "魔法師",
+    "routeSlug": "flame-mage",
+    "description": "專注運用火焰魔法進攻的職業。依已確認技能內容整理，可透過持續火焰與爆發性攻擊壓制敵人。",
+    "summaryBasis": "derived_from_verified_skills",
+    "preferredEquipment": null,
+    "preferredEquipmentStatus": "pending_verified_source",
+    "status": "tw-confirmed",
+    "source": "台版遊戲內容",
+    "contributor": "法那提歐",
+    "active": [
+      {"order": 1, "clientSkillId": "FireStorm", "name": "火焰風暴", "tags": ["連擊", "元素", "干擾"], "description": "引發猛烈火焰漩渦的火焰魔法。火焰漩渦會在一定時間內吸引周圍敵人並將其高高拋起，持續造成傷害。被捲入的敵人會受到固有持續傷害「灼熱」。火焰漩渦消散時會引發大規模爆炸，並在周圍生成多處火焰。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": [{"label": "攻擊次數", "value": "10 次"}, {"label": "破防傷害", "value": "1 格"}, {"label": "持續時間", "value": "5 秒"}, {"label": "吸引範圍", "value": "4 m"}, {"label": "範圍", "value": "2 m"}]},
+      {"order": 2, "clientSkillId": "FlameCannon", "name": "烈焰火炮", "tags": ["元素", "干擾"], "description": "以熊熊燃燒的巨大火焰球焚燒前方的火焰魔法。火焰球會對敵人留下固有持續傷害「灼熱」與弱化效果「烙印」。烙印會造成持續傷害，並使敵人受到火焰術士攻擊時承受更大傷害。技能會依燃燒之魂的階段強化為爆裂火砲。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": [{"label": "擊退距離", "value": "6 m"}, {"label": "最大疊層數", "value": "2"}, {"label": "範圍", "value": "10 m"}]},
+      {"order": 3, "clientSkillId": "FlashOver", "name": "閃燃", "tags": ["連擊", "元素"], "description": "以燃燒的魔力環包圍自身的火焰魔法。一定時間內恢復體力並生成熱氣，以廣域火焰波動對周圍敵人造成傷害，並留下固有持續傷害「灼熱」。", "presentationMode": "corrected_alias", "status": "tw-confirmed", "dataStatus": "verified_corrected_name", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": [{"label": "效果觸發間隔", "value": "2 秒"}, {"label": "範圍", "value": "10 m"}]},
+      {"order": 4, "clientSkillId": "Ignite", "name": "爆炸", "tags": ["強擊", "連擊", "元素"], "description": "一口氣引爆周圍散布火花的火焰魔法精髓。消耗全部熱氣，使受到固有持續傷害「灼熱」的敵人與周圍火焰爆炸，造成廣域傷害。爆炸威力會依消耗的熱氣量增加。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": [{"label": "範圍", "value": "4 m"}]},
+      {"order": 5, "clientSkillId": "RapidFire", "name": "疾火連彈", "tags": ["連擊", "元素"], "description": "連續射出傾盆而下小型火焰球的火焰魔法。隨機發射三至五顆火焰球，對多名敵人造成傷害並賦予固有持續傷害「灼熱」。以其他技能引發爆炸時，冷卻時間會重置，並能限定一次更快速地發射五顆火焰球。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": [{"label": "火焰球發射數", "value": "3～5 顆"}]}
+    ],
+    "passive": []
+  },
+  "frost-mage": {
+    "id": "frost-mage",
+    "name": "冰霜術士",
+    "clientJobId": "IceMage",
+    "series": "魔法師",
+    "routeSlug": "frost-mage",
+    "description": "專注運用冰霜魔法控制戰場的職業。依已確認技能內容整理，可用冰晶、冰封與法球牽制敵人。",
+    "summaryBasis": "derived_from_verified_skills",
+    "preferredEquipment": null,
+    "preferredEquipmentStatus": "pending_verified_source",
+    "status": "tw-confirmed",
+    "source": "台版遊戲內容",
+    "contributor": "法那提歐",
+    "active": [
+      {"order": 1, "clientSkillId": "CrystalEdge", "name": "水晶之刃", "tags": ["元素", "強擊"], "description": "猛烈揮舞冰霜之劍的冰封魔法。以瞬間凍結的寒風攻擊前方敵人。一定時間內最多可重複使用三次，每次重複使用時，技能傷害與命中時的冰霜生成量都會增加。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": [{"label": "可重複使用次數", "value": "最多 3 次"}]},
+      {"order": 2, "clientSkillId": "FreezingField", "name": "冰封領域", "tags": ["元素", "生存", "召喚"], "description": "急速凍結地面，生成冰封地帶的冰封魔法。在冰封地帶內，自身移動速度增加，受到的傷害減少。敵人的移動速度則會降低、受到的傷害增加，並週期性承受寒氣傷害。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": []},
+      {"order": 3, "clientSkillId": "FrozenOrb", "name": "霜凍法球", "tags": ["元素", "召喚"], "description": "掀起猛烈寒氣風暴的劍與球體結合魔法。以狂亂冰刃造成持續範圍傷害，並從被擊中的敵人身上生成冰霜。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": [{"label": "持續傷害間隔", "value": "0.5 秒"}]},
+      {"order": 4, "clientSkillId": "IceSpike", "name": "冰棘", "tags": ["元素", "生存", "輔助"], "description": "披掛布滿尖刺冰霜護盾的防禦魔法。護盾會吸收一定量的傷害，並獲得以凍結尖刺反擊攻擊者的強化效果「冰棘」。效果期間攻擊力增加，效果結束時尖刺會爆炸並造成範圍傷害。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": []},
+      {"order": 5, "clientSkillId": "SplitSlash", "name": "冰川裂刃", "tags": ["強擊", "干擾"], "description": "揮舞兩把冰霜之劍進行攻擊的冰封魔法。攻擊寒氣軌跡上的所有敵人，挑釁並使其凍結。", "presentationMode": "direct", "status": "tw-confirmed", "dataStatus": "verified_client_text", "numericValuesStatus": "pending_resolution", "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。", "stats": [{"label": "破防傷害", "value": "1 格"}]}
+    ],
+    "passive": []
   }
 }

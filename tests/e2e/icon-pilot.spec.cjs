@@ -9,19 +9,24 @@ const professionSidebarEntries = [
   ['crossbowman', '弩手', '⌁'],
   ['thief', '盜賊', '◈'],
   ['fighter', '格鬥家', '✊'],
-  ['dual-blades', '雙刀客', '⚔']
+  ['dual-blades', '雙刀客', '⚔'],
+  ['mage', '魔法師', '✧'],
+  ['flame-mage', '火焰術士', '◆'],
+  ['frost-mage', '冰霜術士', '❄']
 ];
 
 const professionSidebarGroups = [
   ['warrior', ['warrior', 'greatsword-warrior', 'swordsman']],
   ['archer', ['archer', 'crossbowman', 'longbowman']],
-  ['thief', ['thief', 'fighter', 'dual-blades']]
+  ['thief', ['thief', 'fighter', 'dual-blades']],
+  ['mage', ['mage', 'flame-mage', 'frost-mage']]
 ];
 
 const professionSeriesEntries = [
   ['series-warrior', 'warrior', '見習戰士系', '⚔'],
   ['series-archer', 'archer', '見習弓手系', '⌁'],
-  ['series-thief', 'thief', '見習盜賊系', '◈']
+  ['series-thief', 'thief', '見習盜賊系', '◈'],
+  ['series-mage', 'mage', '見習魔法師系', '✧', 'assets/icons/professions/mage.png']
 ];
 
 const professionSidebarImageSelector = '.sidebar .nav-link[data-route^="profession/"] > span[aria-hidden="true"] > .official-icon--sidebar > img[data-official-icon]';
@@ -192,7 +197,7 @@ async function readProfessionSeriesMetrics(page) {
 
 async function expectProfessionSeriesDimensions(page, label) {
   await waitForSidebarLayoutStable(page);
-  await waitForIcons(page, professionSeriesImageSelector, 3);
+  await waitForIcons(page, professionSeriesImageSelector, 4);
   const layouts = await readProfessionSeriesMetrics(page);
   expect(layouts.map(layout => layout.id)).toEqual(professionSeriesEntries.map(([id]) => id));
   for (const layout of layouts) {
@@ -400,14 +405,14 @@ test('生活技能20枚在列表與明細顯示核准圖標', async ({ page }) =
   }
 });
 
-test('職業9枚在總覽與職業頁 hero 顯示', async ({ page }) => {
+test('職業12枚在總覽與職業頁 hero 顯示', async ({ page }) => {
   await page.goto('/#/professions');
   await waitForGuide(page);
   const selector = '.profession-card img[data-official-icon]';
-  await waitForIcons(page, selector, 9);
+  await waitForIcons(page, selector, 12);
   await expectAccessibleDecorativeImages(page, selector);
 
-  for (const id of ['swordsman', 'warrior', 'greatsword-warrior', 'archer', 'longbowman', 'crossbowman', 'thief', 'fighter', 'dual-blades']) {
+  for (const id of ['swordsman', 'warrior', 'greatsword-warrior', 'archer', 'longbowman', 'crossbowman', 'thief', 'fighter', 'dual-blades', 'mage', 'flame-mage', 'frost-mage']) {
     await page.goto(`/#/profession/${id}`);
     await waitForGuide(page);
     const hero = page.locator(`.profession-hero [data-official-icon-detail="${id}"] img[data-official-icon="${id}"]`);
@@ -421,18 +426,18 @@ test('見習職業系列 summary 使用官方圖標並保留單一 fallback', as
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#/home');
   await waitForGuide(page);
-  await expect(page.locator('.sidebar summary[data-profession-series]')).toHaveCount(3);
-  await waitForIcons(page, professionSeriesImageSelector, 3);
+  await expect(page.locator('.sidebar summary[data-profession-series]')).toHaveCount(4);
+  await waitForIcons(page, professionSeriesImageSelector, 4);
   await expectAccessibleDecorativeImages(page, professionSeriesImageSelector);
 
-  for (const [id, groupId, name] of professionSeriesEntries) {
+  for (const [id, groupId, name, , icon] of professionSeriesEntries) {
     const summary = page.locator(`summary[data-profession-series="${id}"]`);
     const host = summary.locator(`[data-profession-series-host="${id}"]`);
     const image = host.locator(`img[data-official-icon="${id}"]`);
     await expect(summary).toContainText(name);
     await expect(host.locator('.official-icon--profession-series')).toHaveCount(1);
     await expect(image).toHaveCount(1);
-    await expect(image).toHaveAttribute('src', `assets/icons/profession-series/${groupId}.png`);
+    await expect(image).toHaveAttribute('src', icon || `assets/icons/profession-series/${groupId}.png`);
     await expect(page.locator(`[data-profession-nav-group="${groupId}"]`)).not.toHaveAttribute('open', '');
   }
 
@@ -440,7 +445,7 @@ test('見習職業系列 summary 使用官方圖標並保留單一 fallback', as
     window.FanatioIconPilot.patch();
     window.FanatioIconPilot.patch();
   });
-  await expect(page.locator(professionSeriesImageSelector)).toHaveCount(3);
+  await expect(page.locator(professionSeriesImageSelector)).toHaveCount(4);
   const before = await expectProfessionSeriesDimensions(page, '桌面');
 
   for (const appearance of ['light', 'dark']) {
@@ -455,7 +460,7 @@ test('見習職業系列 summary 使用官方圖標並保留單一 fallback', as
   await warriorHost.locator('img[data-official-icon="series-warrior"]').evaluate(image => image.dispatchEvent(new Event('error')));
   await expect(warriorHost.locator('img')).toHaveCount(0);
   await expect(warriorHost).toHaveText('⚔');
-  await expect(page.locator(professionSeriesImageSelector)).toHaveCount(2);
+  await expect(page.locator(professionSeriesImageSelector)).toHaveCount(3);
   await page.locator('[data-profession-nav-group="warrior"] summary').click();
   await expect(page.locator('[data-profession-nav-group="warrior"]')).toHaveAttribute('open', '');
   const after = await readProfessionSeriesMetrics(page);
@@ -487,7 +492,7 @@ test('918px 與 390x844 抽屜維持見習職業系列圖標契約', async ({ pa
   await expectProfessionSeriesDimensions(page, '390x844');
 });
 
-test('桌面側邊欄九職業使用 manifest 官方圖標且接線保持冪等', async ({ page }, testInfo) => {
+test('桌面側邊欄十二職業使用 manifest 官方圖標且接線保持冪等', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案驗證側邊欄版面');
   expect(normalizeDomRectPixels(28.0000019)).toBe(28);
   expect(normalizeDomRectPixels(29)).toBe(29);
@@ -498,7 +503,7 @@ test('桌面側邊欄九職業使用 manifest 官方圖標且接線保持冪等'
   await waitForGuide(page);
   await expectAccessibleDecorativeImages(page, professionSidebarImageSelector);
 
-  await expect(page.locator('[data-profession-nav-group]')).toHaveCount(3);
+  await expect(page.locator('[data-profession-nav-group]')).toHaveCount(4);
   for (const [id, name] of professionSidebarEntries) {
     const link = page.locator(`.sidebar .nav-link[data-route="profession/${id}"]`);
     const host = link.locator(':scope > span[aria-hidden="true"]');
@@ -517,7 +522,7 @@ test('桌面側邊欄九職業使用 manifest 官方圖標且接線保持冪等'
     window.FanatioIconPilot.patch();
     window.FanatioThemeSystem.apply({ appearance: 'dark', palette: 'contrast', persist: false });
   });
-  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(9);
+  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(12);
   for (const [id] of professionSidebarEntries) {
     await expect(page.locator(`.sidebar .nav-link[data-route="profession/${id}"] img[data-official-icon]`)).toHaveCount(1);
   }
@@ -529,7 +534,7 @@ test('桌面側邊欄九職業使用 manifest 官方圖標且接線保持冪等'
   await expectNoHorizontalOverflow(page, '桌面側邊欄職業圖標');
 });
 
-test('918px 抽屜維持九職業圖標、導航與重新開啟不重複', async ({ page }, testInfo) => {
+test('918px 抽屜維持十二職業圖標、導航與重新開啟不重複', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chrome', '固定使用桌面專案模擬 918px 抽屜');
   await page.setViewportSize({ width: 918, height: 900 });
   await page.goto('/#/home');
@@ -556,7 +561,7 @@ test('918px 抽屜維持九職業圖標、導航與重新開啟不重複', async
   await waitForSidebarLayoutStable(page);
   await expect(page.locator('.sidebar .nav-link[data-route="profession/thief"]')).toHaveClass(/is-active/);
   await expect(page.locator('[data-profession-nav-group="thief"]')).toHaveAttribute('open', '');
-  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(9);
+  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(12);
   for (const [id] of professionSidebarEntries) {
     await expect(page.locator(`.sidebar .nav-link[data-route="profession/${id}"] img[data-official-icon]`)).toHaveCount(1);
   }
@@ -626,7 +631,7 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   });
   await expect(host.locator('img')).toHaveCount(0);
   await expect(host).toHaveText('◈');
-  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(8);
+  await expect(page.locator(professionSidebarImageSelector)).toHaveCount(11);
   const after = await readProfessionSidebarMetrics(page, 'thief');
   const beforeThief = before.find(item => item.id === 'thief');
   const afterThief = after.find(item => item.id === 'thief');

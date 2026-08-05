@@ -315,6 +315,30 @@ function validateProfessionData(professions, professionSkills) {
       names: ['爆裂射擊', '狂風弩箭', '震撼爆裂', '滑步', '擴散弩箭'],
       clientSkillIds: ['BusterShot', 'GustingBolt', 'ShockExplosion', 'SlidingStep', 'SpreadingBolt'],
       stats: [[['最大層數', '2'], ['範圍', '6 m'], ['強化弩箭裝填', '1 個彈匣']], [['攻擊次數', '10 次'], ['強化弩箭暴擊機率衰減', '每次發射降低為前次的 0.75 倍'], ['強化弩箭消耗', '1 個彈匣']], [['破防傷害', '1 格'], ['強化弩箭裝填', '1 個彈匣']], [['攻擊次數', '2 次'], ['強化弩箭裝填', '1 個彈匣']], [['強化弩箭消耗', '1 個彈匣']]]
+    },
+    mage: {
+      names: ['冰晶匕首', '雷電', '魔力風暴', '流星打擊', '念動力'],
+      clientSkillIds: ['IceDagger', 'Lightning', 'ManaStorm', 'MeteorStrike', 'Telekinesis'],
+      tags: [['連擊', '元素', '干擾'], ['元素', '干擾'], ['生存', '輔助'], ['強擊', '元素', '召喚'], ['連擊', '干擾']],
+      stats: [[['冰霜碎片數量', '6 片']], [], [], [['破防傷害', '1 格'], ['火焰地帶傷害次數', '6 次'], ['火焰地帶範圍', '5 m'], ['火焰地帶持續時間', '6 秒'], ['最大疊層數', '2']], [['岩石碎片數量', '8 個']]],
+      descriptionKeywords: [['六片旋轉的冰霜碎片'], ['觸電'], ['魔力護甲'], ['火焰地帶'], ['岩石碎片']],
+      presentationModes: ['direct', 'direct', 'direct', 'corrected_alias', 'direct']
+    },
+    'flame-mage': {
+      names: ['火焰風暴', '烈焰火炮', '閃燃', '爆炸', '疾火連彈'],
+      clientSkillIds: ['FireStorm', 'FlameCannon', 'FlashOver', 'Ignite', 'RapidFire'],
+      tags: [['連擊', '元素', '干擾'], ['元素', '干擾'], ['連擊', '元素'], ['強擊', '連擊', '元素'], ['連擊', '元素']],
+      stats: [[['攻擊次數', '10 次'], ['破防傷害', '1 格'], ['持續時間', '5 秒'], ['吸引範圍', '4 m'], ['範圍', '2 m']], [['擊退距離', '6 m'], ['最大疊層數', '2'], ['範圍', '10 m']], [['效果觸發間隔', '2 秒'], ['範圍', '10 m']], [['範圍', '4 m']], [['火焰球發射數', '3～5 顆']]],
+      descriptionKeywords: [['灼熱'], ['烙印'], ['恢復體力'], ['消耗全部熱氣'], ['三至五顆']],
+      presentationModes: ['direct', 'direct', 'corrected_alias', 'direct', 'direct']
+    },
+    'frost-mage': {
+      names: ['水晶之刃', '冰封領域', '霜凍法球', '冰棘', '冰川裂刃'],
+      clientSkillIds: ['CrystalEdge', 'FreezingField', 'FrozenOrb', 'IceSpike', 'SplitSlash'],
+      tags: [['元素', '強擊'], ['元素', '生存', '召喚'], ['元素', '召喚'], ['元素', '生存', '輔助'], ['強擊', '干擾']],
+      stats: [[['可重複使用次數', '最多 3 次']], [], [['持續傷害間隔', '0.5 秒']], [], [['破防傷害', '1 格']]],
+      descriptionKeywords: [['最多可重複使用三次'], ['受到的傷害減少'], ['生成冰霜'], ['冰霜護盾'], ['挑釁並使其凍結']],
+      presentationModes: ['direct', 'direct', 'direct', 'direct', 'direct']
     }
   };
   const allowedClientDataStatuses = new Set([
@@ -419,6 +443,15 @@ function validateProfessionData(professions, professionSkills) {
       if (typeof skill.publicNumericPolicy !== 'string' || !skill.publicNumericPolicy.includes('不得')) fail(`${skillLocation}.publicNumericPolicy`, '缺少未解析數值公開限制');
       const actualStats = (skill.stats || []).map(stat => [stat.label, stat.value]);
       if (JSON.stringify(actualStats) !== JSON.stringify(definition.stats[index])) fail(`${skillLocation}.stats`, '已確認常數不符或包含未核實數值');
+      if (definition.tags && JSON.stringify(skill.tags || []) !== JSON.stringify(definition.tags[index])) {
+        fail(`${skillLocation}.tags`, '技能 tags 必須與已確認台版內容一致');
+      }
+      if (definition.descriptionKeywords && !definition.descriptionKeywords[index].every(keyword => skill.description.includes(keyword))) {
+        fail(`${skillLocation}.description`, '技能說明缺少已確認主要機制，疑似退化為摘要');
+      }
+      if (definition.presentationModes && skill.presentationMode !== definition.presentationModes[index]) {
+        fail(`${skillLocation}.presentationMode`, '公開呈現模式不符合已確認別名修正契約');
+      }
       for (const key of ['name', 'description', 'publicNumericPolicy']) {
         if (forbiddenExternalText.test(String(skill[key] || ''))) fail(`${skillLocation}.${key}`, '公開內容不得包含 Drive、Windows 路徑或韓文參照式');
       }
@@ -432,10 +465,13 @@ for (const fileName of jsonFiles) {
   const data = readJson(filePath);
   if (data === null) continue;
   const rawPublicData = JSON.stringify(data);
+  if (/\$[!#(]/.test(rawPublicData)) {
+    fail(fileName, '公開 data JSON 不得包含未解析公式參照式');
+  }
   if (rawPublicData.includes('AxeKick')) {
     fail(fileName, '公開 data JSON 不得包含 AxeKick');
   }
-  for (const alias of ['MountingShock', 'GustingVolt', 'SlipThrough', 'SpreadingVolt']) {
+  for (const alias of ['MountingShock', 'GustingVolt', 'SlipThrough', 'SpreadingVolt', 'ExpertMage_MeteorStrike_Tier2A', 'FireMage_Flashover']) {
     if (rawPublicData.includes(alias)) fail(fileName, `公開 data JSON 不得包含內部別名：${alias}`);
   }
   walk(data, fileName);
