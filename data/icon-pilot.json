@@ -1,7 +1,7 @@
 {
-  "version": 7,
-  "issue": 10,
-  "updatedAt": "2026-08-05",
+  "version": 8,
+  "issue": 52,
+  "updatedAt": "2026-08-06",
   "categories": {
     "lifeSkills": [
       {
@@ -712,6 +712,18 @@
         "sourceClass": "台版客戶端職業技能圖標核准輸出",
         "approved": true
       },
+      {"id":"longbowman-dragon-hunter","professionId":"longbowman","name":"獵龍人","icon":"assets/icons/profession-skills/longbowman-dragon-hunter.png","width":256,"height":256,"sha256":"0259b41ee8f2a3216aa1104d561a27e441b60e3a9ba832bae668549cae6d7847","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"longbowman-sniping","professionId":"longbowman","name":"狙擊術","icon":"assets/icons/profession-skills/longbowman-sniping.png","width":256,"height":256,"sha256":"6b4097c0a1636b7c75499e33ddbf9a224db574e02c74db4c91819a7fe93ad81a","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"longbowman-hunting","professionId":"longbowman","name":"狩獵術","icon":"assets/icons/profession-skills/longbowman-hunting.png","width":256,"height":256,"sha256":"b4e936e76911b5b0fc96fd091d9906521155d8ec41680e0b1cfcf8ba7491fdac","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"longbowman-combat-mastery-heroism","professionId":"longbowman","name":"戰鬥熟練：霸氣","icon":"assets/icons/profession-skills/longbowman-combat-mastery-heroism.png","width":256,"height":256,"sha256":"4f190d112cd57558882ce3be9d93020d71b64ca7b1f4b9d5fbd2b8a4a033d652","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"longbowman-keen-arrow","professionId":"longbowman","name":"敏銳之箭","icon":"assets/icons/profession-skills/longbowman-keen-arrow.png","width":256,"height":256,"sha256":"54c2f799735c09cc2f8eb0c78ad0a68d7d2098b7ad4b15a0a05a2eb8250d21b4","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"longbowman-fighting-spirit","professionId":"longbowman","name":"鬥志高昂","icon":"assets/icons/profession-skills/longbowman-fighting-spirit.png","width":256,"height":256,"sha256":"87a948a07676cb831613105035d98674b1014d9bd6537fc928c2543e7bc2743c","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"crossbowman-hellfire","professionId":"crossbowman","name":"地獄火","icon":"assets/icons/profession-skills/crossbowman-hellfire.png","width":256,"height":256,"sha256":"a04f3741a6a010c35bf0386f81353dad760c451017c0b016a5e70fd390cb9a7d","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"crossbowman-extra-action","professionId":"crossbowman","name":"額外行動","icon":"assets/icons/profession-skills/crossbowman-extra-action.png","width":256,"height":256,"sha256":"2d59887c53a0b019437196944817ab7b92e6b26b875ad6aede64afbc170a299d","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"crossbowman-driving-force","professionId":"crossbowman","name":"驅動力","icon":"assets/icons/profession-skills/crossbowman-driving-force.png","width":256,"height":256,"sha256":"04e255f74a663467d6e87b1315eff07ec042bf7be17963caab52e95c848e4012","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"crossbowman-combat-mastery-threat","professionId":"crossbowman","name":"戰鬥熟練：威脅","icon":"assets/icons/profession-skills/crossbowman-combat-mastery-threat.png","width":256,"height":256,"sha256":"1beb55006bd227007edd47438604d7b76666def25829be1c31794d4ed4eefff2","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"crossbowman-rapid-attack","professionId":"crossbowman","name":"快速攻擊","icon":"assets/icons/profession-skills/crossbowman-rapid-attack.png","width":256,"height":256,"sha256":"631535204b4783016351bac9ae8bb98384c5765d569360dcc7fd16cde5ce966c","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"crossbowman-expanded-magazine","professionId":"crossbowman","name":"擴充彈匣","icon":"assets/icons/profession-skills/crossbowman-expanded-magazine.png","width":256,"height":256,"sha256":"fd60d88775cb3e22c067b0d8f40e6dd1917acdb00474d72e32da8cf3ac90daad","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
       {"id":"mage-ice-dagger","professionId":"mage","name":"冰晶匕首","icon":"assets/icons/profession-skills/mage-ice-dagger.png","width":256,"height":256,"sha256":"d7ce136e9e95d7e7b2810dbd70c2684990f4e48bc9a53bf73e693bab234b7ab5","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
       {"id":"mage-lightning","professionId":"mage","name":"雷電","icon":"assets/icons/profession-skills/mage-lightning.png","width":256,"height":256,"sha256":"d665b0626c48614cc0bc0d0566d18273450b0f9b64ee72414ec07d779c0f341c","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
       {"id":"mage-mana-storm","professionId":"mage","name":"魔力風暴","icon":"assets/icons/profession-skills/mage-mana-storm.png","width":256,"height":256,"sha256":"6cdb3a8efbe0990598db6989e830e5a13930ed69665f451595b06536e26f4fa5","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},

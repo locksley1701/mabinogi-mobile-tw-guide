@@ -10,7 +10,13 @@ const jobs = [
       ['烈焰箭', 'longbowman-flame-barrage', 'assets/icons/profession-skills/longbowman-flame-barrage.png'],
       ['尋心者', 'longbowman-heart-seeker', 'assets/icons/profession-skills/longbowman-heart-seeker.png'],
       ['破殼者', 'longbowman-shell-breaker', 'assets/icons/profession-skills/longbowman-shell-breaker.png'],
-      ['翼之穿刺', 'longbowman-wing-skewer', 'assets/icons/profession-skills/longbowman-wing-skewer.png']
+      ['翼之穿刺', 'longbowman-wing-skewer', 'assets/icons/profession-skills/longbowman-wing-skewer.png'],
+      ['獵龍人', 'longbowman-dragon-hunter', 'assets/icons/profession-skills/longbowman-dragon-hunter.png'],
+      ['狙擊術', 'longbowman-sniping', 'assets/icons/profession-skills/longbowman-sniping.png'],
+      ['狩獵術', 'longbowman-hunting', 'assets/icons/profession-skills/longbowman-hunting.png'],
+      ['戰鬥熟練：霸氣', 'longbowman-combat-mastery-heroism', 'assets/icons/profession-skills/longbowman-combat-mastery-heroism.png'],
+      ['敏銳之箭', 'longbowman-keen-arrow', 'assets/icons/profession-skills/longbowman-keen-arrow.png'],
+      ['鬥志高昂', 'longbowman-fighting-spirit', 'assets/icons/profession-skills/longbowman-fighting-spirit.png']
     ]
   },
   {
@@ -22,7 +28,13 @@ const jobs = [
       ['狂風弩箭', 'crossbowman-gusting-bolt', 'assets/icons/profession-skills/crossbowman-gusting-bolt.png'],
       ['震撼爆裂', 'crossbowman-shock-explosion', 'assets/icons/profession-skills/crossbowman-shock-explosion.png'],
       ['滑步', 'crossbowman-sliding-step', 'assets/icons/profession-skills/crossbowman-sliding-step.png'],
-      ['擴散弩箭', 'crossbowman-spreading-bolt', 'assets/icons/profession-skills/crossbowman-spreading-bolt.png']
+      ['擴散弩箭', 'crossbowman-spreading-bolt', 'assets/icons/profession-skills/crossbowman-spreading-bolt.png'],
+      ['地獄火', 'crossbowman-hellfire', 'assets/icons/profession-skills/crossbowman-hellfire.png'],
+      ['額外行動', 'crossbowman-extra-action', 'assets/icons/profession-skills/crossbowman-extra-action.png'],
+      ['驅動力', 'crossbowman-driving-force', 'assets/icons/profession-skills/crossbowman-driving-force.png'],
+      ['戰鬥熟練：威脅', 'crossbowman-combat-mastery-threat', 'assets/icons/profession-skills/crossbowman-combat-mastery-threat.png'],
+      ['快速攻擊', 'crossbowman-rapid-attack', 'assets/icons/profession-skills/crossbowman-rapid-attack.png'],
+      ['擴充彈匣', 'crossbowman-expanded-magazine', 'assets/icons/profession-skills/crossbowman-expanded-magazine.png']
     ]
   }
 ];
@@ -57,31 +69,37 @@ async function expectNoHorizontalOverflow(page) {
   expect(widths.scroll).toBeLessThanOrEqual(widths.client + 1);
 }
 
+function skillByName(page, name) {
+  return page.locator('.profession-skill').filter({
+    has: page.locator('.profession-skill__identity strong', { hasText: name })
+  });
+}
+
 test.beforeEach(async ({ page }) => prepare(page));
 
-test('兩個正式 route 顯示五項主動技能、待核實裝備與已確認常數', async ({ page }) => {
+test('兩個正式 route 顯示六項主動與五項被動技能、待核實裝備與已確認常數', async ({ page }) => {
   for (const job of jobs) {
     await openRoute(page, `profession/${job.id}`);
     await expect(page.locator('#page-title')).toHaveText(job.name);
     await expect(page.locator('.profession-hero h1')).toHaveText(job.name);
     await expect(page.locator('.profession-summary-basis')).toContainText('依已確認技能內容整理，並非官方職業介紹');
     await expect(page.locator('.profession-summary')).toContainText('資料待補（尚無已核實來源）');
-    await expect(page.locator('details.profession-skill')).toHaveCount(5);
-    await expect(page.locator('.profession-skill__numeric-note')).toHaveCount(5);
+    await expect(page.locator('details.profession-skill')).toHaveCount(11);
+    await expect(page.locator('.profession-skill__numeric-note')).toHaveCount(11);
     expect(await page.locator('.profession-skill__identity strong').allTextContents()).toEqual(job.skills.map(([name]) => name));
     await expect(page.locator('#workspace')).not.toContainText('$4[d]');
     await expectNoHorizontalOverflow(page);
   }
 
   await openRoute(page, 'profession/longbowman');
-  await expect(page.locator('.profession-skill', { hasText: '烈焰箭' })).toContainText('50%');
-  await expect(page.locator('.profession-skill', { hasText: '尋心者' })).toContainText('0.75 秒');
-  await expect(page.locator('.profession-skill', { hasText: '翼之穿刺' })).toContainText('迎擊時破防傷害');
+  await expect(skillByName(page, '烈焰箭')).toContainText('50%');
+  await expect(skillByName(page, '尋心者')).toContainText('0.75 秒');
+  await expect(skillByName(page, '翼之穿刺')).toContainText('迎擊時破防傷害');
 
   await openRoute(page, 'profession/crossbowman');
-  await expect(page.locator('.profession-skill', { hasText: '爆裂射擊' })).toContainText('6 m');
-  await expect(page.locator('.profession-skill', { hasText: '狂風弩箭' })).toContainText('10 次');
-  await expect(page.locator('.profession-skill', { hasText: '滑步' })).toContainText('2 次');
+  await expect(skillByName(page, '爆裂射擊')).toContainText('6 m');
+  await expect(skillByName(page, '狂風弩箭')).toContainText('10 次');
+  await expect(skillByName(page, '滑步')).toContainText('2 次');
 });
 
 test('總覽、hero、技能列與搜尋使用十二個穩定公開圖標', async ({ page }) => {
@@ -104,7 +122,7 @@ test('總覽、hero、技能列與搜尋使用十二個穩定公開圖標', asyn
     await expectLoadedIcon(page.locator('.result-row', { hasText: job.name }).first().locator(`img[data-official-icon="${job.id}"]`), job.icon);
     for (const [name, id, path] of job.skills) {
       await input.fill(name);
-      await expectLoadedIcon(page.locator('.result-row', { hasText: name }).first().locator(`img[data-official-icon="${id}"]`), path);
+      await expectLoadedIcon(page.locator(`.result-row img[data-official-icon="${id}"]`).first(), path);
     }
   }
 });
@@ -136,7 +154,7 @@ test('390×844、亮暗主題與 reduced motion 下維持可閱讀的 ranged job
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const job of jobs) {
     await openRoute(page, `profession/${job.id}`);
-    await expect(page.locator('.profession-skill img[data-official-icon]')).toHaveCount(5);
+    await expect(page.locator('.profession-skill img[data-official-icon]')).toHaveCount(11);
     await expectNoHorizontalOverflow(page);
   }
   for (const appearance of ['light', 'dark']) {

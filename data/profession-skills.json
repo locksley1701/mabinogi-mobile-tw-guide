@@ -922,9 +922,82 @@
           {"label": "破防傷害", "value": "1 格"},
           {"label": "迎擊時破防傷害", "value": "2 格"}
         ]
+      },
+      {
+        "order": 6,
+        "name": "獵龍人",
+        "tags": ["絕招"],
+        "unlock": "長弓兵 Lv.20 以上",
+        "description": "特製龍矢的狙擊用準備架式。\n迅速架起弓，進入一段時間的狙擊架式。\n進入狙擊架式時，無法移動和進行基本攻擊，技能組會發生變更。\n此外，可以憑藉增加的技能射程來瞄準比平時更遠處的敵人。\n「箭已備妥，現在是狩獵時刻。」",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
       }
     ],
-    "passive": []
+    "passive": [
+      {
+        "order": 1,
+        "name": "狙擊術",
+        "description": "戰略性佔據位置捕捉獵物的射擊技術。當未移動時，在一定時間內，技能施放速度、技能施法速度、暴擊機率與強擊傷害將會提升。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
+      },
+      {
+        "order": 2,
+        "name": "狩獵術",
+        "description": "以熟練的弓術經驗為基礎、追求效率的狩獵技法。技能攻擊命中時，尋心者剩餘的冷卻時間將會減少。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
+      },
+      {
+        "order": 3,
+        "name": "戰鬥熟練：霸氣",
+        "unlock": "長弓兵 Lv.15 以上",
+        "description": "從遠距離進行攻擊的熟練戰鬥技法。對敵人造成的強擊傷害會增加。當長弓兵職業等級達到 30 後，戰鬥時可使用職業專精輔助。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
+      },
+      {
+        "order": 4,
+        "name": "敏銳之箭",
+        "tags": ["強擊", "輔助"],
+        "unlock": "長弓兵 Lv.30 以上",
+        "description": "駕馭銳利特殊箭矢的長弓術。技能攻擊命中時，會額外造成持續傷害：創傷。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
+      },
+      {
+        "order": 5,
+        "name": "鬥志高昂",
+        "unlock": "長弓兵 Lv.45 以上",
+        "description": "因成功的射擊而備受鼓舞、戰意高昂。長弓兵的絕招技能傷害增加。強擊發動時，會額外獲得絕招量表。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
+      }
+    ]
   },
   "crossbowman": {
     "id": "crossbowman",
@@ -1020,9 +1093,81 @@
         "stats": [
           {"label": "強化弩箭消耗", "value": "1 個彈匣"}
         ]
+      },
+      {
+        "order": 6,
+        "name": "地獄火",
+        "tags": ["絕招", "強擊", "連擊"],
+        "unlock": "弩手 Lv.20 以上",
+        "description": "以巨大爆炸將周圍焦土化的大爆炸絕招。\n射光所有一般弩箭後，跳起並射出橫掃周圍所有敵人的爆炸弩箭。\n使用技能後，會裝填所有強化弩箭彈匣。\n「萬物註定爆炸。」",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
       }
     ],
-    "passive": []
+    "passive": [
+      {
+        "order": 1,
+        "name": "額外行動",
+        "description": "熟練地維持戰鬥節奏的整備技術。弩手的部分技能會裝填強化弩箭彈匣，其餘技能則會消耗強化弩箭彈匣。使用消耗強化弩箭的技能時，下一次裝填技能的攻擊次數會增加 2 倍。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": [{"label": "下一次裝填技能攻擊次數", "value": "2 倍"}]
+      },
+      {
+        "order": 2,
+        "name": "驅動力",
+        "description": "以熟練的技藝尋找最佳軌道、提升技能傷害的瞄準技術。在一定時間內連續使用相同的消耗強化弩箭技能時，可獲得技能傷害量增加效果。狂風弩箭與擴散弩箭技能會共享技能等級，套用其中較高的技能等級。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
+      },
+      {
+        "order": 3,
+        "name": "戰鬥熟練：威脅",
+        "unlock": "弩手 Lv.15 以上",
+        "description": "從遠距離進行攻擊的熟練戰鬥技法。對敵人造成的暴擊傷害會增加。當弩手職業等級達到 30 後，戰鬥時可使用職業專精輔助。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
+      },
+      {
+        "order": 4,
+        "name": "快速攻擊",
+        "unlock": "弩手 Lv.30 以上",
+        "description": "展現更快速射擊的迅捷手法。裝填強化弩箭時，技能使用速度會在一定時間內增加。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
+      },
+      {
+        "order": 5,
+        "name": "擴充彈匣",
+        "unlock": "弩手 Lv.45 以上",
+        "description": "備好充裕攻擊量的裝填用彈匣。強化弩箭裝填技能的最大層數會增加。",
+        "presentationMode": "direct",
+        "status": "tw-confirmed",
+        "dataStatus": "verified_client_text",
+        "numericValuesStatus": "pending_resolution",
+        "publicNumericPolicy": "未解析為實際數字的客戶端參照式不得公開。",
+        "stats": []
+      }
+    ]
   },
   "mage": {
     "id": "mage",

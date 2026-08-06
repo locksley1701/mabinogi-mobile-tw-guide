@@ -210,7 +210,7 @@ JSON 以穩定英文 ID 綁定圖標：
 
 本批 18 枚圖標均使用既有本機核准的台版客戶端 PNG 輸出，不下載、不重新抽取，也不在公開 manifest 記錄私人素材路徑或內部別名。
 
-## 13. Issue #10 長弓兵與弩手完整圖標清單
+## 13. Issue #10 與 Issue #52 長弓兵與弩手完整圖標清單
 
 ### 職業
 
@@ -229,8 +229,20 @@ JSON 以穩定英文 ID 綁定圖標：
 - `crossbowman-shock-explosion`：震撼爆裂
 - `crossbowman-sliding-step`：滑步
 - `crossbowman-spreading-bolt`：擴散弩箭
+- `longbowman-dragon-hunter`：獵龍人
+- `longbowman-sniping`：狙擊術
+- `longbowman-hunting`：狩獵術
+- `longbowman-combat-mastery-heroism`：戰鬥熟練：霸氣
+- `longbowman-keen-arrow`：敏銳之箭
+- `longbowman-fighting-spirit`：鬥志高昂
+- `crossbowman-hellfire`：地獄火
+- `crossbowman-extra-action`：額外行動
+- `crossbowman-driving-force`：驅動力
+- `crossbowman-combat-mastery-threat`：戰鬥熟練：威脅
+- `crossbowman-rapid-attack`：快速攻擊
+- `crossbowman-expanded-magazine`：擴充彈匣
 
-本批 12 枚圖標均使用既有本機核准的台版客戶端 PNG 輸出，不下載、不重新抽取，也不在公開 manifest 記錄私人素材路徑或內部別名。
+Issue #10 的 12 枚與 Issue #52 的 12 枚圖標均使用既有本機核准的台版客戶端 PNG 輸出，不下載、不重新抽取，也不在公開 manifest 記錄私人素材路徑或內部別名。
 
 ### 見習職業系列
 
@@ -274,7 +286,7 @@ JSON 以穩定英文 ID 綁定圖標：
 - 試點 PNG 必須可讀取且具有透明通道。
 - 不允許提交原始封裝格式、完整截圖或私人資料夾內容。
 - 不允許兩個不同穩定 ID 意外綁定同一檔案，除非資料契約明確宣告共用。
-- 公開圖標 manifest 固定為生活技能 20、見習職業系列 4、職業 12、職業技能 46、料理 4，共 86 筆紀錄與 85 枚唯一 SHA256 資產；唯一允許的共用是 `series-mage` 與 `mage`。
+- 公開圖標 manifest 固定為生活技能 20、見習職業系列 4、職業 12、職業技能 58、料理 4，共 98 筆紀錄與 97 枚唯一 SHA256 資產；唯一允許的共用是 `series-mage` 與 `mage`。
 - Issue #9 與 Issue #10 職業及技能必須維持正式 ID、正式名稱與 `professionId` 一對一綁定。
 - 公開圖標 manifest 不得包含內部別名、Windows 絕對路徑或私人素材庫識別字。
 - changelog 必須記錄試點導入。

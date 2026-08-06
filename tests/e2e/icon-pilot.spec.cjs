@@ -651,14 +651,14 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   expect(runtimeErrors).toEqual([]);
 });
 
-test('31枚職業技能在九個職業頁取代編號底盤', async ({ page }) => {
+test('43枚職業技能在九個職業頁取代編號底盤', async ({ page }) => {
   const matrix = [
     ['swordsman', ['swordmaster-steel-wedge', 'swordmaster-detection']],
     ['warrior', ['expert-warrior-battle-cry', 'expert-warrior-blade-smash']],
     ['greatsword-warrior', ['greatsword-warrior-blockade-front']],
     ['archer', ['expert-archer-magnum-shot']],
-    ['longbowman', ['longbowman-crash-shot', 'longbowman-flame-barrage', 'longbowman-heart-seeker', 'longbowman-shell-breaker', 'longbowman-wing-skewer']],
-    ['crossbowman', ['crossbowman-buster-shot', 'crossbowman-gusting-bolt', 'crossbowman-shock-explosion', 'crossbowman-sliding-step', 'crossbowman-spreading-bolt']],
+    ['longbowman', ['longbowman-crash-shot', 'longbowman-flame-barrage', 'longbowman-heart-seeker', 'longbowman-shell-breaker', 'longbowman-wing-skewer', 'longbowman-dragon-hunter', 'longbowman-sniping', 'longbowman-hunting', 'longbowman-combat-mastery-heroism', 'longbowman-keen-arrow', 'longbowman-fighting-spirit']],
+    ['crossbowman', ['crossbowman-buster-shot', 'crossbowman-gusting-bolt', 'crossbowman-shock-explosion', 'crossbowman-sliding-step', 'crossbowman-spreading-bolt', 'crossbowman-hellfire', 'crossbowman-extra-action', 'crossbowman-driving-force', 'crossbowman-combat-mastery-threat', 'crossbowman-rapid-attack', 'crossbowman-expanded-magazine']],
     ['thief', ['thief-back-stab', 'thief-hide', 'thief-poison-trap', 'thief-screw-dagger', 'thief-throwing-bomb']],
     ['fighter', ['fighter-back-step', 'fighter-burst-punch-1', 'fighter-charging-fist', 'fighter-somersault-1', 'fighter-stomp-kick']],
     ['dual-blades', ['dual-blades-double-crescent', 'dual-blades-gliding-fury', 'dual-blades-howling-gale', 'dual-blades-hurricane-dance', 'dual-blades-outer-slash']]
