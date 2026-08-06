@@ -201,7 +201,7 @@ JSON 以穩定英文 ID 綁定圖標：
 - `fighter-burst-punch-1`：爆裂拳第 1 擊
 - `fighter-charging-fist`：蓄力拳
 - `fighter-somersault-1`：空翻踢第 1 擊
-- `fighter-stomp-kick`：重踏踢
+- `fighter-impact-kick`：衝擊踢
 - `dual-blades-double-crescent`：雙重新月
 - `dual-blades-gliding-fury`：滑行狂怒
 - `dual-blades-howling-gale`：怒號疾風
@@ -280,18 +280,28 @@ Issue #10 的 12 枚與 Issue #52 的 12 枚圖標均使用既有本機核准的
 
 本批 18 枚職業與技能圖標使用既有本機核准的台版客戶端 PNG 輸出，不下載、不重新抽取。公開資料、穩定檔名與 runtime 不記錄內部素材變體或拼法。
 
-## 15. 自動驗證最低要求
+## 15. Issue #55 盜賊、雙刀客與格鬥家完整圖標清單
+
+新增三職各一枚絕招與五枚被動技能圖標，共 18 筆 manifest records。`fighter-impact-kick` 為既有正確 PNG 的 Git 搬遷，取代 `fighter-stomp-kick`，不新增圖標位元組。
+
+- 盜賊：`thief-blitz-rush`、`thief-adrenaline`、`thief-sneak-attack`、`thief-combat-mastery-swiftness`、`thief-poison-attack`、`thief-poison-explosion`
+- 雙刀客：`dual-blades-final-hit`、`dual-blades-rising-aspirations`、`dual-blades-recharge`、`dual-blades-combat-mastery-destruction`、`dual-blades-vigor`、`dual-blades-wind-blade`
+- 格鬥家：`fighter-power-max`、`fighter-combo-damage`、`fighter-finish-attack`、`fighter-combat-mastery-destruction`、`fighter-first-aid`、`fighter-shock-wave`
+
+`fighter-combat-mastery-destruction` 明確以 `sharedWith: "dual-blades-combat-mastery-destruction"` 共用同一路徑與 SHA256；連同 `series-mage → mage`，公開 manifest 恰有兩組宣告共用。
+
+## 16. 自動驗證最低要求
 
 - JSON 內每個非空 `icon` 路徑都必須存在。
 - 試點 PNG 必須可讀取且具有透明通道。
 - 不允許提交原始封裝格式、完整截圖或私人資料夾內容。
 - 不允許兩個不同穩定 ID 意外綁定同一檔案，除非資料契約明確宣告共用。
-- 公開圖標 manifest 固定為生活技能 20、見習職業系列 4、職業 12、職業技能 58、料理 4，共 98 筆紀錄與 97 枚唯一 SHA256 資產；唯一允許的共用是 `series-mage` 與 `mage`。
+- 公開圖標 manifest 固定為生活技能 20、見習職業系列 4、職業 12、職業技能 76、料理 4，共 116 筆紀錄與 114 枚唯一 SHA256 資產；允許的共用為 `series-mage → mage` 與 `fighter-combat-mastery-destruction → dual-blades-combat-mastery-destruction`。
 - Issue #9 與 Issue #10 職業及技能必須維持正式 ID、正式名稱與 `professionId` 一對一綁定。
 - 公開圖標 manifest 不得包含內部別名、Windows 絕對路徑或私人素材庫識別字。
 - changelog 必須記錄試點導入。
 
-## 16. 完成定義
+## 17. 完成定義
 
 Issue #7 僅在下列條件全部成立時完成：
 

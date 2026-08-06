@@ -300,10 +300,19 @@ function validateProfessionData(professions, professionSkills) {
     }
   }
 
-  const issue9Definitions = {
-    thief: ['奇襲', '隱身', '毒陷阱', '螺旋匕首', '投擲炸彈'],
-    fighter: ['後退步', '爆裂拳：第1擊', '蓄力拳', '空翻踢：第1擊', '重踏踢'],
-    'dual-blades': ['雙重新月', '滑行狂怒', '怒號疾風', '旋轉突襲', '分裂斬']
+  const issue55Definitions = {
+    thief: {
+      active: ['奇襲', '隱身', '毒陷阱', '螺旋匕首', '投擲炸彈', '閃擊突襲'],
+      passive: ['腎上腺素', '偷襲', '戰鬥熟練：疾速', '毒擊', '毒爆']
+    },
+    fighter: {
+      active: ['蓄力拳', '衝擊踢', '後退步', '爆裂拳：第1擊', '空翻踢：第1擊', '極限超載'],
+      passive: ['連攜攻擊', '會心一擊', '戰鬥熟練：毀滅', '急救處置', '衝擊波']
+    },
+    'dual-blades': {
+      active: ['雙重新月', '滑行狂怒', '怒號疾風', '旋轉突襲', '分裂斬', '終極連擊'],
+      passive: ['渴望湧現', '再充能', '戰鬥熟練：毀滅', '活力', '風之刃']
+    }
   };
   const issue10Definitions = {
     longbowman: {
@@ -360,15 +369,15 @@ function validateProfessionData(professions, professionSkills) {
   ]);
   const forbiddenExternalText = /drive\.google\.com|[A-Za-z]:\\|[\u1100-\u11ff\u3130-\u318f\uac00-\ud7af]/i;
 
-  for (const [id, expectedNames] of Object.entries(issue9Definitions)) {
+  for (const [id, expected] of Object.entries(issue55Definitions)) {
     const profession = professionSkills[id];
     const overview = professions.find(item => item.id === id);
     const location = `profession-skills.json.${id}`;
     if (!profession || !overview) {
-      fail(location, 'Issue #9 職業或總覽項目缺漏');
+      fail(location, 'Issue #55 職業或總覽項目缺漏');
       continue;
     }
-    if (!overview.documented) fail(`professions.json.${id}.documented`, 'Issue #9 職業必須開放職業頁');
+    if (!overview.documented) fail(`professions.json.${id}.documented`, 'Issue #55 職業必須開放職業頁');
     if (profession.summaryBasis !== 'derived_from_verified_skills') {
       fail(`${location}.summaryBasis`, '職業摘要必須標示為依已確認技能內容整理');
     }
@@ -376,19 +385,23 @@ function validateProfessionData(professions, professionSkills) {
       fail(`${location}.preferredEquipment`, '偏好裝備資料不足時必須保持 null 與待核實狀態');
     }
     if (profession.status !== 'tw-confirmed') fail(`${location}.status`, '職業資料狀態必須沿用台版已確認狀態');
-    if (profession.active.length !== 5 || profession.passive.length !== 0) {
-      fail(location, 'Issue #9 每個職業應收錄 5 筆已確認主動技能，且不得補寫未提供的被動技能');
+    if (profession.active.length !== 6 || profession.passive.length !== 5) {
+      fail(location, 'Issue #55 每個職業必須收錄 6 筆主動與 5 筆被動技能');
       continue;
     }
 
     const names = profession.active.map(skill => skill.name);
-    if (JSON.stringify(names) !== JSON.stringify(expectedNames)) {
+    if (JSON.stringify(names) !== JSON.stringify(expected.active)) {
       fail(`${location}.active`, `技能名稱或順序不符：${names.join('、')}`);
     }
+    const passiveNames = profession.passive.map(skill => skill.name);
+    if (JSON.stringify(passiveNames) !== JSON.stringify(expected.passive)) {
+      fail(`${location}.passive`, `被動技能名稱或順序不符：${passiveNames.join('、')}`);
+    }
     const clientSkillIds = new Set();
-    profession.active.forEach((skill, index) => {
-      const skillLocation = `${location}.active[${index}]`;
-      if (skill.order !== index + 1) fail(`${skillLocation}.order`, '技能 order 必須由 1 連續排列');
+    [...profession.active, ...profession.passive].forEach((skill, index) => {
+      const skillLocation = `${location}.${index < profession.active.length ? 'active' : 'passive'}[${index < profession.active.length ? index : index - profession.active.length}]`;
+      if (index < profession.active.length && skill.order !== index + 1) fail(`${skillLocation}.order`, '主動技能 order 必須由 1 連續排列');
       if (!skill.clientSkillId || clientSkillIds.has(skill.clientSkillId)) fail(`${skillLocation}.clientSkillId`, 'clientSkillId 缺漏或重複');
       clientSkillIds.add(skill.clientSkillId);
       if (skill.status !== 'tw-confirmed') fail(`${skillLocation}.status`, '技能必須標示台版已確認');
@@ -414,16 +427,17 @@ function validateProfessionData(professions, professionSkills) {
       fail(`profession-skills.json.fighter.${name}`, '組合技只能以已確認的第 1 擊基礎列呈現，並保留 1／3 連段關係');
     }
   }
-  const stompKick = fighter?.active.find(item => item.name === '重踏踢');
+  const impactKick = fighter?.active.find(item => item.name === '衝擊踢');
   if (
-    !stompKick ||
-    stompKick.clientSkillId !== 'StompKick' ||
-    stompKick.presentationMode !== 'corrected_alias'
+    !impactKick ||
+    impactKick.clientSkillId !== 'StompKick' ||
+    impactKick.presentationMode !== 'corrected_alias' ||
+    !impactKick.description.includes('螺旋上勾拳或重踏踢')
   ) {
-    fail('profession-skills.json.fighter.重踏踢', '更名技能必須以重踏踢為公開名稱，並維持 StompKick 與 corrected_alias 契約');
+    fail('profession-skills.json.fighter.衝擊踢', '更名技能必須以衝擊踢為公開名稱，保留 StompKick 與後續連段名稱契約');
   }
-  if (stompKick && ('internalAlias' in stompKick || 'publicAliasPolicy' in stompKick)) {
-    fail('profession-skills.json.fighter.重踏踢', '公開技能資料不得保留內部別名或公開別名政策欄位');
+  if (impactKick && ('internalAlias' in impactKick || 'publicAliasPolicy' in impactKick)) {
+    fail('profession-skills.json.fighter.衝擊踢', '公開技能資料不得保留內部別名或公開別名政策欄位');
   }
 
   for (const [id, definition] of Object.entries(issue10Definitions)) {

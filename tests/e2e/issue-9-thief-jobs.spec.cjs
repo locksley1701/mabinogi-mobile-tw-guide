@@ -8,17 +8,29 @@ const jobs = [
       ['隱身', 'thief-hide', 'assets/icons/profession-skills/thief-hide.png'],
       ['毒陷阱', 'thief-poison-trap', 'assets/icons/profession-skills/thief-poison-trap.png'],
       ['螺旋匕首', 'thief-screw-dagger', 'assets/icons/profession-skills/thief-screw-dagger.png'],
-      ['投擲炸彈', 'thief-throwing-bomb', 'assets/icons/profession-skills/thief-throwing-bomb.png']
+      ['投擲炸彈', 'thief-throwing-bomb', 'assets/icons/profession-skills/thief-throwing-bomb.png'],
+      ['閃擊突襲', 'thief-blitz-rush', 'assets/icons/profession-skills/thief-blitz-rush.png'],
+      ['腎上腺素', 'thief-adrenaline', 'assets/icons/profession-skills/thief-adrenaline.png'],
+      ['偷襲', 'thief-sneak-attack', 'assets/icons/profession-skills/thief-sneak-attack.png'],
+      ['戰鬥熟練：疾速', 'thief-combat-mastery-swiftness', 'assets/icons/profession-skills/thief-combat-mastery-swiftness.png'],
+      ['毒擊', 'thief-poison-attack', 'assets/icons/profession-skills/thief-poison-attack.png'],
+      ['毒爆', 'thief-poison-explosion', 'assets/icons/profession-skills/thief-poison-explosion.png']
     ]
   },
   {
     id: 'fighter', name: '格鬥家', professionIcon: 'assets/icons/professions/fighter.png',
     skills: [
+      ['蓄力拳', 'fighter-charging-fist', 'assets/icons/profession-skills/fighter-charging-fist.png'],
+      ['衝擊踢', 'fighter-impact-kick', 'assets/icons/profession-skills/fighter-impact-kick.png'],
       ['後退步', 'fighter-back-step', 'assets/icons/profession-skills/fighter-back-step.png'],
       ['爆裂拳：第1擊', 'fighter-burst-punch-1', 'assets/icons/profession-skills/fighter-burst-punch-1.png'],
-      ['蓄力拳', 'fighter-charging-fist', 'assets/icons/profession-skills/fighter-charging-fist.png'],
       ['空翻踢：第1擊', 'fighter-somersault-1', 'assets/icons/profession-skills/fighter-somersault-1.png'],
-      ['重踏踢', 'fighter-stomp-kick', 'assets/icons/profession-skills/fighter-stomp-kick.png']
+      ['極限超載', 'fighter-power-max', 'assets/icons/profession-skills/fighter-power-max.png'],
+      ['連攜攻擊', 'fighter-combo-damage', 'assets/icons/profession-skills/fighter-combo-damage.png'],
+      ['會心一擊', 'fighter-finish-attack', 'assets/icons/profession-skills/fighter-finish-attack.png'],
+      ['戰鬥熟練：毀滅', 'fighter-combat-mastery-destruction', 'assets/icons/profession-skills/dual-blades-combat-mastery-destruction.png'],
+      ['急救處置', 'fighter-first-aid', 'assets/icons/profession-skills/fighter-first-aid.png'],
+      ['衝擊波', 'fighter-shock-wave', 'assets/icons/profession-skills/fighter-shock-wave.png']
     ]
   },
   {
@@ -28,7 +40,13 @@ const jobs = [
       ['滑行狂怒', 'dual-blades-gliding-fury', 'assets/icons/profession-skills/dual-blades-gliding-fury.png'],
       ['怒號疾風', 'dual-blades-howling-gale', 'assets/icons/profession-skills/dual-blades-howling-gale.png'],
       ['旋轉突襲', 'dual-blades-hurricane-dance', 'assets/icons/profession-skills/dual-blades-hurricane-dance.png'],
-      ['分裂斬', 'dual-blades-outer-slash', 'assets/icons/profession-skills/dual-blades-outer-slash.png']
+      ['分裂斬', 'dual-blades-outer-slash', 'assets/icons/profession-skills/dual-blades-outer-slash.png'],
+      ['終極連擊', 'dual-blades-final-hit', 'assets/icons/profession-skills/dual-blades-final-hit.png'],
+      ['渴望湧現', 'dual-blades-rising-aspirations', 'assets/icons/profession-skills/dual-blades-rising-aspirations.png'],
+      ['再充能', 'dual-blades-recharge', 'assets/icons/profession-skills/dual-blades-recharge.png'],
+      ['戰鬥熟練：毀滅', 'dual-blades-combat-mastery-destruction', 'assets/icons/profession-skills/dual-blades-combat-mastery-destruction.png'],
+      ['活力', 'dual-blades-vigor', 'assets/icons/profession-skills/dual-blades-vigor.png'],
+      ['風之刃', 'dual-blades-wind-blade', 'assets/icons/profession-skills/dual-blades-wind-blade.png']
     ]
   }
 ];
@@ -66,7 +84,7 @@ test.beforeEach(async ({ page }) => {
   await prepare(page);
 });
 
-test('三個可分享 route 呈現各 5 筆技能與資料限制', async ({ page }) => {
+test('三個可分享 route 呈現各 11 筆技能與資料限制', async ({ page }) => {
   for (const job of jobs) {
     await openRoute(page, `profession/${job.id}`);
     await expect(page.locator('#page-title')).toHaveText(job.name);
@@ -76,10 +94,10 @@ test('三個可分享 route 呈現各 5 筆技能與資料限制', async ({ page
     const summary = page.locator('.profession-summary');
     await expect(summary).toContainText('資料待補（尚無已核實來源）');
     const descriptionCount = summary.locator('span', { hasText: '技能說明' }).locator('xpath=following-sibling::strong[1]');
-    await expect(descriptionCount).toHaveText('5 個');
+    await expect(descriptionCount).toHaveText('11 個');
     await expect(summary).not.toContainText('完整效果');
-    await expect(page.locator('details.profession-skill')).toHaveCount(5);
-    await expect(page.locator('.profession-skill__numeric-note')).toHaveCount(5);
+    await expect(page.locator('details.profession-skill')).toHaveCount(11);
+    await expect(page.locator('.profession-skill__numeric-note')).toHaveCount(11);
 
     const names = await page.locator('.profession-skill__identity strong').allTextContents();
     expect(names).toEqual(job.skills.map(([name]) => name));
@@ -91,7 +109,7 @@ test('三個可分享 route 呈現各 5 筆技能與資料限制', async ({ page
   }
 });
 
-test('三職業總覽、hero 與 15 筆技能載入穩定官方圖標', async ({ page }) => {
+test('三職業總覽、hero 與 33 筆技能載入穩定官方圖標', async ({ page }) => {
   await openRoute(page, 'professions');
   const allSkillIconIds = [];
 
@@ -105,7 +123,7 @@ test('三職業總覽、hero 與 15 筆技能載入穩定官方圖標', async ({
     await expectLoadedIcon(heroIcon, job.professionIcon);
 
     const rowIcons = page.locator('.profession-skill img[data-official-icon]');
-    await expect(rowIcons).toHaveCount(5);
+    await expect(rowIcons).toHaveCount(11);
     for (const [name, iconId, iconPath] of job.skills) {
       const row = page.locator('.profession-skill', { has: page.locator('.profession-skill__identity strong', { hasText: name }) });
       const image = row.locator(`img[data-official-icon="${iconId}"]`);
@@ -114,10 +132,10 @@ test('三職業總覽、hero 與 15 筆技能載入穩定官方圖標', async ({
     }
   }
 
-  expect(new Set(allSkillIconIds).size).toBe(15);
+  expect(new Set(allSkillIconIds).size).toBe(33);
 });
 
-test('格鬥家只公開已確認的組合技基礎列與重踏踢正式名稱', async ({ page }) => {
+test('格鬥家只公開已確認的組合技基礎列，並以衝擊踢作為正式名稱', async ({ page }) => {
   await openRoute(page, 'profession/fighter');
   const combos = page.locator('.profession-skill__combo');
   await expect(combos).toHaveCount(2);
@@ -126,7 +144,9 @@ test('格鬥家只公開已確認的組合技基礎列與重踏踢正式名稱',
   const publicSkillNames = await page.locator('.profession-skill__identity strong').allTextContents();
   expect(publicSkillNames).not.toContain('爆裂拳：第2擊');
   expect(publicSkillNames).not.toContain('空翻踢：第2擊');
-  await expect(page.locator('#workspace')).toContainText('重踏踢');
+  expect(publicSkillNames).toContain('衝擊踢');
+  expect(publicSkillNames).not.toContain('重踏踢');
+  await expect(page.locator('.profession-skill', { has: page.locator('.profession-skill__identity strong', { hasText: '衝擊踢' }) })).toContainText('螺旋上勾拳或重踏踢');
   await expect(page.locator('#workspace')).not.toContainText('AxeKick');
   await expectLoadedIcon(
     page.locator('.profession-skill', { hasText: '爆裂拳：第1擊' }).locator('img[data-official-icon="fighter-burst-punch-1"]'),
@@ -137,8 +157,8 @@ test('格鬥家只公開已確認的組合技基礎列與重踏踢正式名稱',
     'assets/icons/profession-skills/fighter-somersault-1.png'
   );
   await expectLoadedIcon(
-    page.locator('.profession-skill', { hasText: '重踏踢' }).locator('img[data-official-icon="fighter-stomp-kick"]'),
-    'assets/icons/profession-skills/fighter-stomp-kick.png'
+    page.locator('.profession-skill', { has: page.locator('.profession-skill__identity strong', { hasText: '衝擊踢' }) }).locator('img[data-official-icon="fighter-impact-kick"]'),
+    'assets/icons/profession-skills/fighter-impact-kick.png'
   );
 });
 
@@ -163,7 +183,7 @@ test('職業與技能可由快速查詢抵達，內部別名不進入搜尋', as
   await expect(page.locator('.empty-state')).toBeVisible();
 });
 
-test('搜尋結果為三職業與 15 技能顯示正式圖標', async ({ page }) => {
+test('搜尋結果為三職業與 33 技能顯示正式圖標', async ({ page }) => {
   await openRoute(page, 'search');
   const input = page.locator('#site-search');
 
@@ -174,7 +194,11 @@ test('搜尋結果為三職業與 15 技能顯示正式圖標', async ({ page })
 
     for (const [name, iconId, iconPath] of job.skills) {
       await input.fill(name);
-      const result = page.locator('.result-row', { has: page.locator('strong', { hasText: name }) }).first();
+      const result = page.locator('.result-row').filter({
+        has: page.locator(`a[href="#/profession/${job.id}"]`)
+      }).filter({
+        has: page.locator('strong', { hasText: name })
+      }).first();
       await expectLoadedIcon(result.locator(`img[data-official-icon="${iconId}"]`), iconPath);
     }
   }
@@ -186,7 +210,7 @@ test('搜尋結果為三職業與 15 技能顯示正式圖標', async ({ page })
 
 test('Issue #9 技能圖標失敗時恢復編號 fallback 且不保留破圖', async ({ page }) => {
   await openRoute(page, 'profession/thief');
-  const host = page.locator('.profession-skill', { hasText: '奇襲' }).locator('.profession-skill__number');
+  const host = page.locator('.profession-skill', { has: page.locator('.profession-skill__identity strong', { hasText: '奇襲' }) }).locator('.profession-skill__number');
   const image = host.locator('img[data-official-icon="thief-back-stab"]');
   await expectLoadedIcon(image, 'assets/icons/profession-skills/thief-back-stab.png');
   await image.evaluate(element => { element.src = 'assets/icons/missing-issue-9-icon.png'; });
@@ -195,7 +219,7 @@ test('Issue #9 技能圖標失敗時恢復編號 fallback 且不保留破圖', a
   await expect(host).toHaveText('01');
 });
 
-test('公開 JSON 保持三職業、15 技能、route 與 changelog 契約', async ({ page }) => {
+test('公開 JSON 保持三職業、完整技能樹、route 與 changelog 契約', async ({ page }) => {
   await openRoute(page, 'home');
   const data = await page.evaluate(async () => {
     const [professions, professionSkillsRaw, iconManifestRaw, changelog] = await Promise.all([
@@ -218,18 +242,19 @@ test('公開 JSON 保持三職業、15 技能、route 與 changelog 契約', asy
   expect(added).toHaveLength(3);
   expect(added.every(item => item.documented && item.routeSlug === item.id)).toBeTruthy();
   const skills = jobs.flatMap(job => data.professionSkills[job.id].active);
-  expect(skills).toHaveLength(15);
+  expect(skills).toHaveLength(18);
   expect(skills.every(skill => skill.status === 'tw-confirmed' && skill.numericValuesStatus === 'pending_resolution' && skill.stats.length === 0)).toBeTruthy();
   expect(data.professionSkillsRaw).not.toContain('AxeKick');
   expect(data.iconManifestRaw).not.toContain('AxeKick');
   expect(data.iconManifestRaw).not.toMatch(/[A-Za-z]:[\\/]/);
   expect(data.iconManifestRaw).not.toMatch(/Blob|Segment|Bundle|OfficialIconLibrary|appdata/i);
   expect(data.iconManifest.categories.professions).toHaveLength(12);
-  expect(data.iconManifest.categories.professionSkills).toHaveLength(58);
-  const stompKick = data.professionSkills.fighter.active.find(skill => skill.name === '重踏踢');
-  expect(stompKick).toMatchObject({ clientSkillId: 'StompKick', presentationMode: 'corrected_alias' });
-  expect(stompKick).not.toHaveProperty('internalAlias');
-  expect(stompKick).not.toHaveProperty('publicAliasPolicy');
+  expect(data.iconManifest.categories.professionSkills).toHaveLength(76);
+  const impactKick = data.professionSkills.fighter.active.find(skill => skill.name === '衝擊踢');
+  expect(impactKick).toMatchObject({ clientSkillId: 'StompKick', presentationMode: 'corrected_alias' });
+  expect(impactKick.description).toContain('螺旋上勾拳或重踏踢');
+  expect(impactKick).not.toHaveProperty('internalAlias');
+  expect(impactKick).not.toHaveProperty('publicAliasPolicy');
   expect(data.changelog.some(item => item.item === '盜賊系三職業技能手札')).toBeTruthy();
 });
 
@@ -270,7 +295,7 @@ test('390×844 手機圖標不擠壓技能名稱與展開控制', async ({ page 
 
   for (const job of jobs) {
     await openRoute(page, `profession/${job.id}`);
-    await expect(page.locator('.profession-skill img[data-official-icon]')).toHaveCount(5);
+    await expect(page.locator('.profession-skill img[data-official-icon]')).toHaveCount(11);
     const layout = await page.locator('.profession-skill__summary').evaluateAll(elements => elements.map(element => {
       const name = element.querySelector('.profession-skill__identity strong');
       const toggle = element.querySelector('.profession-skill__toggle');
@@ -298,7 +323,7 @@ test('亮色、暗色與 reduced motion 下技能內容皆可閱讀', async ({ p
       window.FanatioThemeSystem.apply({ appearance: value, palette: 'forest', persist: false });
     }, appearance);
     await expect(page.locator('html')).toHaveAttribute('data-theme', appearance);
-    await expect(page.locator('.profession-skill__identity strong', { hasText: '重踏踢' })).toBeVisible();
+    await expect(page.locator('.profession-skill__identity strong', { hasText: '衝擊踢' })).toBeVisible();
     const scrollBehavior = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior);
     expect(scrollBehavior).toBe('auto');
     await expectNoHorizontalOverflow(page);
