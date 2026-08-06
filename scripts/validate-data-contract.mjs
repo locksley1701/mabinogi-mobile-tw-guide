@@ -307,14 +307,26 @@ function validateProfessionData(professions, professionSkills) {
   };
   const issue10Definitions = {
     longbowman: {
-      names: ['震盪射擊', '烈焰箭', '尋心者', '破殼者', '翼之穿刺'],
+      names: ['震盪射擊', '烈焰箭', '尋心者', '破殼者', '翼之穿刺', '獵龍人'],
       clientSkillIds: ['CrashShot', 'FlameBarrage', 'HeartSeeker', 'ShellBreaker', 'WingSkewer'],
-      stats: [[], [['攻擊已破防敵人時傷害增加', '50%'], ['重複打擊時傷害比例', '25%']], [['各階段蓄力時間', '0.75 秒']], [], [['攻擊次數', '5 次'], ['破防傷害', '1 格'], ['迎擊時破防傷害', '2 格']]]
+      stats: [[], [['攻擊已破防敵人時傷害增加', '50%'], ['重複打擊時傷害比例', '25%']], [['各階段蓄力時間', '0.75 秒']], [], [['攻擊次數', '5 次'], ['破防傷害', '1 格'], ['迎擊時破防傷害', '2 格']], []],
+      tags: [null, null, null, null, null, ['絕招']],
+      unlocks: [null, null, null, null, null, '長弓兵 Lv.20 以上'],
+      passiveNames: ['狙擊術', '狩獵術', '戰鬥熟練：霸氣', '敏銳之箭', '鬥志高昂'],
+      passiveStats: [[], [], [], [], []],
+      passiveTags: [[], [], [], ['強擊', '輔助'], []],
+      passiveUnlocks: [null, null, '長弓兵 Lv.15 以上', '長弓兵 Lv.30 以上', '長弓兵 Lv.45 以上']
     },
     crossbowman: {
-      names: ['爆裂射擊', '狂風弩箭', '震撼爆裂', '滑步', '擴散弩箭'],
+      names: ['爆裂射擊', '狂風弩箭', '震撼爆裂', '滑步', '擴散弩箭', '地獄火'],
       clientSkillIds: ['BusterShot', 'GustingBolt', 'ShockExplosion', 'SlidingStep', 'SpreadingBolt'],
-      stats: [[['最大層數', '2'], ['範圍', '6 m'], ['強化弩箭裝填', '1 個彈匣']], [['攻擊次數', '10 次'], ['強化弩箭暴擊機率衰減', '每次發射降低為前次的 0.75 倍'], ['強化弩箭消耗', '1 個彈匣']], [['破防傷害', '1 格'], ['強化弩箭裝填', '1 個彈匣']], [['攻擊次數', '2 次'], ['強化弩箭裝填', '1 個彈匣']], [['強化弩箭消耗', '1 個彈匣']]]
+      stats: [[['最大層數', '2'], ['範圍', '6 m'], ['強化弩箭裝填', '1 個彈匣']], [['攻擊次數', '10 次'], ['強化弩箭暴擊機率衰減', '每次發射降低為前次的 0.75 倍'], ['強化弩箭消耗', '1 個彈匣']], [['破防傷害', '1 格'], ['強化弩箭裝填', '1 個彈匣']], [['攻擊次數', '2 次'], ['強化弩箭裝填', '1 個彈匣']], [['強化弩箭消耗', '1 個彈匣']], []],
+      tags: [null, null, null, null, null, ['絕招', '強擊', '連擊']],
+      unlocks: [null, null, null, null, null, '弩手 Lv.20 以上'],
+      passiveNames: ['額外行動', '驅動力', '戰鬥熟練：威脅', '快速攻擊', '擴充彈匣'],
+      passiveStats: [[['下一次裝填技能攻擊次數', '2 倍']], [], [], [], []],
+      passiveTags: [[], [], [], [], []],
+      passiveUnlocks: [null, null, '弩手 Lv.15 以上', '弩手 Lv.30 以上', '弩手 Lv.45 以上']
     },
     mage: {
       names: ['冰晶匕首', '雷電', '魔力風暴', '流星打擊', '念動力'],
@@ -429,22 +441,32 @@ function validateProfessionData(professions, professionSkills) {
     if (profession.preferredEquipment !== null || profession.preferredEquipmentStatus !== 'pending_verified_source') {
       fail(`${location}.preferredEquipment`, '偏好裝備資料不足時必須保持 null 與待核實狀態');
     }
-    if (profession.status !== 'tw-confirmed' || profession.active.length !== 5 || profession.passive.length !== 0) {
-      fail(location, 'Issue #10 每個職業應收錄 5 筆已確認主動技能且不得補寫被動技能');
+    const expectedPassiveCount = definition.passiveNames?.length || 0;
+    if (profession.status !== 'tw-confirmed' || profession.active.length !== definition.names.length || profession.passive.length !== expectedPassiveCount) {
+      fail(location, '職業技能樹收錄數量不符合已確認公開契約');
       continue;
     }
     const names = profession.active.map(skill => skill.name);
     if (JSON.stringify(names) !== JSON.stringify(definition.names)) fail(`${location}.active`, '技能名稱或順序不符');
     profession.active.forEach((skill, index) => {
       const skillLocation = `${location}.active[${index}]`;
-      if (skill.order !== index + 1 || skill.clientSkillId !== definition.clientSkillIds[index]) fail(skillLocation, '技能 order 或公開 clientSkillId 不符');
+      if (skill.order !== index + 1) fail(skillLocation, '技能 order 不符');
+      if (definition.clientSkillIds[index] && skill.clientSkillId !== definition.clientSkillIds[index]) {
+        fail(`${skillLocation}.clientSkillId`, '既有技能的公開 clientSkillId 不符');
+      }
+      if (!definition.clientSkillIds[index] && ('clientSkillId' in skill || 'internalAlias' in skill)) {
+        fail(skillLocation, '新增技能不得公開內部 clientSkillId 或別名');
+      }
       if (skill.status !== 'tw-confirmed' || skill.numericValuesStatus !== 'pending_resolution') fail(skillLocation, '技能資料或數值狀態不符');
       if (!allowedClientDataStatuses.has(skill.dataStatus)) fail(`${skillLocation}.dataStatus`, '不允許的客戶端文字確認狀態');
       if (typeof skill.publicNumericPolicy !== 'string' || !skill.publicNumericPolicy.includes('不得')) fail(`${skillLocation}.publicNumericPolicy`, '缺少未解析數值公開限制');
       const actualStats = (skill.stats || []).map(stat => [stat.label, stat.value]);
       if (JSON.stringify(actualStats) !== JSON.stringify(definition.stats[index])) fail(`${skillLocation}.stats`, '已確認常數不符或包含未核實數值');
-      if (definition.tags && JSON.stringify(skill.tags || []) !== JSON.stringify(definition.tags[index])) {
+      if (definition.tags?.[index] && JSON.stringify(skill.tags || []) !== JSON.stringify(definition.tags[index])) {
         fail(`${skillLocation}.tags`, '技能 tags 必須與已確認台版內容一致');
+      }
+      if (definition.unlocks && (skill.unlock || null) !== definition.unlocks[index]) {
+        fail(`${skillLocation}.unlock`, '技能解鎖等級不符合已確認台版內容');
       }
       if (definition.descriptionKeywords && !definition.descriptionKeywords[index].every(keyword => skill.description.includes(keyword))) {
         fail(`${skillLocation}.description`, '技能說明缺少已確認主要機制，疑似退化為摘要');
@@ -452,6 +474,25 @@ function validateProfessionData(professions, professionSkills) {
       if (definition.presentationModes && skill.presentationMode !== definition.presentationModes[index]) {
         fail(`${skillLocation}.presentationMode`, '公開呈現模式不符合已確認別名修正契約');
       }
+      for (const key of ['name', 'description', 'publicNumericPolicy']) {
+        if (forbiddenExternalText.test(String(skill[key] || ''))) fail(`${skillLocation}.${key}`, '公開內容不得包含 Drive、Windows 路徑或韓文參照式');
+      }
+    });
+    (definition.passiveNames || []).forEach((name, index) => {
+      const skill = profession.passive[index];
+      const skillLocation = `${location}.passive[${index}]`;
+      if (!skill || skill.order !== index + 1 || skill.name !== name) {
+        fail(skillLocation, '被動技能名稱或順序不符');
+        return;
+      }
+      if ('clientSkillId' in skill || 'internalAlias' in skill) fail(skillLocation, '新增被動技能不得公開內部 clientSkillId 或別名');
+      if (skill.status !== 'tw-confirmed' || skill.numericValuesStatus !== 'pending_resolution') fail(skillLocation, '被動技能資料或數值狀態不符');
+      if (!allowedClientDataStatuses.has(skill.dataStatus)) fail(`${skillLocation}.dataStatus`, '不允許的被動技能文字確認狀態');
+      if (typeof skill.publicNumericPolicy !== 'string' || !skill.publicNumericPolicy.includes('不得')) fail(`${skillLocation}.publicNumericPolicy`, '缺少未解析數值公開限制');
+      const actualStats = (skill.stats || []).map(stat => [stat.label, stat.value]);
+      if (JSON.stringify(actualStats) !== JSON.stringify(definition.passiveStats[index])) fail(`${skillLocation}.stats`, '被動技能包含未核實數值或遺漏安全常數');
+      if (JSON.stringify(skill.tags || []) !== JSON.stringify(definition.passiveTags[index])) fail(`${skillLocation}.tags`, '被動技能 tags 不符合公開契約');
+      if ((skill.unlock || null) !== definition.passiveUnlocks[index]) fail(`${skillLocation}.unlock`, '被動技能解鎖等級不符合公開契約');
       for (const key of ['name', 'description', 'publicNumericPolicy']) {
         if (forbiddenExternalText.test(String(skill[key] || ''))) fail(`${skillLocation}.${key}`, '公開內容不得包含 Drive、Windows 路徑或韓文參照式');
       }
@@ -471,7 +512,12 @@ for (const fileName of jsonFiles) {
   if (rawPublicData.includes('AxeKick')) {
     fail(fileName, '公開 data JSON 不得包含 AxeKick');
   }
-  for (const alias of ['MountingShock', 'GustingVolt', 'SlipThrough', 'SpreadingVolt', 'ExpertMage_MeteorStrike_Tier2A', 'FireMage_Flashover']) {
+  for (const alias of [
+    'MountingShock', 'GustingVolt', 'SlipThrough', 'SpreadingVolt', 'ExpertMage_MeteorStrike_Tier2A', 'FireMage_Flashover',
+    'LongBowMan_DragonHunter', 'LongBowMan_Sniping', 'LongBowMan_Hunting', 'Common_CombatMastery_Fortitude',
+    'LongBowMan_ConcentrationArrow', 'LongBowMan_Upliftment', 'Arbalist_BigBang', 'Arbalist_ExtraAction',
+    'Arbalist_DrivingForce', 'Common_CombatMastery_Menace', 'Arbalist_QuickAttack', 'Arbalist_ReinforcedBolt'
+  ]) {
     if (rawPublicData.includes(alias)) fail(fileName, `公開 data JSON 不得包含內部別名：${alias}`);
   }
   walk(data, fileName);

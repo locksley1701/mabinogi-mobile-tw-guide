@@ -63,7 +63,7 @@ const expectedCounts = {
   lifeSkills: 20,
   professionSeries: 4,
   professions: 12,
-  professionSkills: 46,
+  professionSkills: 58,
   cooking: 4
 };
 
@@ -74,7 +74,7 @@ for (const [category, count] of Object.entries(expectedCounts)) {
   if (items.length !== count) fail(`${category} 數量為 ${items.length}，預期 ${count}`);
   all.push(...items.map(item => ({ ...item, category })));
 }
-if (all.length !== 86) fail(`總數為 ${all.length}，預期 86`);
+if (all.length !== 98) fail(`總數為 ${all.length}，預期 98`);
 
 const manifestById = new Map(all.map(item => [item.id, item]));
 const sharedWithItems = all.filter(item => Object.hasOwn(item, 'sharedWith'));
@@ -177,6 +177,18 @@ const issue10SkillBindings = new Map([
   ['crossbowman-shock-explosion', { professionId: 'crossbowman', name: '震撼爆裂' }],
   ['crossbowman-sliding-step', { professionId: 'crossbowman', name: '滑步' }],
   ['crossbowman-spreading-bolt', { professionId: 'crossbowman', name: '擴散弩箭' }],
+  ['longbowman-dragon-hunter', { professionId: 'longbowman', name: '獵龍人' }],
+  ['longbowman-sniping', { professionId: 'longbowman', name: '狙擊術' }],
+  ['longbowman-hunting', { professionId: 'longbowman', name: '狩獵術' }],
+  ['longbowman-combat-mastery-heroism', { professionId: 'longbowman', name: '戰鬥熟練：霸氣' }],
+  ['longbowman-keen-arrow', { professionId: 'longbowman', name: '敏銳之箭' }],
+  ['longbowman-fighting-spirit', { professionId: 'longbowman', name: '鬥志高昂' }],
+  ['crossbowman-hellfire', { professionId: 'crossbowman', name: '地獄火' }],
+  ['crossbowman-extra-action', { professionId: 'crossbowman', name: '額外行動' }],
+  ['crossbowman-driving-force', { professionId: 'crossbowman', name: '驅動力' }],
+  ['crossbowman-combat-mastery-threat', { professionId: 'crossbowman', name: '戰鬥熟練：威脅' }],
+  ['crossbowman-rapid-attack', { professionId: 'crossbowman', name: '快速攻擊' }],
+  ['crossbowman-expanded-magazine', { professionId: 'crossbowman', name: '擴充彈匣' }],
   ['mage-ice-dagger', { professionId: 'mage', name: '冰晶匕首' }],
   ['mage-lightning', { professionId: 'mage', name: '雷電' }],
   ['mage-mana-storm', { professionId: 'mage', name: '魔力風暴' }],

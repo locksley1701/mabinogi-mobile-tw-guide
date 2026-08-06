@@ -107,8 +107,8 @@ jobs:
             thief: {active: 5, passive: 0},
             fighter: {active: 5, passive: 0},
             'dual-blades': {active: 5, passive: 0},
-            longbowman: {active: 5, passive: 0},
-            crossbowman: {active: 5, passive: 0},
+            longbowman: {active: 6, passive: 5},
+            crossbowman: {active: 6, passive: 5},
             mage: {active: 5, passive: 0},
             'flame-mage': {active: 5, passive: 0},
             'frost-mage': {active: 5, passive: 0}
@@ -136,7 +136,7 @@ jobs:
           }
 
           const iconCount = Object.values(icons.categories || {}).flat().length;
-          if (iconCount !== 86) throw new Error(`Expected 86 approved icon records, got ${iconCount}`);
+          if (iconCount !== 98) throw new Error(`Expected 98 approved icon records, got ${iconCount}`);
 
           const lifeIconCount = icons.categories?.lifeSkills?.length || 0;
           if (lifeIconCount !== 20) throw new Error(`Expected 20 approved life-skill icon records, got ${lifeIconCount}`);
