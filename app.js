@@ -301,6 +301,7 @@ function renderSearchResults() {
       </div>
     </section>
   `).join('');
+  window.FanatioIconPilot?.patch();
 }
 
 function renderLife() {

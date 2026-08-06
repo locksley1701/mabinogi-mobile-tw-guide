@@ -116,8 +116,8 @@ test('mage 與 series-mage 依公開契約共用單一正式 PNG，內部別名�
   const seriesMage = manifest.categories.professionSeries.find(item => item.id === 'series-mage');
   const mage = manifest.categories.professions.find(item => item.id === 'mage');
   const declaredShares = records.filter(item => Object.hasOwn(item, 'sharedWith'));
-  expect(records).toHaveLength(98);
-  expect(declaredShares).toHaveLength(1);
+  expect(records).toHaveLength(116);
+  expect(declaredShares).toHaveLength(2);
   expect(new Set(records.map(item => item.sha256)).size).toBe(records.length - declaredShares.length);
   expect(seriesMage).toMatchObject({
     name: '見習魔法師系',

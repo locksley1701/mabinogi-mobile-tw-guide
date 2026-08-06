@@ -63,7 +63,7 @@ const expectedCounts = {
   lifeSkills: 20,
   professionSeries: 4,
   professions: 12,
-  professionSkills: 58,
+  professionSkills: 76,
   cooking: 4
 };
 
@@ -74,24 +74,26 @@ for (const [category, count] of Object.entries(expectedCounts)) {
   if (items.length !== count) fail(`${category} 數量為 ${items.length}，預期 ${count}`);
   all.push(...items.map(item => ({ ...item, category })));
 }
-if (all.length !== 98) fail(`總數為 ${all.length}，預期 98`);
+if (all.length !== 116) fail(`總數為 ${all.length}，預期 116`);
 
 const manifestById = new Map(all.map(item => [item.id, item]));
 const sharedWithItems = all.filter(item => Object.hasOwn(item, 'sharedWith'));
-if (sharedWithItems.length !== 1) fail(`sharedWith 僅允許一筆宣告，實際為 ${sharedWithItems.length} 筆`);
-const sharedMageSeries = sharedWithItems[0];
-if (
-  !sharedMageSeries ||
-  sharedMageSeries.category !== 'professionSeries' ||
-  sharedMageSeries.id !== 'series-mage' ||
-  sharedMageSeries.sharedWith !== 'mage'
-) {
-  fail('sharedWith 僅允許 professionSeries 的 series-mage 指向 mage');
+if (sharedWithItems.length !== 2) fail(`sharedWith 必須有兩筆宣告，實際為 ${sharedWithItems.length} 筆`);
+const expectedShares = new Map([
+  ['series-mage', 'mage'],
+  ['fighter-combat-mastery-destruction', 'dual-blades-combat-mastery-destruction']
+]);
+for (const item of sharedWithItems) {
+  if (expectedShares.get(item.id) !== item.sharedWith) fail(`${item.id} sharedWith 不符合公開契約`);
+  if (item.sharedWith === item.id) fail('sharedWith 不得指向自身');
+  const target = manifestById.get(item.sharedWith);
+  if (!target) fail(`sharedWith target 不存在：${item.sharedWith}`);
+  if (Object.hasOwn(target, 'sharedWith')) fail('sharedWith 不得建立雙向或循環關係');
+  if (item.icon !== target.icon || item.sha256 !== target.sha256) fail(`${item.id} 必須與 sharedWith target 共用路徑與 SHA256`);
 }
-if (sharedMageSeries.sharedWith === sharedMageSeries.id) fail('sharedWith 不得指向自身');
-const sharedMageTarget = manifestById.get(sharedMageSeries.sharedWith);
-if (!sharedMageTarget) fail(`sharedWith target 不存在：${sharedMageSeries.sharedWith}`);
-if (Object.hasOwn(sharedMageTarget, 'sharedWith')) fail('sharedWith 不得建立雙向或循環關係');
+for (const id of expectedShares.keys()) {
+  if (!sharedWithItems.some(item => item.id === id)) fail(`缺少 sharedWith 宣告：${id}`);
+}
 
 const lifeCategoryIds = new Set(lifeCategories.map(item => item.id));
 if (lifeCategoryIds.size !== 20) fail(`生活技能分類穩定 ID 數量為 ${lifeCategoryIds.size}，預期 20`);
@@ -159,7 +161,7 @@ const issue9SkillBindings = new Map([
   ['fighter-burst-punch-1', { professionId: 'fighter', name: '爆裂拳：第1擊' }],
   ['fighter-charging-fist', { professionId: 'fighter', name: '蓄力拳' }],
   ['fighter-somersault-1', { professionId: 'fighter', name: '空翻踢：第1擊' }],
-  ['fighter-stomp-kick', { professionId: 'fighter', name: '重踏踢' }],
+  ['fighter-impact-kick', { professionId: 'fighter', name: '衝擊踢' }],
   ['dual-blades-double-crescent', { professionId: 'dual-blades', name: '雙重新月' }],
   ['dual-blades-gliding-fury', { professionId: 'dual-blades', name: '滑行狂怒' }],
   ['dual-blades-howling-gale', { professionId: 'dual-blades', name: '怒號疾風' }],
@@ -205,8 +207,28 @@ const issue10SkillBindings = new Map([
   ['frost-mage-ice-spike', { professionId: 'frost-mage', name: '冰棘' }],
   ['frost-mage-split-slash', { professionId: 'frost-mage', name: '冰川裂刃' }]
 ]);
+const issue55SkillBindings = new Map([
+  ['thief-blitz-rush', { professionId: 'thief', name: '閃擊突襲' }],
+  ['thief-adrenaline', { professionId: 'thief', name: '腎上腺素' }],
+  ['thief-sneak-attack', { professionId: 'thief', name: '偷襲' }],
+  ['thief-combat-mastery-swiftness', { professionId: 'thief', name: '戰鬥熟練：疾速' }],
+  ['thief-poison-attack', { professionId: 'thief', name: '毒擊' }],
+  ['thief-poison-explosion', { professionId: 'thief', name: '毒爆' }],
+  ['dual-blades-final-hit', { professionId: 'dual-blades', name: '終極連擊' }],
+  ['dual-blades-rising-aspirations', { professionId: 'dual-blades', name: '渴望湧現' }],
+  ['dual-blades-recharge', { professionId: 'dual-blades', name: '再充能' }],
+  ['dual-blades-combat-mastery-destruction', { professionId: 'dual-blades', name: '戰鬥熟練：毀滅' }],
+  ['dual-blades-vigor', { professionId: 'dual-blades', name: '活力' }],
+  ['dual-blades-wind-blade', { professionId: 'dual-blades', name: '風之刃' }],
+  ['fighter-power-max', { professionId: 'fighter', name: '極限超載' }],
+  ['fighter-combo-damage', { professionId: 'fighter', name: '連攜攻擊' }],
+  ['fighter-finish-attack', { professionId: 'fighter', name: '會心一擊' }],
+  ['fighter-combat-mastery-destruction', { professionId: 'fighter', name: '戰鬥熟練：毀滅' }],
+  ['fighter-first-aid', { professionId: 'fighter', name: '急救處置' }],
+  ['fighter-shock-wave', { professionId: 'fighter', name: '衝擊波' }]
+]);
 const professionSkillById = new Map(categories.professionSkills.map(item => [item.id, item]));
-for (const [id, binding] of [...issue9SkillBindings, ...issue10SkillBindings]) {
+for (const [id, binding] of [...issue9SkillBindings, ...issue10SkillBindings, ...issue55SkillBindings]) {
   const item = professionSkillById.get(id);
   if (!item) fail(`職業技能缺少正式圖標：${id}`);
   if (item.professionId !== binding.professionId) fail(`${id} professionId 應為 ${binding.professionId}`);
@@ -222,10 +244,9 @@ const ids = new Set();
 const paths = new Map();
 const hashes = new Map();
 function isDeclaredSharedAsset(first, second) {
-  const pair = new Set([first?.id, second?.id]);
-  return pair.size === 2 && pair.has('series-mage') && pair.has('mage') &&
-    sharedMageSeries.sharedWith === 'mage' &&
-    first.icon === second.icon && first.sha256 === second.sha256;
+  return Boolean(first && second && first.id !== second.id &&
+    (first.sharedWith === second.id || second.sharedWith === first.id) &&
+    first.icon === second.icon && first.sha256 === second.sha256);
 }
 for (const item of all) {
   if (!item.approved) fail(`${item.id} 尚未核准`);
@@ -255,8 +276,8 @@ for (const item of all) {
   }
   if (!info.hasAlpha) fail(`${item.id} PNG 沒有 alpha 通道（color type ${info.colorType}）`);
 }
-if (hashes.size !== all.length - 1 || paths.size !== all.length - 1) {
-  fail('公開圖標必須恰有一組已宣告共用資產');
+if (hashes.size !== all.length - sharedWithItems.length || paths.size !== all.length - sharedWithItems.length) {
+  fail('公開圖標必須只含已宣告共用資產');
 }
 
 for (const full of walk(root)) {

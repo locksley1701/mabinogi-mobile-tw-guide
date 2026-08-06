@@ -1,6 +1,6 @@
 {
-  "version": 8,
-  "issue": 52,
+  "version": 9,
+  "issue": 55,
   "updatedAt": "2026-08-06",
   "categories": {
     "lifeSkills": [
@@ -537,10 +537,10 @@
         "approved": true
       },
       {
-        "id": "fighter-stomp-kick",
+        "id": "fighter-impact-kick",
         "professionId": "fighter",
-        "name": "重踏踢",
-        "icon": "assets/icons/profession-skills/fighter-stomp-kick.png",
+        "name": "衝擊踢",
+        "icon": "assets/icons/profession-skills/fighter-impact-kick.png",
         "width": 256,
         "height": 256,
         "sha256": "cefd5afcc861dc51056e837c75130e2842c9e8b9e91400e3afc1f8dd5ed542ff",
@@ -738,7 +738,25 @@
       {"id":"frost-mage-freezing-field","professionId":"frost-mage","name":"冰封領域","icon":"assets/icons/profession-skills/frost-mage-freezing-field.png","width":256,"height":256,"sha256":"eeb61b3de35d6f417a986f70855498659b70ebde1581bf5e29d2b99a62b754fa","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
       {"id":"frost-mage-frozen-orb","professionId":"frost-mage","name":"霜凍法球","icon":"assets/icons/profession-skills/frost-mage-frozen-orb.png","width":256,"height":256,"sha256":"fc4c59d07a950d394c6f86a5da7c51c0733c03ed6c88673e9e9fd76517b1d16f","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
       {"id":"frost-mage-ice-spike","professionId":"frost-mage","name":"冰棘","icon":"assets/icons/profession-skills/frost-mage-ice-spike.png","width":256,"height":256,"sha256":"0afbeebcba88ae53a5ed87b13c16ab6645a0ecb3e0bef418e7b44fd7a6c497b4","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
-      {"id":"frost-mage-split-slash","professionId":"frost-mage","name":"冰川裂刃","icon":"assets/icons/profession-skills/frost-mage-split-slash.png","width":256,"height":256,"sha256":"c4102ac74eaa86486f247d2652f223a07c2aa130111042a7b9fbab3416171bc9","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true}
+      {"id":"frost-mage-split-slash","professionId":"frost-mage","name":"冰川裂刃","icon":"assets/icons/profession-skills/frost-mage-split-slash.png","width":256,"height":256,"sha256":"c4102ac74eaa86486f247d2652f223a07c2aa130111042a7b9fbab3416171bc9","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"thief-blitz-rush","professionId":"thief","name":"閃擊突襲","icon":"assets/icons/profession-skills/thief-blitz-rush.png","width":256,"height":256,"sha256":"09f9d8225cf04e6b153b05c7f803611317d5600a7fc455167a948119825d394d","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"thief-adrenaline","professionId":"thief","name":"腎上腺素","icon":"assets/icons/profession-skills/thief-adrenaline.png","width":256,"height":256,"sha256":"9c4704ca0a207b6a774dc48a7d844b7db75651fb71afb898e96811da5bfae556","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"thief-sneak-attack","professionId":"thief","name":"偷襲","icon":"assets/icons/profession-skills/thief-sneak-attack.png","width":256,"height":256,"sha256":"faa61ce461ffdab7677311e3acbb667fcd4d1ab4b4494081603ae86aa732e0ae","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"thief-combat-mastery-swiftness","professionId":"thief","name":"戰鬥熟練：疾速","icon":"assets/icons/profession-skills/thief-combat-mastery-swiftness.png","width":256,"height":256,"sha256":"4d0769a16fb8b00293b27d5480eb9cab4afba10d3c73773b8aa20cce8f2b7fe5","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"thief-poison-attack","professionId":"thief","name":"毒擊","icon":"assets/icons/profession-skills/thief-poison-attack.png","width":256,"height":256,"sha256":"f82c3fe1d0ee31a5bddf4911e933e346bd3fbdb7a05b0d86ab10f620b1d7fe29","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"thief-poison-explosion","professionId":"thief","name":"毒爆","icon":"assets/icons/profession-skills/thief-poison-explosion.png","width":256,"height":256,"sha256":"bef0169f763020748cbd6fb09850b1c6eee58dc713df3b4ff1f4ba527e123d35","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"dual-blades-final-hit","professionId":"dual-blades","name":"終極連擊","icon":"assets/icons/profession-skills/dual-blades-final-hit.png","width":256,"height":256,"sha256":"ff71a6c5b04d263eda735b13c9eafb39de7a7de39fdfc4866433d0a07333e9bd","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"dual-blades-rising-aspirations","professionId":"dual-blades","name":"渴望湧現","icon":"assets/icons/profession-skills/dual-blades-rising-aspirations.png","width":256,"height":256,"sha256":"3717a5dff6eb47782f33d54b6cb0ed857da1ac7da0f1b25ce9995e477ca3846a","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"dual-blades-recharge","professionId":"dual-blades","name":"再充能","icon":"assets/icons/profession-skills/dual-blades-recharge.png","width":256,"height":256,"sha256":"cbc4eabe39a11e526990d493b888916933395ccba72b6506d386805a99fda19d","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"dual-blades-combat-mastery-destruction","professionId":"dual-blades","name":"戰鬥熟練：毀滅","icon":"assets/icons/profession-skills/dual-blades-combat-mastery-destruction.png","width":256,"height":256,"sha256":"e48073e65b955802e95a02f5d3587b37ff777ef9218775cb184c777d78952a9f","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"dual-blades-vigor","professionId":"dual-blades","name":"活力","icon":"assets/icons/profession-skills/dual-blades-vigor.png","width":256,"height":256,"sha256":"d2c8db176a343fc81cda865d9267b80957216faa6a3c38ca1ce45f431f1bdacf","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"dual-blades-wind-blade","professionId":"dual-blades","name":"風之刃","icon":"assets/icons/profession-skills/dual-blades-wind-blade.png","width":256,"height":256,"sha256":"631d2c45b9930f94fc053825142ccf44720d572f6c5bb9857df699d65e2f73ad","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"fighter-power-max","professionId":"fighter","name":"極限超載","icon":"assets/icons/profession-skills/fighter-power-max.png","width":256,"height":256,"sha256":"c7adab91f6a322a258a70672d291f5a81ff70a8235f13fbde0c0e01e26949a0c","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"fighter-combo-damage","professionId":"fighter","name":"連攜攻擊","icon":"assets/icons/profession-skills/fighter-combo-damage.png","width":256,"height":256,"sha256":"2f0a60c7a84fb7e74311c5963bc4621350ab9918abfa247999f11dc00c129584","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"fighter-finish-attack","professionId":"fighter","name":"會心一擊","icon":"assets/icons/profession-skills/fighter-finish-attack.png","width":256,"height":256,"sha256":"2358c3fc91c77db768803cd3991835b87d82df0a026c45c52963b7d213592fb0","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"fighter-combat-mastery-destruction","professionId":"fighter","name":"戰鬥熟練：毀滅","icon":"assets/icons/profession-skills/dual-blades-combat-mastery-destruction.png","width":256,"height":256,"sha256":"e48073e65b955802e95a02f5d3587b37ff777ef9218775cb184c777d78952a9f","sharedWith":"dual-blades-combat-mastery-destruction","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"fighter-first-aid","professionId":"fighter","name":"急救處置","icon":"assets/icons/profession-skills/fighter-first-aid.png","width":256,"height":256,"sha256":"474457576d42d541d9b91ae5b8d8b7ca32cf50af12748a7f63b42bdd05435933","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true},
+      {"id":"fighter-shock-wave","professionId":"fighter","name":"衝擊波","icon":"assets/icons/profession-skills/fighter-shock-wave.png","width":256,"height":256,"sha256":"1d0497216eda950fca8cd8510626103c753640711e904349f184b24e08d3c85a","sourceClass":"台版客戶端職業技能圖標核准輸出","approved":true}
     ],
     "cooking": [
       {
