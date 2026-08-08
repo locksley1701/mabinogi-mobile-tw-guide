@@ -651,7 +651,7 @@ test('側邊欄單一職業圖標失敗時只恢復該入口原符號', async ({
   expect(runtimeErrors).toEqual([]);
 });
 
-test('61枚職業技能在九個職業頁取代編號底盤', async ({ page }) => {
+test('94枚職業技能在十二個職業頁取代編號底盤', async ({ page }) => {
   const matrix = [
     ['swordsman', ['swordmaster-steel-wedge', 'swordmaster-detection']],
     ['warrior', ['expert-warrior-battle-cry', 'expert-warrior-blade-smash']],
@@ -661,7 +661,10 @@ test('61枚職業技能在九個職業頁取代編號底盤', async ({ page }) =
     ['crossbowman', ['crossbowman-buster-shot', 'crossbowman-gusting-bolt', 'crossbowman-shock-explosion', 'crossbowman-sliding-step', 'crossbowman-spreading-bolt', 'crossbowman-hellfire', 'crossbowman-extra-action', 'crossbowman-driving-force', 'crossbowman-combat-mastery-threat', 'crossbowman-rapid-attack', 'crossbowman-expanded-magazine']],
     ['thief', ['thief-back-stab', 'thief-hide', 'thief-poison-trap', 'thief-screw-dagger', 'thief-throwing-bomb', 'thief-blitz-rush', 'thief-adrenaline', 'thief-sneak-attack', 'thief-combat-mastery-swiftness', 'thief-poison-attack', 'thief-poison-explosion']],
     ['fighter', ['fighter-charging-fist', 'fighter-impact-kick', 'fighter-back-step', 'fighter-burst-punch-1', 'fighter-somersault-1', 'fighter-power-max', 'fighter-combo-damage', 'fighter-finish-attack', 'fighter-combat-mastery-destruction', 'fighter-first-aid', 'fighter-shock-wave']],
-    ['dual-blades', ['dual-blades-double-crescent', 'dual-blades-gliding-fury', 'dual-blades-howling-gale', 'dual-blades-hurricane-dance', 'dual-blades-outer-slash', 'dual-blades-final-hit', 'dual-blades-rising-aspirations', 'dual-blades-recharge', 'dual-blades-combat-mastery-destruction', 'dual-blades-vigor', 'dual-blades-wind-blade']]
+    ['dual-blades', ['dual-blades-double-crescent', 'dual-blades-gliding-fury', 'dual-blades-howling-gale', 'dual-blades-hurricane-dance', 'dual-blades-outer-slash', 'dual-blades-final-hit', 'dual-blades-rising-aspirations', 'dual-blades-recharge', 'dual-blades-combat-mastery-destruction', 'dual-blades-vigor', 'dual-blades-wind-blade']],
+    ['mage', ['mage-ice-dagger', 'mage-lightning', 'mage-mana-storm', 'mage-meteor-strike', 'mage-telekinesis', 'mage-infinite-mana', 'mage-meditation', 'mage-elemental-harmony', 'mage-combat-mastery-technique', 'mage-elemental-master', 'mage-arcane-power']],
+    ['flame-mage', ['flame-mage-fire-storm', 'flame-mage-flame-cannon', 'flame-mage-flash-over', 'flame-mage-ignite', 'flame-mage-rapid-fire', 'flame-mage-inferno', 'flame-mage-burning-soul', 'flame-mage-blazing-flame', 'flame-mage-combat-mastery-technique', 'flame-mage-spark', 'flame-mage-overheat']],
+    ['frost-mage', ['frost-mage-crystal-edge', 'frost-mage-freezing-field', 'frost-mage-frozen-orb', 'frost-mage-ice-spike', 'frost-mage-split-slash', 'frost-mage-absolute-zero', 'frost-mage-winter-veil', 'frost-mage-icicle-mark', 'frost-mage-combat-mastery-guard', 'frost-mage-fluttering-frost', 'frost-mage-piercing-chill']]
   ];
 
   for (const [professionId, iconIds] of matrix) {

@@ -338,28 +338,43 @@ function validateProfessionData(professions, professionSkills) {
       passiveUnlocks: [null, null, '弩手 Lv.15 以上', '弩手 Lv.30 以上', '弩手 Lv.45 以上']
     },
     mage: {
-      names: ['冰晶匕首', '雷電', '魔力風暴', '流星打擊', '念動力'],
+      names: ['冰晶匕首', '雷電', '魔力風暴', '流星打擊', '念動力', '無限魔力'],
       clientSkillIds: ['IceDagger', 'Lightning', 'ManaStorm', 'MeteorStrike', 'Telekinesis'],
-      tags: [['連擊', '元素', '干擾'], ['元素', '干擾'], ['生存', '輔助'], ['強擊', '元素', '召喚'], ['連擊', '干擾']],
-      stats: [[['冰霜碎片數量', '6 片']], [], [], [['破防傷害', '1 格'], ['火焰地帶傷害次數', '6 次'], ['火焰地帶範圍', '5 m'], ['火焰地帶持續時間', '6 秒'], ['最大疊層數', '2']], [['岩石碎片數量', '8 個']]],
-      descriptionKeywords: [['六片旋轉的冰霜碎片'], ['觸電'], ['魔力護甲'], ['火焰地帶'], ['岩石碎片']],
-      presentationModes: ['direct', 'direct', 'direct', 'corrected_alias', 'direct']
+      tags: [['連擊', '元素', '干擾'], ['元素', '干擾'], ['生存', '輔助'], ['強擊', '元素', '召喚'], ['連擊', '干擾'], ['絕招', '生存', '輔助']],
+      stats: [[['冰霜碎片數量', '6 片']], [], [], [['破防傷害', '1 格'], ['火焰地帶傷害次數', '6 次'], ['火焰地帶範圍', '5 m'], ['火焰地帶持續時間', '6 秒'], ['最大疊層數', '2']], [['岩石碎片數量', '8 個']], []],
+      descriptionKeywords: [['六片旋轉的冰霜碎片'], ['觸電'], ['魔力護甲'], ['火焰地帶'], ['岩石碎片'], ['冷卻時間立即重置']],
+      presentationModes: ['direct', 'direct', 'direct', 'corrected_alias', 'direct', 'direct'],
+      unlocks: [null, null, null, null, null, '魔法師 Lv.20 以上'],
+      passiveNames: ['冥想', '元素和諧', '戰鬥熟練：技巧', '元素大師', '奧術力量'],
+      passiveStats: [[], [], [], [], []],
+      passiveTags: [[], [], [], [], []],
+      passiveUnlocks: [null, null, '魔法師 Lv.15 以上', '魔法師 Lv.30 以上', '魔法師 Lv.45 以上']
     },
     'flame-mage': {
-      names: ['火焰風暴', '烈焰火炮', '閃燃', '爆炸', '疾火連彈'],
+      names: ['火焰風暴', '烈焰火炮', '閃燃', '爆炸', '疾火連彈', '煉獄'],
       clientSkillIds: ['FireStorm', 'FlameCannon', 'FlashOver', 'Ignite', 'RapidFire'],
-      tags: [['連擊', '元素', '干擾'], ['元素', '干擾'], ['連擊', '元素'], ['強擊', '連擊', '元素'], ['連擊', '元素']],
-      stats: [[['攻擊次數', '10 次'], ['破防傷害', '1 格'], ['持續時間', '5 秒'], ['吸引範圍', '4 m'], ['範圍', '2 m']], [['擊退距離', '6 m'], ['最大疊層數', '2'], ['範圍', '10 m']], [['效果觸發間隔', '2 秒'], ['範圍', '10 m']], [['範圍', '4 m']], [['火焰球發射數', '3～5 顆']]],
-      descriptionKeywords: [['灼熱'], ['烙印'], ['恢復體力'], ['消耗全部熱氣'], ['三至五顆']],
-      presentationModes: ['direct', 'direct', 'corrected_alias', 'direct', 'direct']
+      tags: [['連擊', '元素', '干擾'], ['元素', '干擾'], ['連擊', '元素'], ['強擊', '連擊', '元素'], ['連擊', '元素'], ['絕招', '連擊', '元素', '輔助']],
+      stats: [[['攻擊次數', '10 次'], ['破防傷害', '1 格'], ['持續時間', '5 秒'], ['吸引範圍', '4 m'], ['範圍', '2 m']], [['擊退距離', '6 m'], ['最大疊層數', '2'], ['範圍', '10 m']], [['效果觸發間隔', '2 秒'], ['範圍', '10 m']], [['範圍', '4 m']], [['火焰球發射數', '3～5 顆']], []],
+      descriptionKeywords: [['灼熱'], ['烙印'], ['恢復體力'], ['消耗全部熱氣'], ['三至五顆'], ['3階段燃燒之魂']],
+      presentationModes: ['direct', 'direct', 'corrected_alias', 'direct', 'direct', 'direct'],
+      unlocks: [null, null, null, null, null, '火焰術士 Lv.20 以上'],
+      passiveNames: ['燃燒之魂', '熾焰', '戰鬥熟練：技巧', '火花', '過熱'],
+      passiveStats: [[], [], [], [], []],
+      passiveTags: [[], ['連擊', '元素'], [], [], []],
+      passiveUnlocks: [null, null, '火焰術士 Lv.15 以上', '火焰術士 Lv.30 以上', '火焰術士 Lv.45 以上']
     },
     'frost-mage': {
-      names: ['水晶之刃', '冰封領域', '霜凍法球', '冰棘', '冰川裂刃'],
+      names: ['水晶之刃', '冰封領域', '霜凍法球', '冰棘', '冰川裂刃', '絕對零度'],
       clientSkillIds: ['CrystalEdge', 'FreezingField', 'FrozenOrb', 'IceSpike', 'SplitSlash'],
-      tags: [['元素', '強擊'], ['元素', '生存', '召喚'], ['元素', '召喚'], ['元素', '生存', '輔助'], ['強擊', '干擾']],
-      stats: [[['可重複使用次數', '最多 3 次']], [], [['持續傷害間隔', '0.5 秒']], [], [['破防傷害', '1 格']]],
-      descriptionKeywords: [['最多可重複使用三次'], ['受到的傷害減少'], ['生成冰霜'], ['冰霜護盾'], ['挑釁並使其凍結']],
-      presentationModes: ['direct', 'direct', 'direct', 'direct', 'direct']
+      tags: [['元素', '強擊'], ['元素', '生存', '召喚'], ['元素', '召喚'], ['元素', '生存', '輔助'], ['強擊', '干擾'], ['絕招', '元素', '生存', '召喚']],
+      stats: [[['可重複使用次數', '最多 3 次']], [], [['持續傷害間隔', '0.5 秒']], [], [['破防傷害', '1 格']], []],
+      descriptionKeywords: [['最多可重複使用三次'], ['受到的傷害減少'], ['生成冰霜'], ['冰霜護盾'], ['挑釁並使其凍結'], ['冰之隕石']],
+      presentationModes: ['direct', 'direct', 'direct', 'direct', 'direct', 'direct'],
+      unlocks: [null, null, null, null, null, '冰霜術士 Lv.20 以上'],
+      passiveNames: ['冬之帷幕', '冰錐印記', '戰鬥熟練：守護', '紛飛的冰霜', '刺骨寒氣'],
+      passiveStats: [[], [], [], [], []],
+      passiveTags: [[], ['元素'], [], [], ['元素', '強擊']],
+      passiveUnlocks: [null, null, '冰霜術士 Lv.15 以上', '冰霜術士 Lv.30 以上', '冰霜術士 Lv.45 以上']
     }
   };
   const allowedClientDataStatuses = new Set([
@@ -530,7 +545,12 @@ for (const fileName of jsonFiles) {
     'MountingShock', 'GustingVolt', 'SlipThrough', 'SpreadingVolt', 'ExpertMage_MeteorStrike_Tier2A', 'FireMage_Flashover',
     'LongBowMan_DragonHunter', 'LongBowMan_Sniping', 'LongBowMan_Hunting', 'Common_CombatMastery_Fortitude',
     'LongBowMan_ConcentrationArrow', 'LongBowMan_Upliftment', 'Arbalist_BigBang', 'Arbalist_ExtraAction',
-    'Arbalist_DrivingForce', 'Common_CombatMastery_Menace', 'Arbalist_QuickAttack', 'Arbalist_ReinforcedBolt'
+    'Arbalist_DrivingForce', 'Common_CombatMastery_Menace', 'Arbalist_QuickAttack', 'Arbalist_ReinforcedBolt',
+    'ExpertMage_BoltMagicCombination_C1', 'FireMage_Backdraft', 'ExpertMage_EnchantMagic', 'FireMage_Rekindle',
+    'Common_CombatMastery_Technique', 'Common_CombatMastery_Protection', 'Mage_InfiniteManaLoop',
+    'ExpertMage_Meditation', 'ExpertMage_ElementalMaster', 'ExpertMage_ArcanePower', 'FireMage_Incinerate',
+    'FireMage_BurningSoul', 'FireMage_Spark', 'FireMage_Overheat', 'IceMage_IceAge', 'IceMage_VeilOfWinter',
+    'IceMage_MarkOfIcicle', 'IceMage_FlutteringFrost', 'IceMage_PiercingChill'
   ]) {
     if (rawPublicData.includes(alias)) fail(fileName, `公開 data JSON 不得包含內部別名：${alias}`);
   }

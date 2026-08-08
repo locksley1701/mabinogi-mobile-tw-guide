@@ -58,11 +58,12 @@ test('Issue #55 的 18 枚新圖標、兩組共用契約與搜尋均可用', asy
   const records = Object.values(manifest.categories).flat();
   const added = records.filter(record => /^(thief-(blitz-rush|adrenaline|sneak-attack|combat-mastery-swiftness|poison-attack|poison-explosion)|dual-blades-(final-hit|rising-aspirations|recharge|combat-mastery-destruction|vigor|wind-blade)|fighter-(power-max|combo-damage|finish-attack|combat-mastery-destruction|first-aid|shock-wave))$/.test(record.id));
   expect(added).toHaveLength(18);
-  expect(records).toHaveLength(116);
-  expect(new Set(records.map(record => record.sha256)).size).toBe(114);
+  expect(records).toHaveLength(134);
+  expect(new Set(records.map(record => record.sha256)).size).toBe(131);
   expect(records.filter(record => Object.hasOwn(record, 'sharedWith'))).toEqual(expect.arrayContaining([
     expect.objectContaining({ id: 'series-mage', sharedWith: 'mage' }),
-    expect.objectContaining({ id: 'fighter-combat-mastery-destruction', sharedWith: 'dual-blades-combat-mastery-destruction' })
+    expect.objectContaining({ id: 'fighter-combat-mastery-destruction', sharedWith: 'dual-blades-combat-mastery-destruction' }),
+    expect.objectContaining({ id: 'flame-mage-combat-mastery-technique', sharedWith: 'mage-combat-mastery-technique' })
   ]));
   expect(skills.fighter.active.find(skill => skill.name === '衝擊踢')).toBeTruthy();
 

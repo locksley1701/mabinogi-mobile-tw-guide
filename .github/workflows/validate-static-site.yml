@@ -51,6 +51,7 @@ jobs:
           node --check tests/e2e/icon-pilot.spec.cjs
           node --check tests/e2e/game-guided-tour.spec.cjs
           node --check tests/e2e/issue-10-ranged-jobs.spec.cjs
+          node --check tests/e2e/issue-57-magic-skill-trees.spec.cjs
           node --check tests/e2e/issue-9-thief-jobs.spec.cjs
           node --check tests/e2e/static-server-safety.spec.cjs
           node --check playwright.config.cjs
@@ -104,14 +105,14 @@ jobs:
             'greatsword-warrior': {active: 6, passive: 5},
             swordsman: {active: 6, passive: 5},
             archer: {active: 6, passive: 5},
-            thief: {active: 5, passive: 0},
-            fighter: {active: 5, passive: 0},
-            'dual-blades': {active: 5, passive: 0},
+            thief: {active: 6, passive: 5},
+            fighter: {active: 6, passive: 5},
+            'dual-blades': {active: 6, passive: 5},
             longbowman: {active: 6, passive: 5},
             crossbowman: {active: 6, passive: 5},
-            mage: {active: 5, passive: 0},
-            'flame-mage': {active: 5, passive: 0},
-            'frost-mage': {active: 5, passive: 0}
+            mage: {active: 6, passive: 5},
+            'flame-mage': {active: 6, passive: 5},
+            'frost-mage': {active: 6, passive: 5}
           };
           if (JSON.stringify(documented) !== JSON.stringify(expectedDocumented)) {
             throw new Error(`Unexpected documented professions: ${documented.join(', ')}`);
@@ -136,7 +137,11 @@ jobs:
           }
 
           const iconCount = Object.values(icons.categories || {}).flat().length;
-          if (iconCount !== 116) throw new Error(`Expected 116 approved icon records, got ${iconCount}`);
+          if (iconCount !== 134) throw new Error(`Expected 134 approved icon records, got ${iconCount}`);
+          const uniqueIconShaCount = new Set(Object.values(icons.categories || {}).flat().map(icon => icon.sha256)).size;
+          if (uniqueIconShaCount !== 131) throw new Error(`Expected 131 unique approved icon SHA256 values, got ${uniqueIconShaCount}`);
+          const declaredShareCount = Object.values(icons.categories || {}).flat().filter(icon => Object.hasOwn(icon, 'sharedWith')).length;
+          if (declaredShareCount !== 3) throw new Error(`Expected 3 declared icon shares, got ${declaredShareCount}`);
 
           const lifeIconCount = icons.categories?.lifeSkills?.length || 0;
           if (lifeIconCount !== 20) throw new Error(`Expected 20 approved life-skill icon records, got ${lifeIconCount}`);
@@ -144,7 +149,7 @@ jobs:
           const professionSeriesIconCount = icons.categories?.professionSeries?.length || 0;
           if (professionSeriesIconCount !== 4) throw new Error(`Expected 4 approved profession-series icon records, got ${professionSeriesIconCount}`);
 
-          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 12 professions, ${aliases.length} alias definitions, and ${iconCount} icon records (${lifeIconCount}/20 life-skill categories covered; ${professionSeriesIconCount}/4 profession series).`);
+          console.log(`Validated ${jsonFiles.length} JSON files, ${cooking.length} cooking records, ${life.length} life skills, 12 professions, ${aliases.length} alias definitions, and ${iconCount} icon records (${uniqueIconShaCount} unique SHA256; ${declaredShareCount} declared shares; ${lifeIconCount}/20 life-skill categories covered; ${professionSeriesIconCount}/4 profession series).`);
           NODE
 
       - name: Validate public data and UI state contract
