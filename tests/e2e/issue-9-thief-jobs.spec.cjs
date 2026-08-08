@@ -249,7 +249,7 @@ test('公開 JSON 保持三職業、完整技能樹、route 與 changelog 契約
   expect(data.iconManifestRaw).not.toMatch(/[A-Za-z]:[\\/]/);
   expect(data.iconManifestRaw).not.toMatch(/Blob|Segment|Bundle|OfficialIconLibrary|appdata/i);
   expect(data.iconManifest.categories.professions).toHaveLength(12);
-  expect(data.iconManifest.categories.professionSkills).toHaveLength(76);
+  expect(data.iconManifest.categories.professionSkills).toHaveLength(94);
   const impactKick = data.professionSkills.fighter.active.find(skill => skill.name === '衝擊踢');
   expect(impactKick).toMatchObject({ clientSkillId: 'StompKick', presentationMode: 'corrected_alias' });
   expect(impactKick.description).toContain('螺旋上勾拳或重踏踢');

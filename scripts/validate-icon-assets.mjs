@@ -63,7 +63,7 @@ const expectedCounts = {
   lifeSkills: 20,
   professionSeries: 4,
   professions: 12,
-  professionSkills: 76,
+  professionSkills: 94,
   cooking: 4
 };
 
@@ -74,14 +74,15 @@ for (const [category, count] of Object.entries(expectedCounts)) {
   if (items.length !== count) fail(`${category} 數量為 ${items.length}，預期 ${count}`);
   all.push(...items.map(item => ({ ...item, category })));
 }
-if (all.length !== 116) fail(`總數為 ${all.length}，預期 116`);
+if (all.length !== 134) fail(`總數為 ${all.length}，預期 134`);
 
 const manifestById = new Map(all.map(item => [item.id, item]));
 const sharedWithItems = all.filter(item => Object.hasOwn(item, 'sharedWith'));
-if (sharedWithItems.length !== 2) fail(`sharedWith 必須有兩筆宣告，實際為 ${sharedWithItems.length} 筆`);
+if (sharedWithItems.length !== 3) fail(`sharedWith 必須有三筆宣告，實際為 ${sharedWithItems.length} 筆`);
 const expectedShares = new Map([
   ['series-mage', 'mage'],
-  ['fighter-combat-mastery-destruction', 'dual-blades-combat-mastery-destruction']
+  ['fighter-combat-mastery-destruction', 'dual-blades-combat-mastery-destruction'],
+  ['flame-mage-combat-mastery-technique', 'mage-combat-mastery-technique']
 ]);
 for (const item of sharedWithItems) {
   if (expectedShares.get(item.id) !== item.sharedWith) fail(`${item.id} sharedWith 不符合公開契約`);
@@ -227,13 +228,43 @@ const issue55SkillBindings = new Map([
   ['fighter-first-aid', { professionId: 'fighter', name: '急救處置' }],
   ['fighter-shock-wave', { professionId: 'fighter', name: '衝擊波' }]
 ]);
+const issue57SkillBindings = new Map([
+  ['mage-infinite-mana', { professionId: 'mage', name: '無限魔力' }],
+  ['mage-meditation', { professionId: 'mage', name: '冥想' }],
+  ['mage-elemental-harmony', { professionId: 'mage', name: '元素和諧' }],
+  ['mage-combat-mastery-technique', { professionId: 'mage', name: '戰鬥熟練：技巧' }],
+  ['mage-elemental-master', { professionId: 'mage', name: '元素大師' }],
+  ['mage-arcane-power', { professionId: 'mage', name: '奧術力量' }],
+  ['flame-mage-inferno', { professionId: 'flame-mage', name: '煉獄' }],
+  ['flame-mage-burning-soul', { professionId: 'flame-mage', name: '燃燒之魂' }],
+  ['flame-mage-blazing-flame', { professionId: 'flame-mage', name: '熾焰' }],
+  ['flame-mage-combat-mastery-technique', { professionId: 'flame-mage', name: '戰鬥熟練：技巧' }],
+  ['flame-mage-spark', { professionId: 'flame-mage', name: '火花' }],
+  ['flame-mage-overheat', { professionId: 'flame-mage', name: '過熱' }],
+  ['frost-mage-absolute-zero', { professionId: 'frost-mage', name: '絕對零度' }],
+  ['frost-mage-winter-veil', { professionId: 'frost-mage', name: '冬之帷幕' }],
+  ['frost-mage-icicle-mark', { professionId: 'frost-mage', name: '冰錐印記' }],
+  ['frost-mage-combat-mastery-guard', { professionId: 'frost-mage', name: '戰鬥熟練：守護' }],
+  ['frost-mage-fluttering-frost', { professionId: 'frost-mage', name: '紛飛的冰霜' }],
+  ['frost-mage-piercing-chill', { professionId: 'frost-mage', name: '刺骨寒氣' }]
+]);
 const professionSkillById = new Map(categories.professionSkills.map(item => [item.id, item]));
-for (const [id, binding] of [...issue9SkillBindings, ...issue10SkillBindings, ...issue55SkillBindings]) {
+for (const [id, binding] of [...issue9SkillBindings, ...issue10SkillBindings, ...issue55SkillBindings, ...issue57SkillBindings]) {
   const item = professionSkillById.get(id);
   if (!item) fail(`職業技能缺少正式圖標：${id}`);
   if (item.professionId !== binding.professionId) fail(`${id} professionId 應為 ${binding.professionId}`);
   if (item.name !== binding.name) fail(`${id} 正式名稱應為 ${binding.name}`);
   if (item.width !== 256 || item.height !== 256) fail(`${id} 必須宣告為 256x256`);
+}
+const mageTechnique = professionSkillById.get('mage-combat-mastery-technique');
+const flameTechnique = professionSkillById.get('flame-mage-combat-mastery-technique');
+if (!mageTechnique || !flameTechnique || flameTechnique.sharedWith !== mageTechnique.id ||
+  flameTechnique.icon !== mageTechnique.icon || flameTechnique.sha256 !== mageTechnique.sha256) {
+  fail('火焰術士戰鬥熟練：技巧必須依公開契約共用魔法師實體圖標');
+}
+const frostGuard = professionSkillById.get('frost-mage-combat-mastery-guard');
+if (!frostGuard || Object.hasOwn(frostGuard, 'sharedWith') || frostGuard.icon !== 'assets/icons/profession-skills/frost-mage-combat-mastery-guard.png') {
+  fail('冰霜術士戰鬥熟練：守護必須保有獨立實體圖標');
 }
 for (const id of ['thief', 'fighter', 'dual-blades', 'longbowman', 'crossbowman', 'mage', 'flame-mage', 'frost-mage']) {
   const item = categories.professions.find(entry => entry.id === id);

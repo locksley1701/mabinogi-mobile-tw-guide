@@ -3,19 +3,19 @@ const { test, expect } = require('@playwright/test');
 const jobs = [
   {
     id: 'mage', name: '魔法師', icon: 'assets/icons/professions/mage.png',
-    skills: [['冰晶匕首', 'mage-ice-dagger'], ['雷電', 'mage-lightning'], ['魔力風暴', 'mage-mana-storm'], ['流星打擊', 'mage-meteor-strike'], ['念動力', 'mage-telekinesis']]
+    skills: [['冰晶匕首', 'mage-ice-dagger'], ['雷電', 'mage-lightning'], ['魔力風暴', 'mage-mana-storm'], ['流星打擊', 'mage-meteor-strike'], ['念動力', 'mage-telekinesis'], ['無限魔力', 'mage-infinite-mana'], ['冥想', 'mage-meditation'], ['元素和諧', 'mage-elemental-harmony'], ['戰鬥熟練：技巧', 'mage-combat-mastery-technique'], ['元素大師', 'mage-elemental-master'], ['奧術力量', 'mage-arcane-power']]
   },
   {
     id: 'flame-mage', name: '火焰術士', icon: 'assets/icons/professions/flame-mage.png',
-    skills: [['火焰風暴', 'flame-mage-fire-storm'], ['烈焰火炮', 'flame-mage-flame-cannon'], ['閃燃', 'flame-mage-flash-over'], ['爆炸', 'flame-mage-ignite'], ['疾火連彈', 'flame-mage-rapid-fire']]
+    skills: [['火焰風暴', 'flame-mage-fire-storm'], ['烈焰火炮', 'flame-mage-flame-cannon'], ['閃燃', 'flame-mage-flash-over'], ['爆炸', 'flame-mage-ignite'], ['疾火連彈', 'flame-mage-rapid-fire'], ['煉獄', 'flame-mage-inferno'], ['燃燒之魂', 'flame-mage-burning-soul'], ['熾焰', 'flame-mage-blazing-flame'], ['戰鬥熟練：技巧', 'flame-mage-combat-mastery-technique'], ['火花', 'flame-mage-spark'], ['過熱', 'flame-mage-overheat']]
   },
   {
     id: 'frost-mage', name: '冰霜術士', icon: 'assets/icons/professions/frost-mage.png',
-    skills: [['水晶之刃', 'frost-mage-crystal-edge'], ['冰封領域', 'frost-mage-freezing-field'], ['霜凍法球', 'frost-mage-frozen-orb'], ['冰棘', 'frost-mage-ice-spike'], ['冰川裂刃', 'frost-mage-split-slash']]
+    skills: [['水晶之刃', 'frost-mage-crystal-edge'], ['冰封領域', 'frost-mage-freezing-field'], ['霜凍法球', 'frost-mage-frozen-orb'], ['冰棘', 'frost-mage-ice-spike'], ['冰川裂刃', 'frost-mage-split-slash'], ['絕對零度', 'frost-mage-absolute-zero'], ['冬之帷幕', 'frost-mage-winter-veil'], ['冰錐印記', 'frost-mage-icicle-mark'], ['戰鬥熟練：守護', 'frost-mage-combat-mastery-guard'], ['紛飛的冰霜', 'frost-mage-fluttering-frost'], ['刺骨寒氣', 'frost-mage-piercing-chill']]
   }
 ];
 
-const internalAliases = ['ExpertMage_MeteorStrike_Tier2A', 'FireMage_Flashover'];
+const internalAliases = ['ExpertMage_MeteorStrike_Tier2A', 'FireMage_Flashover', 'ExpertMage_BoltMagicCombination_C1', 'FireMage_Backdraft'];
 const skillAssertions = new Map([
   ['冰晶匕首', { tags: ['連擊', '元素', '干擾'], keyword: '六片旋轉的冰霜碎片', stats: [['冰霜碎片數量', '6 片']] }],
   ['雷電', { tags: ['元素', '干擾'], keyword: '觸電', stats: [] }],
@@ -32,6 +32,23 @@ const skillAssertions = new Map([
   ['霜凍法球', { tags: ['元素', '召喚'], keyword: '生成冰霜', stats: [['持續傷害間隔', '0.5 秒']] }],
   ['冰棘', { tags: ['元素', '生存', '輔助'], keyword: '冰霜護盾', stats: [] }],
   ['冰川裂刃', { tags: ['強擊', '干擾'], keyword: '挑釁並使其凍結', stats: [['破防傷害', '1 格']] }]
+  ,['無限魔力', { tags: ['絕招', '生存', '輔助'], keyword: '冷卻時間立即重置', stats: [] }]
+  ,['冥想', { tags: [], keyword: '持續恢復魔力', stats: [] }]
+  ,['元素和諧', { tags: [], keyword: '元素持續傷害', stats: [] }]
+  ,['戰鬥熟練：技巧', { tags: [], keyword: '多重打擊傷害', stats: [] }]
+  ,['元素大師', { tags: [], keyword: '持續傷害：觸電', stats: [] }]
+  ,['奧術力量', { tags: [], keyword: '各效果分別套用', stats: [] }]
+  ,['煉獄', { tags: ['絕招', '連擊', '元素', '輔助'], keyword: '3階段燃燒之魂', stats: [] }]
+  ,['燃燒之魂', { tags: [], keyword: '儲備火焰之力', stats: [] }]
+  ,['熾焰', { tags: ['連擊', '元素'], keyword: '噴出火流', stats: [] }]
+  ,['火花', { tags: [], keyword: '生成大量熱氣', stats: [] }]
+  ,['過熱', { tags: [], keyword: '冷卻時間會減少', stats: [] }]
+  ,['絕對零度', { tags: ['絕招', '元素', '生存', '召喚'], keyword: '冰之隕石', stats: [] }]
+  ,['冬之帷幕', { tags: [], keyword: '消耗1個冰霜', stats: [] }]
+  ,['冰錐印記', { tags: ['元素'], keyword: '冰柱印記', stats: [] }]
+  ,['戰鬥熟練：守護', { tags: [], keyword: '多重打擊傷害增加', stats: [] }]
+  ,['紛飛的冰霜', { tags: [], keyword: '消耗冰霜的數量', stats: [] }]
+  ,['刺骨寒氣', { tags: ['元素', '強擊'], keyword: '持續傷害：冰凍', stats: [] }]
 ]);
 
 async function prepare(page) {
@@ -56,14 +73,14 @@ async function expectLoadedIcon(image, path) {
 
 test.beforeEach(async ({ page }) => prepare(page));
 
-test('三個正式魔法系 route 依固定順序顯示十五筆技能與摘要來源說明', async ({ page }) => {
+test('三個正式魔法系 route 依固定順序顯示三十三筆技能與摘要來源說明', async ({ page }) => {
   for (const job of jobs) {
     await openRoute(page, `profession/${job.id}`);
     await expect(page.locator('#page-title')).toHaveText(job.name);
     await expect(page.locator('.profession-summary-basis')).toContainText('依已確認技能內容整理，並非官方職業介紹');
     const rows = page.locator('details.profession-skill');
-    await expect(rows).toHaveCount(5);
-    await expect(page.locator('.profession-skill__numeric-note')).toHaveCount(5);
+    await expect(rows).toHaveCount(11);
+    await expect(page.locator('.profession-skill__numeric-note')).toHaveCount(11);
     expect(await page.locator('.profession-skill__identity strong').allTextContents()).toEqual(job.skills.map(([name]) => name));
     for (const [index, [name]] of job.skills.entries()) {
       const expected = skillAssertions.get(name);
@@ -91,7 +108,10 @@ test('魔法系職業與技能圖標可在總覽、hero、技能列與搜尋載�
     await openRoute(page, `profession/${job.id}`);
     await expectLoadedIcon(page.locator(`.profession-hero img[data-official-icon="${job.id}"]`), job.icon);
     for (const [, skillId] of job.skills) {
-      await expectLoadedIcon(page.locator(`.profession-skill img[data-official-icon="${skillId}"]`), `assets/icons/profession-skills/${skillId}.png`);
+      const iconPath = skillId === 'flame-mage-combat-mastery-technique'
+        ? 'assets/icons/profession-skills/mage-combat-mastery-technique.png'
+        : `assets/icons/profession-skills/${skillId}.png`;
+      await expectLoadedIcon(page.locator(`.profession-skill img[data-official-icon="${skillId}"]`), iconPath);
     }
   }
 
@@ -116,8 +136,8 @@ test('mage 與 series-mage 依公開契約共用單一正式 PNG，內部別名�
   const seriesMage = manifest.categories.professionSeries.find(item => item.id === 'series-mage');
   const mage = manifest.categories.professions.find(item => item.id === 'mage');
   const declaredShares = records.filter(item => Object.hasOwn(item, 'sharedWith'));
-  expect(records).toHaveLength(116);
-  expect(declaredShares).toHaveLength(2);
+  expect(records).toHaveLength(134);
+  expect(declaredShares).toHaveLength(3);
   expect(new Set(records.map(item => item.sha256)).size).toBe(records.length - declaredShares.length);
   expect(seriesMage).toMatchObject({
     name: '見習魔法師系',
